@@ -86,7 +86,7 @@ export default function UpiPaymentPage() {
                         <h2 className="text-[28px] font-black tracking-tight mb-2">UPI Payment</h2>
                         <div className="bg-[#141b2a] border border-[#1f2937] rounded-full px-4 py-1.5 flex items-center gap-2">
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">BOOKING FOR:</span>
-                            <span className="text-xs font-bold text-blue-400">{bookingState?.bus?.operator || "Inception"}</span>
+                            <span className="text-xs font-bold text-primary-400">{bookingState?.bus?.operator || "Inception"}</span>
                         </div>
                     </div>
 
@@ -133,7 +133,7 @@ export default function UpiPaymentPage() {
                                 <button
                                     key={app.id}
                                     onClick={() => setSelectedApp(app.id)}
-                                    className={`flex flex-col items-center justify-center p-4 rounded-3xl transition-all border ${selectedApp === app.id ? 'bg-[#1e2740] border-blue-500' : 'bg-[#161c2d] border-transparent hover:bg-[#1a2136]'}`}
+                                    className={`flex flex-col items-center justify-center p-4 rounded-3xl transition-all border ${selectedApp === app.id ? 'bg-[#1e2740] border-primary-500' : 'bg-[#161c2d] border-transparent hover:bg-[#1a2136]'}`}
                                     style={{ aspectRatio: "1/1.1" }}
                                 >
                                     <div className={`w-14 h-14 flex items-center justify-center mb-3 shadow-md ${app.displayLogo || ''}`}>
@@ -155,7 +155,7 @@ export default function UpiPaymentPage() {
                         className="mb-8"
                     >
                         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">OTHER UPI ID</p>
-                        <div className="bg-[#161c2d] rounded-2xl flex items-center p-2 border border-[#1f2937] focus-within:border-blue-500 transition-colors">
+                        <div className="bg-[#161c2d] rounded-2xl flex items-center p-2 border border-[#1f2937] focus-within:border-primary-500 transition-colors">
                             <input
                                 type="text"
                                 value={upiId}
@@ -163,7 +163,7 @@ export default function UpiPaymentPage() {
                                 placeholder="Enter UPI ID (e.g. user@bank)"
                                 className="bg-transparent border-none flex-1 text-sm text-white px-3 py-2 outline-none placeholder:text-slate-500"
                             />
-                            <button className="bg-[#1e2a4a] text-blue-400 font-bold text-xs px-4 py-2.5 rounded-xl uppercase tracking-wider hover:bg-[#25355e] transition-colors">
+                            <button className="bg-[#1e2a4a] text-primary-400 font-bold text-xs px-4 py-2.5 rounded-xl uppercase tracking-wider hover:bg-[#25355e] transition-colors">
                                 Verify
                             </button>
                         </div>

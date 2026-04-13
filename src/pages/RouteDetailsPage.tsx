@@ -1,101 +1,153 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, MapPin, Bus, MoreVertical } from "lucide-react";
-import { motion } from "framer-motion";
+import { ArrowLeft, MoreVertical, Bus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import PageShell from "../components/PageShell";
 import { Button } from "../components/ui/button";
 
 const RouteDetailsPage = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const routeData = location.state?.route || { number: "18", destination: "Jagatpur" };
+    const navigate = useNavigate();
+    const location = useLocation();
+    const routeData = location.state?.route || { number: "47", destination: "Settlement Office" };
+    
+    const mapRef = useRef<HTMLDivElement>(null);
+    const mapInstance = useRef<L.Map | null>(null);
 
-  const stops = [
-    { name: "Baramunda BSABT", active: true },
-    { name: "Rajdhani College", active: false },
-    { name: "Fire Station Square", active: false },
-    { name: "Gopabandhu Nagar", active: false },
-    { name: "CRPF Square", active: false },
-    { name: "Nayapalli", active: false },
-  ];
+    const stops = [
+        { name: "Baramunda BSABT", active: true },
+        { name: "Rajdhani College", active: false },
+        { name: "Fire Station Square", active: false },
+        { name: "Gopabandhu Nagar", active: false },
+        { name: "CRPF Square", active: false },
+        { name: "Nayapalli", active: false },
+    ];
 
-  return (
-    <PageShell>
-      <div className="fixed inset-0 z-0 h-[45vh] bg-slate-200">
-        {/* Placeholder for real map */}
-        <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-            <div className="relative w-full h-full">
-                <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=1000" className="w-full h-full object-cover opacity-50 grayscale" alt="Map Placeholder" />
-                <div className="absolute inset-0 bg-primary/10" />
-            </div>
-        </div>
+    useEffect(() => {
+        if (!mapRef.current) return;
+
+        // Initialize map
+        mapInstance.current = L.map(mapRef.current, {
+            center: [20.2961, 85.8245],
+            zoom: 13,
+            zoomControl: false,
+            attributionControl: false
+        });
+
+        // Dark-ish tile layer using filter if possible, or just a clean style
+        const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19
+        });
         
-        {/* Header Controls */}
-        <div className="absolute top-10 left-6 right-6 flex items-center justify-between z-10">
-            <button 
-                onClick={() => navigate(-1)}
-                className="w-10 h-10 rounded-full bg-white dark:bg-slate-900 shadow-xl flex items-center justify-center"
-            >
-                <ArrowLeft className="w-5 h-5 text-on-surface" />
-            </button>
-        </div>
+        tileLayer.addTo(mapInstance.current);
 
-        {/* Floating Ticket Button */}
-        <div className="absolute bottom-6 right-6 z-10">
-            <Button 
-                onClick={() => navigate("/book-ticket")}
-                className="h-12 px-8 rounded-full bg-orange-500 hover:bg-orange-600 shadow-2xl shadow-orange-500/30 text-white font-bold text-base"
-            >
-                Pay for ticket
-            </Button>
-        </div>
-      </div>
+        return () => {
+            if (mapInstance.current) {
+                mapInstance.current.remove();
+            }
+        };
+    }, []);
 
-      <div className="relative mt-[40vh] bg-white dark:bg-slate-900 rounded-t-[3rem] shadow-2xl min-h-[60vh] pb-24 border-t border-slate-100 dark:border-slate-800">
-        <div className="p-8 pb-4">
-            <div className="flex items-center justify-between mb-2">
-                <h1 className="text-3xl font-headline font-black tracking-tighter italic">{routeData.number}</h1>
-                <button className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
-                    <MoreVertical className="w-4 h-4 text-slate-400" />
+    const handleBookTicket = () => {
+        navigate("/book-ticket", { 
+            state: { 
+                route_id: routeData.number,
+                origin: "Baramunda BSABT",
+                destination: routeData.destination,
+                price: 25,
+                operator: "Mo Bus"
+            } 
+        });
+    };
+
+    return (
+        <PageShell noPadding className="h-screen overflow-hidden">
+            {/* Full Screen Map Background */}
+            <div className="absolute inset-0 z-0">
+                <div ref={mapRef} className="w-full h-full grayscale opacity-60 dark:opacity-40" />
+                <div className="absolute inset-0 bg-slate-900/40 pointer-events-none" />
+            </div>
+
+            {/* Back Button */}
+            <div className="absolute top-6 left-6 z-20">
+                <button 
+                    onClick={() => navigate(-1)}
+                    className="w-10 h-10 rounded-full bg-slate-900/80 backdrop-blur-md flex items-center justify-center text-white shadow-xl"
+                >
+                    <ArrowLeft className="w-5 h-5" />
                 </button>
             </div>
-            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">To {routeData.destination}</p>
-        </div>
 
-        <div className="px-8 mt-6">
-            <div className="relative">
-                {/* Connecting Line */}
-                <div className="absolute left-[11px] top-3 bottom-3 w-0.5 bg-slate-100 dark:bg-slate-800" />
-                
-                <div className="space-y-10">
-                    {stops.map((stop, i) => (
-                        <div key={stop.name} className="relative pl-10">
-                            <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full border-2 ${stop.active ? 'border-primary bg-white dark:bg-slate-900' : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900'} flex items-center justify-center z-10`}>
-                                <div className={`w-2 h-2 rounded-full ${stop.active ? 'bg-primary' : 'bg-slate-200 dark:bg-slate-700'}`} />
-                            </div>
-                            
-                            {/* If active, show small bus icon nearby */}
-                            {stop.active && i === 4 && (
-                                <motion.div 
-                                    animate={{ y: [0, -3, 0] }}
-                                    transition={{ duration: 1.5, repeat: Infinity }}
-                                    className="absolute -left-2 top-0 bg-primary w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900"
-                                >
-                                    <Bus className="w-5 h-5 text-white" />
-                                </motion.div>
-                            )}
-                            
-                            <h3 className={`font-headline font-bold text-base ${stop.active ? 'text-on-surface' : 'text-slate-400'}`}>
-                                {stop.name}
-                            </h3>
+            {/* Main Content Area - Centered Card */}
+            <div className="absolute inset-0 flex items-center justify-center p-6 z-10">
+                <motion.div 
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="w-full max-w-sm aspect-[9/16] bg-[#0F172A]/95 dark:bg-slate-950/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl border border-white/5 flex flex-col overflow-hidden"
+                >
+                    {/* Card Header */}
+                    <div className="p-8 pb-4">
+                        <div className="flex items-center justify-between mb-2">
+                            <h2 className="text-4xl font-headline font-black italic text-white tracking-tighter">
+                                {routeData.number}
+                            </h2>
+                            <button className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400">
+                                <MoreVertical className="w-5 h-5" />
+                            </button>
                         </div>
-                    ))}
-                </div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                            TO {routeData.destination}
+                        </p>
+                    </div>
+
+                    {/* Stops List */}
+                    <div className="flex-1 overflow-y-auto px-8 py-4 scrollbar-none">
+                        <div className="relative">
+                            {/* Connecting Line */}
+                            <div className="absolute left-[7px] top-2 bottom-2 w-[1px] bg-white/10" />
+                            
+                            <div className="space-y-10">
+                                {stops.map((stop, i) => (
+                                    <div key={stop.name} className="relative pl-8">
+                                        <div className={`absolute left-0 top-1.5 w-4 h-4 rounded-full border-2 ${stop.active ? 'border-primary bg-primary' : 'border-white/20 bg-transparent'} flex items-center justify-center z-10`}>
+                                            {stop.active && <div className="w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_8px_white]" />}
+                                        </div>
+                                        
+                                        <div className="flex items-center justify-between">
+                                            <h3 className={`font-bold text-sm ${stop.active ? 'text-white' : 'text-slate-400'}`}>
+                                                {stop.name}
+                                            </h3>
+                                            {stop.active && (
+                                                <div className="w-1.5 h-1.5 bg-primary rounded-full animate-ping" />
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Floating elements inside card? Or just a footer button */}
+                    <div className="p-8 pt-0">
+                        {/* Empty space if needed */}
+                    </div>
+                </motion.div>
             </div>
-        </div>
-      </div>
-    </PageShell>
-  );
+
+            {/* Book Ticket Button - Floating Bottom Right (or as per design img) */}
+            <div className="absolute top-[45%] right-4 sm:right-10 z-30 translate-y-[-50%]">
+                 <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleBookTicket}
+                    className="bg-primary hover:bg-primary/90 text-white px-8 h-12 rounded-full font-black text-sm shadow-2xl shadow-primary/40 flex items-center gap-2 whitespace-nowrap"
+                 >
+                    Book Ticket
+                 </motion.button>
+            </div>
+        </PageShell>
+    );
 };
 
 export default RouteDetailsPage;

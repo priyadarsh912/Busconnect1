@@ -126,7 +126,7 @@ export default function NetBankingWalletPage() {
                                     onClick={() => handleSelectBank(bank.id)}
                                     className={`flex flex-col items-center gap-2 focus:outline-none group ${selectedBank === bank.id ? 'opacity-100 scale-105' : 'opacity-80 hover:opacity-100'}`}
                                 >
-                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden border-2 transition-all ${selectedBank === bank.id ? 'border-blue-500' : 'border-transparent group-hover:border-slate-600'} ${bank.bg} ${bank.p || ''}`}>
+                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden border-2 transition-all ${selectedBank === bank.id ? 'border-primary-500' : 'border-transparent group-hover:border-slate-600'} ${bank.bg} ${bank.p || ''}`}>
                                         {bank.icon ? (
                                             <img src={bank.icon} alt={bank.name} className="w-full h-full object-contain" />
                                         ) : (
@@ -149,7 +149,7 @@ export default function NetBankingWalletPage() {
                                 <button
                                     key={wallet.id}
                                     onClick={() => handleSelectWallet(wallet.id)}
-                                    className={`w-full bg-[#1a2334] border ${selectedWallet === wallet.id ? 'border-blue-500' : 'border-[#2a364f]'} rounded-[1.25rem] p-4 flex items-center justify-between text-left transition-all active:scale-[0.98]`}
+                                    className={`w-full bg-[#1a2334] border ${selectedWallet === wallet.id ? 'border-primary-500' : 'border-[#2a364f]'} rounded-[1.25rem] p-4 flex items-center justify-between text-left transition-all active:scale-[0.98]`}
                                 >
                                     <div className="flex items-center gap-4">
                                         <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center p-2.5 shrink-0">
@@ -166,8 +166,8 @@ export default function NetBankingWalletPage() {
                                             <p className="text-[12px] text-slate-400">{wallet.desc}</p>
                                         </div>
                                     </div>
-                                    <div className={`w-5 h-5 rounded-full border-[1.5px] flex items-center justify-center transition-all ${selectedWallet === wallet.id ? "border-blue-500" : "border-slate-500"}`}>
-                                        <div className={`w-3 h-3 rounded-full bg-blue-500 transition-transform ${selectedWallet === wallet.id ? "scale-100" : "scale-0"}`} />
+                                    <div className={`w-5 h-5 rounded-full border-[1.5px] flex items-center justify-center transition-all ${selectedWallet === wallet.id ? "border-primary-500" : "border-slate-500"}`}>
+                                        <div className={`w-3 h-3 rounded-full bg-primary-500 transition-transform ${selectedWallet === wallet.id ? "scale-100" : "scale-0"}`} />
                                     </div>
                                 </button>
                             ))}
@@ -179,8 +179,8 @@ export default function NetBankingWalletPage() {
                 <div className="absolute bottom-0 left-0 right-0 bg-[#0f1522] border-t border-[#1e2638] px-5 py-4 z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.2)]">
                     <div className="max-w-md mx-auto">
                         <div className="bg-[#162035] rounded-xl p-3 flex gap-3 mb-4 items-start border border-[#2a364f]">
-                            <ShieldCheck className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-                            <p className="text-[11px] font-medium text-blue-200/70 leading-relaxed">
+                            <ShieldCheck className="w-5 h-5 text-primary-500 shrink-0 mt-0.5" />
+                            <p className="text-[11px] font-medium text-primary-200/70 leading-relaxed">
                                 Your payment is 100% secured with SSL encryption. Instant refund on cancellations for all bank and wallet payments.
                             </p>
                         </div>
