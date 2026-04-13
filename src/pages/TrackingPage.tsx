@@ -927,8 +927,10 @@ const TrackingPage = () => {
             {t("tracking.returnToRoutes")}
           </Button>
         </div>
-      </PageShell>
-      return (
+    );
+  }
+
+  return (
     <PageShell noPadding>
       <div className="flex flex-col h-screen overflow-hidden bg-white dark:bg-[#0f1522]">
         {/* Top Half: Map */}
