@@ -927,6 +927,7 @@ const TrackingPage = () => {
             {t("tracking.returnToRoutes")}
           </Button>
         </div>
+      </PageShell>
     );
   }
 
