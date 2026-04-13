@@ -14,6 +14,7 @@ import TrackingPage from "./pages/TrackingPage";
 import ETicketPage from "./pages/ETicketPage";
 import RoutesPage from "./pages/RoutesPage";
 import AccountPage from "./pages/AccountPage";
+import RouteDetailsPage from "./pages/RouteDetailsPage";
 import HelpSupportPage from "./pages/HelpSupportPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
@@ -89,6 +90,7 @@ const AnimatedRoutes = () => {
           <Route path="/routes" element={<RoutesPage />} />
           <Route path="/my-bookings" element={<MyBookingsPage />} />
           <Route path="/account" element={<AccountPage />} />
+          <Route path="/route-details" element={<RouteDetailsPage />} />
           <Route path="/help" element={<HelpSupportPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/radar" element={<LiveRadarWrapper />} />

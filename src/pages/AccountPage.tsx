@@ -134,18 +134,12 @@ const AccountPage = () => {
         <div className="relative z-10 flex items-center justify-between mb-8">
           <button 
             onClick={() => navigate("/")} 
-            aria-label="Go home"
-            className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all active:scale-95"
+            className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-white font-headline font-black text-2xl tracking-tighter uppercase">{t("account.title")}</h1>
-          <button 
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all active:scale-95 shadow-lg"
-          >
-            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" /> }
-          </button>
+          <h1 className="text-white font-headline font-black text-xl tracking-tighter uppercase">Account</h1>
+          <div className="w-10" />
         </div>
 
         {/* Profile Card Overlay */}
@@ -244,13 +238,15 @@ const AccountPage = () => {
                         <button 
                             key={item.label} 
                             onClick={() => navigate(item.path)} 
-                            className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-50 dark:border-slate-800 flex items-center gap-4 transition-all active:scale-[0.98] hover:shadow-md group"
+                            className="bg-white dark:bg-slate-900 p-3.5 rounded-3xl border border-slate-50 dark:border-slate-800 flex items-center gap-4 transition-all active:scale-[0.98] hover:shadow-md group"
                         >
-                            <div className={`w-12 h-12 rounded-2xl ${item.color.split(' ')[0]} flex items-center justify-center transition-transform group-hover:scale-110`}>
-                                <item.icon className="w-6 h-6" />
+                            <div className={`w-10 h-10 rounded-2xl ${item.color.split(' ')[0]} flex items-center justify-center transition-transform group-hover:scale-110 shadow-sm shadow-black/5`}>
+                                <item.icon className="w-5 h-5" />
                             </div>
-                            <span className="flex-1 font-headline font-bold text-base text-on-surface tracking-tight">{item.label}</span>
-                            <ChevronRight className="w-5 h-5 text-slate-300" />
+                            <span className="flex-1 font-headline font-bold text-sm text-on-surface tracking-tight text-left">{item.label}</span>
+                            <div className="p-1 px-3 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center gap-1">
+                                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                            </div>
                         </button>
                     ))}
                 </div>
@@ -263,10 +259,10 @@ const AccountPage = () => {
                         <button 
                             key={item.label} 
                             onClick={() => item.action ? item.action() : navigate(item.path)} 
-                            className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-50 dark:border-slate-800 flex items-center gap-4 transition-all active:scale-[0.98] hover:shadow-md group"
+                            className="bg-white dark:bg-slate-900 p-3.5 rounded-3xl border border-slate-50 dark:border-slate-800 flex items-center gap-4 transition-all active:scale-[0.98] hover:shadow-md group"
                         >
-                            <div className={`w-12 h-12 rounded-2xl ${item.color.split(' ')[0]} flex items-center justify-center transition-transform group-hover:scale-110`}>
-                                <item.icon className="w-6 h-6" />
+                            <div className={`w-10 h-10 rounded-2xl ${item.color.split(' ')[0]} flex items-center justify-center transition-transform group-hover:scale-110 shadow-sm shadow-black/5`}>
+                                <item.icon className="w-5 h-5" />
                             </div>
                             <span className="flex-1 font-headline font-bold text-sm text-on-surface tracking-tight text-left">{item.label}</span>
                             {item.isToggle ? (
@@ -274,7 +270,9 @@ const AccountPage = () => {
                                     <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${theme === 'dark' ? 'left-6' : 'left-1'}`} />
                                 </div>
                             ) : (
-                                <ChevronRight className="w-5 h-5 text-slate-300" />
+                                <div className="p-1 px-3 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center gap-1">
+                                    <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                                </div>
                             )}
                         </button>
                     ))}
