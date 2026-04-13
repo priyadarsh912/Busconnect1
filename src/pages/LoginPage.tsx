@@ -132,8 +132,13 @@ const LoginPage = () => {
       <main className="flex-1 px-8 py-4 flex flex-col">
         {/* Branding */}
         <div className="mb-10 text-center md:text-left">
-          <div className="inline-flex items-center justify-center w-20 h-20 mb-6 rounded-3xl bg-white shadow-xl shadow-primary/10 border border-slate-50 relative group p-3">
-             <img src="/b_logo.png" alt="BusConnect" className="w-full h-full object-contain" />
+          <div className="inline-flex items-center justify-center w-20 h-20 mb-6 rounded-3xl bg-white shadow-xl shadow-primary/10 border border-slate-50 relative group p-3 overflow-hidden">
+             <img 
+               src="/b_logo.png" 
+               alt="BusConnect" 
+               className="w-full h-full object-contain" 
+               style={{ filter: "brightness(0) saturate(100%) invert(23%) sepia(87%) saturate(1461%) hue-rotate(152deg) brightness(89%) contrast(101%)" }}
+             />
           </div>
           <h1 className="font-headline font-black text-5xl text-primary italic tracking-tighter mb-3 leading-[0.9]">
             Welcome to <br />

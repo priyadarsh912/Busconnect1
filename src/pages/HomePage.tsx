@@ -27,13 +27,15 @@ const HomePage = () => {
       {/* App Header */}
       <motion.div variants={fadeUp} initial="initial" animate="animate" className="flex items-center justify-between mb-8 pt-4 px-1">
         <div className="flex items-center gap-3">
-          <button 
-           onClick={() => navigate("/account")}
-           className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 active:scale-95 transition-transform"
-          >
-            <User className="w-5 h-5 text-on-surface" />
-          </button>
-          <h1 className="text-xl font-headline font-black tracking-tighter text-on-surface uppercase">
+          <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-800 flex items-center justify-center p-1.5 overflow-hidden">
+             <img 
+               src="/b_logo.png" 
+               alt="BusConnect" 
+               className="w-full h-full object-contain"
+               style={{ filter: "brightness(0) saturate(100%) invert(23%) sepia(87%) saturate(1461%) hue-rotate(152deg) brightness(89%) contrast(101%)" }}
+             />
+          </div>
+          <h1 className="text-xl font-headline font-black tracking-tighter text-primary italic uppercase">
             BusConnect
           </h1>
         </div>

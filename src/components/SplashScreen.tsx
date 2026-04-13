@@ -57,8 +57,13 @@ const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
                 transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
                 className="flex flex-col items-center"
               >
-                <div className="w-32 h-32 bg-white rounded-3xl flex items-center justify-center shadow-2xl shadow-primary/10 border border-slate-100 mb-8 relative px-4">
-                  <img src="/b_logo.png" alt="BusConnect" className="w-full h-full object-contain" />
+                <div className="w-32 h-32 bg-white rounded-3xl flex items-center justify-center shadow-2xl shadow-primary/10 border border-slate-100 mb-8 relative px-4 overflow-hidden">
+                  <img 
+                    src="/b_logo.png" 
+                    alt="BusConnect" 
+                    className="w-full h-full object-contain"
+                    style={{ filter: "brightness(0) saturate(100%) invert(23%) sepia(87%) saturate(1461%) hue-rotate(152deg) brightness(89%) contrast(101%)" }}
+                  />
                 </div>
               </motion.div>
 
