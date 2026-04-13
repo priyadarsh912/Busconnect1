@@ -51,7 +51,7 @@ const BottomNav = () => {
               <span
                 className={`text-[9px] font-black uppercase tracking-wider ${isActive ? "text-white" : ""}`}
               >
-                {t(tab.label) || tab.label}
+                {tab.label}
               </span>
             </motion.button>
           );

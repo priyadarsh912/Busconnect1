@@ -131,6 +131,7 @@ const AccountPage = () => {
         <div className="relative z-10 flex items-center justify-between mb-8">
           <button 
             onClick={() => navigate(-1)} 
+            aria-label="Go back"
             className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all active:scale-95"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -180,7 +181,7 @@ const AccountPage = () => {
               className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 p-8 pt-10 shadow-sm"
             >
               <div className="flex items-center justify-between mb-8">
-                <h3 className="font-headline font-bold text-xl tracking-tight text-on-surface">Edit Profile</h3>
+                <h3 className="font-headline font-bold text-xl tracking-tight text-on-surface">{t('account.editProfile')}</h3>
                 <button onClick={handleCancelEdit} className="p-2 bg-slate-50 dark:bg-slate-800 rounded-full text-slate-400">
                   <X className="w-5 h-5" />
                 </button>
@@ -188,7 +189,7 @@ const AccountPage = () => {
 
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Full Name</label>
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">{t('account.fullName')}</label>
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/40" />
                     <Input
@@ -201,7 +202,7 @@ const AccountPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Email</label>
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">{t('account.email')}</label>
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/40" />
                     <Input
@@ -216,10 +217,10 @@ const AccountPage = () => {
 
                 <div className="grid grid-cols-2 gap-4 pt-4">
                     <Button variant="ghost" onClick={handleCancelEdit} className="h-14 rounded-2xl font-bold text-slate-500">
-                        Cancel
+                        {t('action.cancel')}
                     </Button>
                     <Button onClick={handleSave} className="h-14 rounded-2xl font-headline font-bold text-base shadow-lg shadow-primary/20">
-                        <Save className="w-5 h-5 mr-2" /> Save
+                        <Save className="w-5 h-5 mr-2" /> {t('action.save')}
                     </Button>
                 </div>
               </div>
@@ -285,4 +286,3 @@ const AccountPage = () => {
 };
 
 export default AccountPage;
-

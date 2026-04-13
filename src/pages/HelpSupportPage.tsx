@@ -137,7 +137,7 @@ const HelpSupportPage = () => {
 
         {/* Common Issues (Accordions) */}
         <section className="space-y-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-2">Frequenty Asked</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-2">Frequently Asked</p>
             <div className="grid gap-3">
                 {commonIssues.map((issue, i) => (
                     <button key={i} className="w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-50 dark:border-slate-800 p-5 flex items-center justify-between active:scale-[0.98] transition-all group">

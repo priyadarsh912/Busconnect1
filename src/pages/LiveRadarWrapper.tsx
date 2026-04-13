@@ -45,24 +45,21 @@ const getAgeMs = (lastUpdated: any): number => {
 
 const createLiveMarkerHtml = (bus: SupabaseLiveBus): string => {
     const ageSec = Math.round(getAgeMs(bus.lastUpdated) / 1000);
-    const ageLabel = ageSec < 60 ? `${ageSec}s` : `${Math.floor(ageSec / 60)}m`;
     const isRecent = ageSec < 30;
     const borderColor = isRecent ? "#22c55e" : "#f59e0b";
 
     return `
 <div style="
   background:white;border:2.5px solid ${borderColor};
-  border-radius:24px;padding:3px 10px;
-  display:flex;align-items:center;gap:5px;
+  border-radius:24px;padding:3px 6px;
+  display:flex;align-items:center;gap:0;
   box-shadow:0 4px 16px rgba(0,0,0,0.25);
   cursor:pointer;width:max-content;position:relative;
 ">
-  <span style="position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;
+  <span style="position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;
     background:${isRecent ? '#22c55e' : '#f59e0b'};border:2px solid white;
     ${isRecent ? 'animation:livePulseRadar 1.5s ease infinite;' : ''}"></span>
-  <span style="font-size:15px;line-height:1">🚌</span>
-  <span style="font-size:9px;font-weight:800;color:#1e293b;letter-spacing:0.3px;text-transform:uppercase">LIVE</span>
-  <span style="font-size:9px;font-weight:600;color:#64748b">${ageLabel}</span>
+  <span style="font-size:16px;line-height:1">🚌</span>
 </div>`;
 };
 
@@ -141,9 +138,9 @@ const LiveRadarWrapper = () => {
             const icon = L.divIcon({
                 className: "",
                 html: createLiveMarkerHtml(bus),
-                iconSize: [110, 30],
-                iconAnchor: [55, 15],
-                popupAnchor: [0, -18],
+                iconSize: [36, 30],
+                iconAnchor: [18, 15],
+                popupAnchor: [0, -16],
             });
 
             L.marker([bus.latitude, bus.longitude], {

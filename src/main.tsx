@@ -3,10 +3,13 @@ import { defineCustomElements as jeepSqlite } from 'jeep-sqlite/loader';
 import App from "./App.tsx";
 import "./index.css";
 
-// Initialize the jeep-sqlite web component
-jeepSqlite(window);
+// Initialize the jeep-sqlite web component and start the app
+async function bootstrap() {
+  await jeepSqlite(window);
+  createRoot(document.getElementById("root")!).render(<App />);
+}
 
-createRoot(document.getElementById("root")!).render(<App />);
+bootstrap();
 
 
 

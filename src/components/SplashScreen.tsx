@@ -94,7 +94,7 @@ const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
               </p>
 
               {/* Progress Tracker */}
-              <div className="mt-16 w-1 w-24 h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden relative">
+              <div className="mt-16 w-24 h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden relative">
                 <motion.div 
                   initial={{ x: "-100%" }}
                   animate={{ x: "100%" }}

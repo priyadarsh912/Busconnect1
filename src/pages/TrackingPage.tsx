@@ -172,6 +172,19 @@ const TrackingPage = () => {
   const [progress, setProgress] = useState<number>(0);
   const [dynamicStops, setDynamicStops] = useState<Stop[]>([]);
 
+  const [currentSpeed, setCurrentSpeed] = useState<number>(42); // default placeholder
+  const [crowdLevel, setCrowdLevel] = useState<any>({ level: 'medium', label: 'Moderate' });
+  
+  // Track previous location to compute live speed
+  const prevSpeedRef = useRef<{ loc: any, time: number } | null>(null);
+
+  // Update crowd info periodically
+  useEffect(() => {
+    if (from && to) {
+        setCrowdLevel(predictCrowd(from, to, { delayMinutes: etaMinutes }));
+    }
+  }, [from, to, etaMinutes, predictCrowd]);
+
   // --- City & Stop Coordinates ---
   const CITY_COORDS: Record<string, [number, number]> = {
     // Chandigarh Tricity
@@ -769,8 +782,22 @@ const TrackingPage = () => {
 
             const liveLat = latestDoc.lat ?? latestDoc.latitude;
             const liveLng = latestDoc.lng ?? latestDoc.longitude;
+            const liveTime = latestDoc.timestamp?.toMillis?.() || (latestDoc.timestamp?.seconds ? latestDoc.timestamp.seconds * 1000 : Date.now());
             
             if (liveLat != null && liveLng != null && busMarkerRef.current) {
+              // Compute dynamic speed
+              if (prevSpeedRef.current) {
+                  const dist = L.latLng(liveLat, liveLng).distanceTo(prevSpeedRef.current.loc);
+                  const timeDiff = (liveTime - prevSpeedRef.current.time) / 1000;
+                  if (timeDiff > 0 && timeDiff < 300) { // realistic window
+                      const speedKmh = Math.round((dist / timeDiff) * 3.6);
+                      if (speedKmh >= 0 && speedKmh < 120) {
+                          setCurrentSpeed(speedKmh);
+                      }
+                  }
+              }
+              prevSpeedRef.current = { loc: L.latLng(liveLat, liveLng), time: liveTime };
+
               const newPos: [number, number] = [liveLat, liveLng];
               busMarkerRef.current.setLatLng(newPos);
               
@@ -964,58 +991,49 @@ const TrackingPage = () => {
               className="max-w-xl mx-auto bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2.5rem] shadow-[0_-12px_40px_rgba(0,0,0,0.1)] border border-white/20 overflow-hidden"
             >
               {/* Handle */}
-              <div className="w-full flex justify-center py-4">
-                <div className="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full" />
+              <div className="w-full flex justify-center py-3">
+                <div className="w-10 h-1 bg-slate-200 dark:bg-slate-700 rounded-full" />
               </div>
 
-              <div className="p-8 pt-0">
-                <div className="flex justify-between items-start mb-8">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="bg-primary/10 text-primary font-bold text-[10px] px-2.5 py-1 rounded-full tracking-wider border border-primary/10">ON THE MOVE</span>
+              <div className="p-4 pt-0">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="bg-primary/10 text-primary font-bold text-[9px] px-2 py-0.5 rounded-full tracking-widest border border-primary/10">LIVE</span>
                     </div>
-                    <h2 className="font-headline font-extrabold text-3xl tracking-tight text-on-surface">
+                    <h2 className="font-headline font-bold text-lg tracking-tight text-on-surface leading-tight">
                       Bus {activeRoute?.route_no || activeRoute?.route_id || "402"} 
-                      <span className="text-slate-400 font-medium ml-2">to {to}</span>
+                      <span className="text-xs text-slate-400 font-medium ml-1">to {to}</span>
                     </h2>
-                    <p className="text-slate-500 font-medium">
+                    <p className="text-xs text-slate-500 font-medium">
                       Next: <span className="font-bold text-on-surface">
                         {dynamicStops.find((s) => progress < s.progressAnchor)?.name || to}
                       </span>
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-headline font-black text-5xl text-primary leading-none">
+                    <p className="font-headline font-black text-2xl text-primary leading-none tracking-tight">
                       {Math.max(0, Math.round((etaMinutes * (100 - progress)) / 100))}
                     </p>
-                    <p className="font-bold text-[10px] uppercase tracking-widest text-primary mt-1">mins away</p>
+                    <p className="font-bold text-[9px] uppercase tracking-widest text-primary mt-1">mins</p>
                   </div>
                 </div>
 
-                {/* Info Bento Grid */}
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                  <div className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-3xl flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-700 shadow-sm flex items-center justify-center text-orange-500">
-                      <Clock className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Crowd</p>
-                      <p className="font-headline font-bold text-base">Moderate</p>
-                    </div>
+                {/* Minimal Info Row */}
+                <div className="flex items-center gap-4 mb-3 text-xs font-semibold text-slate-500 bg-slate-50 dark:bg-slate-800/50 py-2 px-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <div className={`flex items-center gap-1.5 ${crowdLevel.level === 'high' ? 'text-red-500' : crowdLevel.level === 'low' ? 'text-green-500' : 'text-orange-500'}`}>
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>{crowdLevel.label || "Moderate"} Crowd</span>
                   </div>
-                  <div className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-3xl flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-700 shadow-sm flex items-center justify-center text-primary">
-                      <Zap className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Speed</p>
-                      <p className="font-headline font-bold text-base">42 km/h</p>
-                    </div>
+                  <div className="w-1 h-1 rounded-full bg-slate-200 dark:bg-slate-700" />
+                  <div className="flex items-center gap-1.5 text-primary">
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>{currentSpeed} km/h</span>
                   </div>
                 </div>
 
                 {/* Progress Bar Container */}
-                <div className="bg-slate-100 dark:bg-slate-800 h-2 w-full rounded-full overflow-hidden mb-8 relative">
+                <div className="bg-slate-100 dark:bg-slate-800 h-1 w-full rounded-full overflow-hidden mb-3 relative">
                    <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
@@ -1023,12 +1041,12 @@ const TrackingPage = () => {
                    />
                 </div>
 
-                <div className="flex gap-4">
-                  <Button className="flex-1 h-14 rounded-full bg-gradient-to-r from-primary to-primary-container text-white font-headline font-extrabold text-lg shadow-lg shadow-primary/20 active:scale-95">
+                <div className="flex gap-2">
+                  <Button className="flex-1 h-10 rounded-xl bg-gradient-to-r from-primary to-primary-container text-white font-headline font-bold text-sm shadow-md shadow-primary/20 active:scale-95">
                     View Full Route
                   </Button>
-                  <Button variant="outline" className="w-14 h-14 rounded-full border-slate-200 dark:border-slate-700 flex items-center justify-center p-0 active:scale-90">
-                    <Info className="w-6 h-6 text-slate-500" />
+                  <Button variant="outline" className="w-10 h-10 rounded-xl border-slate-200 dark:border-slate-700 flex items-center justify-center p-0 active:scale-90">
+                    <Info className="w-4 h-4 text-slate-500" />
                   </Button>
                 </div>
               </div>

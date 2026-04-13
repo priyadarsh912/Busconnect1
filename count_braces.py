@@ -1,5 +1,11 @@
+import sys
+import os
 
 def count_braces(filename):
+    if not os.path.exists(filename):
+        print(f"Error: File not found: {filename}")
+        return
+    
     with open(filename, 'r', encoding='utf-8') as f:
         content = f.read()
         curly = content.count('{') - content.count('}')
@@ -10,7 +16,9 @@ def count_braces(filename):
         print(f"  Parentheses diff: {paren}")
         print(f"  Square brackets diff: {square}")
 
-count_braces(r"c:\Users\spriy\Downloads\busconnect-main\src\pages\ConfirmationPage.tsx")
-count_braces(r"c:\Users\spriy\Downloads\busconnect-main\src\pages\ETicketPage.tsx")
-count_braces(r"c:\Users\spriy\Downloads\busconnect-main\src\pages\TrackingPage.tsx")
-count_braces(r"c:\Users\spriy\Downloads\busconnect-main\src\pages\LoginPage.tsx")
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        for arg in sys.argv[1:]:
+            count_braces(arg)
+    else:
+        print("Usage: python count_braces.py <file1> <file2> ...")

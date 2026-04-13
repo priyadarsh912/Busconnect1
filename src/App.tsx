@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ThemeProvider } from "./components/theme-provider";
 import BottomNav from "./components/BottomNav";
 import HomePage from "./pages/HomePage";
@@ -169,27 +169,35 @@ const App = () => {
       <LanguageProvider>
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
-            <AnimatePresence>
-              {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
+            <AnimatePresence mode="wait">
+              {showSplash ? (
+                <SplashScreen key="splash" onFinish={() => setShowSplash(false)} />
+              ) : (
+                <motion.div 
+                  key="main-app" 
+                  initial={{ opacity: 0, y: 10 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  transition={{ duration: 0.6 }}
+                  className="h-full w-full"
+                >
+                  <OfflineOverlay 
+                    isOffline={isOffline && !suppressOffline} 
+                    onContinueOffline={() => setSuppressOffline(true)}
+                    onRetry={() => {
+                      console.log("Retrying connection...");
+                    }}
+                  />
+
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <AnimatedRoutes />
+                    <SOSButton />
+                    <BottomNav />
+                  </BrowserRouter>
+                </motion.div>
+              )}
             </AnimatePresence>
-            
-            <OfflineOverlay 
-              isOffline={isOffline && !suppressOffline} 
-              onContinueOffline={() => setSuppressOffline(true)}
-              onRetry={() => {
-                // Network check happens automatically, but we can log it
-                console.log("Retrying connection...");
-              }}
-            />
-
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <AnimatedRoutes />
-              <SOSButton />
-              <BottomNav />
-
-            </BrowserRouter>
           </TooltipProvider>
         </QueryClientProvider>
       </LanguageProvider>

@@ -28,13 +28,19 @@ const SettingsPage = () => {
   const [radius, setRadius] = useState<number>(1000);
 
   const handleApply = async () => {
-    setLanguage(selected);
-    await notificationService.updateNotifyRadius(radius);
-    toast.success(t("settings.languageUpdated") || "Settings Updated", { 
-        description: t("settings.languageUpdatedDescription") || "Your preferences have been saved." ,
-        className: "bg-primary text-white font-bold"
-    });
-    navigate(-1);
+    try {
+        setLanguage(selected);
+        await notificationService.updateNotifyRadius(radius);
+        toast.success(t("settings.languageUpdated") || "Settings Updated", { 
+            description: t("settings.languageUpdatedDescription") || "Your preferences have been saved." ,
+            className: "bg-primary text-white font-bold"
+        });
+        navigate(-1);
+    } catch (error: any) {
+        toast.error("Update Failed", {
+            description: error.message || "Failed to update notification radius."
+        });
+    }
   };
 
   return (
