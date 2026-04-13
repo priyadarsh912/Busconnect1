@@ -50,21 +50,36 @@ const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Live in your city</span>
               </div>
 
-              <div className="relative mb-10 group">
-                <motion.div 
-                   animate={{ 
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0]
-                   }}
-                   transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-                   className="absolute -inset-8 bg-primary/10 rounded-full blur-3xl"
-                />
-                <img 
-                  src="/bus_app_icon.png" 
-                  alt="BusConnect Logo" 
-                  className="w-32 h-32 object-contain relative z-10 drop-shadow-[0_20px_50px_rgba(0,107,125,0.2)]"
-                />
-              </div>
+              {/* Brand Logo Container */}
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+                className="flex flex-col items-center"
+              >
+                <div className="w-28 h-28 bg-primary rounded-[2.5rem] flex items-center justify-center shadow-2xl border border-white/20 mb-8 relative">
+                    {/* SVG Logo - New Design */}
+                    <svg viewBox="0 0 100 100" className="w-20 h-20 text-white" fill="currentColor">
+                        {/* Bus Body */}
+                        <path d="M25,35 Q25,25 35,25 L65,25 Q75,25 75,35 L75,70 Q75,75 70,75 L65,75 L65,85 L55,85 L55,75 L45,75 L45,85 L35,85 L35,75 L30,75 Q25,75 25,70 Z" />
+                        {/* Windshield */}
+                        <path d="M30,35 L70,35 L70,55 L30,55 Z" fill="white" className="opacity-20" />
+                        {/* Lights */}
+                        <circle cx="38" cy="65" r="4" fill="white" />
+                        <circle cx="62" cy="65" r="4" fill="white" />
+                        {/* Connecting Path Line */}
+                        <path 
+                        d="M15,85 C15,60 55,60 85,85" 
+                        fill="none" 
+                        stroke="white" 
+                        strokeWidth="4" 
+                        strokeLinecap="round" 
+                        className="opacity-40"
+                        />
+                        <circle cx="85" cy="85" r="4" fill="white" />
+                    </svg>
+                </div>
+              </motion.div>
 
               <h1 className="font-headline font-black text-6xl tracking-tighter leading-tight mb-4 text-on-surface">
                 Bus<span className="bg-gradient-to-br from-primary to-primary-container bg-clip-text text-transparent italic">Connect</span>
