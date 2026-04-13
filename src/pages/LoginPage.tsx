@@ -132,31 +132,12 @@ const LoginPage = () => {
       <main className="flex-1 px-8 py-4 flex flex-col">
         {/* Branding */}
         <div className="mb-10 text-center md:text-left">
-          <div className="inline-flex items-center justify-center w-20 h-20 mb-6 rounded-3xl bg-white dark:bg-slate-800 shadow-xl shadow-primary/10 relative group">
-             {/* Logo SVG - Based on your new design */}
-             <svg viewBox="0 0 100 100" className="w-14 h-14 text-primary" fill="currentColor">
-                {/* Bus Body */}
-                <path d="M25,35 Q25,25 35,25 L65,25 Q75,25 75,35 L75,70 Q75,75 70,75 L65,75 L65,85 L55,85 L55,75 L45,75 L45,85 L35,85 L35,75 L30,75 Q25,75 25,70 Z" />
-                {/* Windshield */}
-                <path d="M30,35 L70,35 L70,55 L30,55 Z" fill="white" className="opacity-90" />
-                {/* Lights */}
-                <circle cx="38" cy="65" r="4" fill="white" />
-                <circle cx="62" cy="65" r="4" fill="white" />
-                {/* Connecting Path Line */}
-                <path 
-                  d="M15,85 C15,60 55,60 85,85" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="5" 
-                  strokeLinecap="round" 
-                  className="opacity-40"
-                />
-                <circle cx="85" cy="85" r="4" />
-             </svg>
+          <div className="inline-flex items-center justify-center w-20 h-20 mb-6 rounded-3xl bg-white shadow-xl shadow-primary/10 border border-slate-50 relative group p-3">
+             <img src="/b_logo.png" alt="BusConnect" className="w-full h-full object-contain" />
           </div>
-          <h1 className="font-headline font-black text-5xl text-on-surface tracking-tighter mb-3 leading-[0.9]">
+          <h1 className="font-headline font-black text-5xl text-primary italic tracking-tighter mb-3 leading-[0.9]">
             Welcome to <br />
-            <span className="text-primary italic">BusConnect</span>
+            BusConnect
           </h1>
           <p className="text-on-surface-variant text-base font-medium leading-relaxed max-w-sm">
             {isSignUp ? "Create an account to start your reimagined daily journey." : "Your daily commute, reimagined with real-time intelligence."}

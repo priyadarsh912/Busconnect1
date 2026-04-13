@@ -54,42 +54,23 @@ const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+                transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
                 className="flex flex-col items-center"
               >
-                <div className="w-28 h-28 bg-primary rounded-[2.5rem] flex items-center justify-center shadow-2xl border border-white/20 mb-8 relative">
-                    {/* SVG Logo - New Design */}
-                    <svg viewBox="0 0 100 100" className="w-20 h-20 text-white" fill="currentColor">
-                        {/* Bus Body */}
-                        <path d="M25,35 Q25,25 35,25 L65,25 Q75,25 75,35 L75,70 Q75,75 70,75 L65,75 L65,85 L55,85 L55,75 L45,75 L45,85 L35,85 L35,75 L30,75 Q25,75 25,70 Z" />
-                        {/* Windshield */}
-                        <path d="M30,35 L70,35 L70,55 L30,55 Z" fill="white" className="opacity-20" />
-                        {/* Lights */}
-                        <circle cx="38" cy="65" r="4" fill="white" />
-                        <circle cx="62" cy="65" r="4" fill="white" />
-                        {/* Connecting Path Line */}
-                        <path 
-                        d="M15,85 C15,60 55,60 85,85" 
-                        fill="none" 
-                        stroke="white" 
-                        strokeWidth="4" 
-                        strokeLinecap="round" 
-                        className="opacity-40"
-                        />
-                        <circle cx="85" cy="85" r="4" fill="white" />
-                    </svg>
+                <div className="w-32 h-32 bg-white rounded-3xl flex items-center justify-center shadow-2xl shadow-primary/10 border border-slate-100 mb-8 relative px-4">
+                  <img src="/b_logo.png" alt="BusConnect" className="w-full h-full object-contain" />
                 </div>
               </motion.div>
 
-              <h1 className="font-headline font-black text-6xl tracking-tighter leading-tight mb-4 text-on-surface">
-                Bus<span className="bg-gradient-to-br from-primary to-primary-container bg-clip-text text-transparent italic">Connect</span>
+              <h1 className="font-headline font-black text-6xl tracking-tighter leading-tight mb-4 text-primary italic drop-shadow-sm">
+                BusConnect
               </h1>
               
               <motion.div 
                 initial={{ width: 0 }}
-                animate={{ width: 48 }}
-                transition={{ delay: 0.5, duration: 0.8 }}
-                className="h-1 bg-primary rounded-full mt-2"
+                animate={{ width: 80 }}
+                transition={{ delay: 0.8, duration: 1 }}
+                className="h-1.5 bg-primary/20 rounded-full mt-2"
               />
             </motion.div>
           ) : (
