@@ -200,8 +200,8 @@ const renderBusPopupHtml = (busId: string, operator: string, to: string, highway
     </div>
     </div>
     <div style="display:flex;gap:6px;margin-top:12px">
-        <button id="track-btn-${busId}" style="flex:1;background:#3b82f6;color:white;border:none;padding:6px 0;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;transition:opacity 0.2s" onmousedown="setTimeout(()=>this.style.opacity=0.7,0)" onmouseup="setTimeout(()=>this.style.opacity=1,200)">Track Bus</button>
-        ${operator !== "Private Volvo" ? `<button id="book-btn-${busId}" style="flex:1;background:white;color:#3b82f6;border:1px solid #3b82f6;padding:6px 0;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;transition:background 0.2s" onmousedown="setTimeout(()=>this.style.background='#eff6ff',0)" onmouseup="setTimeout(()=>this.style.background='white',200)">Book Ticket</button>` : ''}
+        <button id="track-btn-${busId}" style="flex:1;background:#006B7D;color:white;border:none;padding:6px 0;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;transition:opacity 0.2s" onmousedown="setTimeout(()=>this.style.opacity=0.7,0)" onmouseup="setTimeout(()=>this.style.opacity=1,200)">Track Bus</button>
+        ${operator !== "Private Volvo" ? `<button id="book-btn-${busId}" style="flex:1;background:white;color:#006B7D;border:1px solid #006B7D;padding:6px 0;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;transition:background 0.2s" onmousedown="setTimeout(()=>this.style.background='#f0fdfa',0)" onmouseup="setTimeout(()=>this.style.background='white',200)">Book Ticket</button>` : ''}
     </div>
 </div>
 `;
@@ -249,16 +249,17 @@ const HighwayRadarPage = () => {
         routeLineGroup.current = L.layerGroup().addTo(m);
         radarLayerGroup.current = L.layerGroup().addTo(m);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+            maxZoom: 19,
         }).addTo(m);
 
         // User marker
         const userIcon = L.divIcon({
             className: '',
             html: `<div style="position:relative;width:22px;height:22px">
-               <span style="position:absolute;inset:0;border-radius:50%;background:#3b82f6;opacity:0.4;animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite"></span>
-               <span style="position:relative;display:block;width:22px;height:22px;border-radius:50%;background:#2563eb;border:3px solid white;box-shadow:0 2px 10px rgba(37,99,235,0.5)"></span>
+               <span style="position:absolute;inset:0;border-radius:50%;background:#006B7D;opacity:0.4;animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite"></span>
+               <span style="position:relative;display:block;width:22px;height:22px;border-radius:50%;background:#005a69;border:3px solid white;box-shadow:0 2px 10px rgba(0,107,125,0.5)"></span>
              </div>`,
             iconSize: [22, 22],
             iconAnchor: [11, 11],
@@ -269,8 +270,8 @@ const HighwayRadarPage = () => {
 
         radarCircleRef.current = L.circle(fallback, {
             radius: 35000,
-            color: "#2563eb",
-            fillColor: "#2563eb",
+            color: "#006B7D",
+            fillColor: "#006B7D",
             fillOpacity: 0.08,
             weight: 1,
             interactive: false
@@ -517,8 +518,8 @@ const HighwayRadarPage = () => {
         rings.forEach(radius => {
             L.circle(coords, {
                 radius,
-                color: '#3b82f6',
-                fillColor: '#3b82f6',
+                color: '#006B7D',
+                fillColor: '#006B7D',
                 fillOpacity: 0.04,
                 weight: 1,
                 opacity: 0.3,
@@ -528,8 +529,8 @@ const HighwayRadarPage = () => {
         // Animated sweep
         const sweep = L.circle(coords, {
             radius: 1000,
-            color: '#60a5fa',
-            fillColor: '#3b82f6',
+            color: '#00B1B0',
+            fillColor: '#006B7D',
             fillOpacity: 0.08,
             weight: 2,
         }).addTo(radarLayerGroup.current);
@@ -595,7 +596,7 @@ const HighwayRadarPage = () => {
 
                             <div className="flex-1 text-center px-4">
                                 <h1 className="text-xl font-black text-neutral-900 tracking-tight leading-none">{t("radar.title")}</h1>
-                                <p className="text-[11px] font-bold text-blue-600 uppercase tracking-widest mt-1">{t("radar.subtitle")}</p>
+                                <p className="text-[11px] font-bold text-[#006B7D] uppercase tracking-widest mt-1">{t("radar.subtitle")}</p>
                             </div>
 
                             <button
@@ -629,7 +630,7 @@ const HighwayRadarPage = () => {
                                     onClick={() => setRange(opt.id as RadarRange)}
                                     className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all ${
                                         range === opt.id 
-                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 scale-[1.02]' 
+                                            ? 'bg-[#006B7D] text-white shadow-lg shadow-primary/20 scale-[1.02]' 
                                             : 'text-neutral-600 hover:bg-neutral-100'
                                     }`}
                                 >

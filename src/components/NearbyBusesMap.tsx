@@ -33,14 +33,14 @@ const createUserMarkerHtml = (): string => `
 <div style="position:relative;width:24px;height:24px">
   <span style="
     position:absolute;inset:0;border-radius:50%;
-    background:#3b82f6;opacity:0.35;
+    background:#006B7D;opacity:0.35;
     animation:nearbyPing 2s cubic-bezier(0,0,0.2,1) infinite;
   "></span>
   <span style="
     position:relative;display:block;width:24px;height:24px;
-    border-radius:50%;background:#2563eb;
+    border-radius:50%;background:#005a69;
     border:3px solid white;
-    box-shadow:0 2px 12px rgba(37,99,235,0.5);
+    box-shadow:0 2px 12px rgba(0,107,125,0.5);
   "></span>
 </div>`;
 
@@ -156,7 +156,7 @@ const NearbyBusesMap: React.FC<NearbyBusesMapProps> = ({
 
         // Tile layer
         L.tileLayer(
-            "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
             {
                 attribution:
                     '&copy; <a href="https://carto.com/">CARTO</a>',
@@ -219,8 +219,8 @@ const NearbyBusesMap: React.FC<NearbyBusesMapProps> = ({
         } else {
             radiusCircleRef.current = L.circle([lat, lng], {
                 radius: radiusM,
-                color: "#3b82f6",
-                fillColor: "#3b82f6",
+                color: "#006B7D",
+                fillColor: "#006B7D",
                 fillOpacity: 0.06,
                 weight: 1.5,
                 dashArray: "6, 4",
@@ -234,8 +234,8 @@ const NearbyBusesMap: React.FC<NearbyBusesMapProps> = ({
             [0.3, 0.6, 0.9].forEach((frac) => {
                 L.circle([lat, lng], {
                     radius: radiusM * frac,
-                    color: "#93c5fd",
-                    fillColor: "#3b82f6",
+                    color: "#00B1B0",
+                    fillColor: "#006B7D",
                     fillOpacity: 0.03,
                     weight: 0.5,
                     interactive: false,

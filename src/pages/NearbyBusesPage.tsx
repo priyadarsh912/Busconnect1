@@ -123,7 +123,7 @@ const NearbyBusesPage = () => {
                                 <h1 className="text-lg font-black text-neutral-900 tracking-tight leading-none">
                                     Nearby Buses
                                 </h1>
-                                <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-0.5">
+                                <p className="text-[10px] font-bold text-[#006B7D] uppercase tracking-widest mt-0.5">
                                     Live · Geo-Queried · Real-Time
                                 </p>
                             </div>
@@ -146,7 +146,7 @@ const NearbyBusesPage = () => {
                         <div className="bg-white/92 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-white/50 pointer-events-auto">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Radar className="w-4 h-4 text-blue-600" />
+                                    <Radar className="w-4 h-4 text-[#006B7D]" />
                                     <span className="text-xs font-bold text-neutral-700">
                                         Search Radius
                                     </span>
@@ -162,7 +162,7 @@ const NearbyBusesPage = () => {
                                     >
                                         <Minus className="w-3.5 h-3.5" />
                                     </button>
-                                    <span className="text-sm font-extrabold text-blue-600 w-12 text-center tabular-nums">
+                                    <span className="text-sm font-extrabold text-[#006B7D] w-12 text-center tabular-nums">
                                         {effectiveRadius} km
                                     </span>
                                     <button
@@ -197,12 +197,12 @@ const NearbyBusesPage = () => {
                                         [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5
                                         [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full
                                         [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:border-2
-                                        [&::-webkit-slider-thumb]:border-blue-500
+                                        [&::-webkit-slider-thumb]:border-[#006B7D]
                                         [&::-webkit-slider-thumb]:cursor-pointer
                                         [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5
                                         [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:rounded-full
                                         [&::-moz-range-thumb]:shadow-lg [&::-moz-range-thumb]:border-2
-                                        [&::-moz-range-thumb]:border-blue-500
+                                        [&::-moz-range-thumb]:border-[#006B7D]
                                         [&::-moz-range-thumb]:cursor-pointer"
                                 />
                                 <div className="flex justify-between mt-1">
@@ -259,7 +259,7 @@ const NearbyBusesPage = () => {
                                             onClick={() =>
                                                 setShowBusList(!showBusList)
                                             }
-                                            className="text-[10px] font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg active:scale-95 transition-all"
+                                            className="text-[10px] font-bold text-[#006B7D] bg-teal-50 px-3 py-1.5 rounded-lg active:scale-95 transition-all"
                                         >
                                             {showBusList
                                                 ? "Hide List"

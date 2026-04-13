@@ -325,9 +325,9 @@ const TrackingPage = () => {
       mapInstance.invalidateSize();
     }, 300);
 
-    // Add Free OpenStreetMap tiles
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "&copy; OpenStreetMap contributors",
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+      maxZoom: 19,
     }).addTo(mapInstance);
 
     let isMounted = true;
