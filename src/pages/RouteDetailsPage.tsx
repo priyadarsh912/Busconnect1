@@ -96,10 +96,12 @@ const RouteDetailsPage = () => {
             maxZoom: 19,
         }).addTo(map);
 
-        // Fix map sizing
+        // Fix map sizing and fit bounds after tiles load
         setTimeout(() => {
             map.invalidateSize();
-        }, 200);
+            const b = L.latLngBounds(routeLatLngs);
+            map.fitBounds(b, { padding: [50, 50], maxZoom: 14 });
+        }, 300);
 
         // Draw the route line
         const routeLatLngs: L.LatLngExpression[] = stops.map(s => [s.lat, s.lng]);
@@ -147,7 +149,7 @@ const RouteDetailsPage = () => {
 
         // Fit bounds to show all stops
         const bounds = L.latLngBounds(routeLatLngs);
-        map.fitBounds(bounds, { padding: [40, 40] });
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
 
         setMapReady(true);
 
@@ -170,9 +172,9 @@ const RouteDetailsPage = () => {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-white dark:bg-[#0f1522] overflow-hidden">
+        <div className="max-w-md mx-auto flex flex-col h-screen bg-white dark:bg-[#0f1522] overflow-hidden">
             {/* Top Half: Map */}
-            <div className="relative h-[45vh] w-full shrink-0">
+            <div className="relative h-[42vh] w-full shrink-0">
                 <div ref={mapRef} className="absolute inset-0 z-0" />
                 
                 {/* Back Button - Floating over map */}
@@ -190,7 +192,7 @@ const RouteDetailsPage = () => {
                     <motion.button
                         whileTap={{ scale: 0.95 }}
                         onClick={handleBookTicket}
-                        className="bg-[#FF6B35] hover:bg-[#e85d2c] text-white px-6 py-3 rounded-full font-bold text-sm shadow-xl flex items-center gap-2 whitespace-nowrap"
+                        className="bg-[#006B7D] hover:bg-[#005a69] text-white px-6 py-3 rounded-full font-bold text-sm shadow-xl shadow-primary/30 flex items-center gap-2 whitespace-nowrap"
                     >
                         Book Ticket
                     </motion.button>
@@ -198,7 +200,7 @@ const RouteDetailsPage = () => {
             </div>
 
             {/* Bottom Half: Route Info + Stops */}
-            <div className="flex-1 overflow-y-auto bg-white dark:bg-[#0f1522] border-t border-slate-100 dark:border-slate-800/50">
+            <div className="flex-1 overflow-y-auto bg-white dark:bg-[#0f1522] border-t border-slate-100 dark:border-slate-800/50 pb-20">
                 {/* Route Header */}
                 <div className="px-5 pt-5 pb-4 border-b border-slate-100 dark:border-slate-800/50">
                     <div className="flex items-center justify-between">
@@ -217,10 +219,10 @@ const RouteDetailsPage = () => {
                 </div>
 
                 {/* Stops List */}
-                <div className="px-5 py-4">
+                <div className="px-5 py-3">
                     <div className="relative">
                         {/* Vertical connecting line */}
-                        <div className="absolute left-[11px] top-3 bottom-3 w-[2px] bg-slate-200 dark:bg-slate-700" />
+                        <div className="absolute left-[11px] top-4 bottom-4 w-[2px] bg-slate-200 dark:bg-slate-700" />
 
                         <div className="space-y-0">
                             {stops.map((stop, i) => {
@@ -228,7 +230,7 @@ const RouteDetailsPage = () => {
                                 const isLast = i === stops.length - 1;
                                 
                                 return (
-                                    <div key={stop.name} className="relative flex items-start gap-5 py-5">
+                                    <div key={stop.name} className="relative flex items-start gap-4 py-4">
                                         {/* Circle indicator */}
                                         <div className="relative z-10 shrink-0 mt-0.5">
                                             <div className={`w-6 h-6 rounded-full border-[2.5px] flex items-center justify-center ${

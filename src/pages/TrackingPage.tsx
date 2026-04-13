@@ -933,62 +933,49 @@ const TrackingPage = () => {
 
   return (
     <PageShell noPadding>
-      <div className="flex flex-col h-screen overflow-hidden bg-white dark:bg-[#0f1522]">
+      <div className="max-w-md mx-auto flex flex-col h-screen overflow-hidden bg-white dark:bg-[#0f1522]">
         {/* Top Half: Map */}
-        <div className="relative h-[40vh] w-full shrink-0">
+        <div className="relative h-[38vh] w-full shrink-0">
           <div ref={mapContainer} className="absolute inset-0 z-0 bg-slate-100 dark:bg-slate-900" />
           
-          {/* Header Overlay */}
-          <div className="absolute top-0 left-0 right-0 z-10 p-4 flex items-center justify-between pointer-events-none">
+          {/* Header Overlay - Only back button */}
+          <div className="absolute top-3 left-3 z-10">
             <button
               onClick={() => navigate(-1)}
-              className="w-10 h-10 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-md flex items-center justify-center text-primary pointer-events-auto active:scale-95"
+              className="w-10 h-10 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-md flex items-center justify-center text-slate-800 dark:text-white active:scale-95"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div className="flex gap-2 pointer-events-auto">
-              <button className="px-4 py-2 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-md text-[10px] font-black tracking-widest text-[#006B7D] uppercase">
-                Book
-              </button>
-            </div>
-          </div>
-
-          {/* Live Badge Overlay */}
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
-             <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md px-4 py-1.5 rounded-full shadow-lg border border-white/20 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(0,107,125,0.6)]" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface">
-                  LIVE • ROUTE {activeRoute?.route_no || activeRoute?.route_id || "402"}
-                </span>
-             </div>
           </div>
         </div>
 
-        {/* Bottom Half: Full Info Card */}
-        <div className="flex-1 overflow-y-auto bg-white dark:bg-[#0f1522] rounded-t-[2.5rem] -mt-8 relative z-20 shadow-[0_-12px_40px_rgba(0,0,0,0.1)] border-t border-slate-100 dark:border-slate-800/50 pb-24">
-          <div className="p-6 pt-8 max-w-xl mx-auto space-y-8">
-            {/* Trip Info Row */}
-            <div className="flex justify-between items-start">
-              <div className="space-y-1">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-1">Current Trip</p>
-                <h2 className="font-headline font-black text-2xl tracking-tighter text-on-surface leading-none flex items-center gap-2">
+        {/* Bottom Half: Route Info + Stops */}
+        <div className="flex-1 overflow-y-auto bg-white dark:bg-[#0f1522] border-t border-slate-100 dark:border-slate-800/50 pb-20">
+          <div className="px-5 pt-4 pb-3 border-b border-slate-100 dark:border-slate-800/50">
+            {/* Trip Info Row - Compact */}
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-[9px] font-black uppercase tracking-[0.15em] text-primary mb-0.5">Current Trip</p>
+                <h2 className="font-headline font-black text-lg tracking-tight text-slate-900 dark:text-white leading-none flex items-center gap-1.5">
                   {from}
-                  <span className="text-slate-300 dark:text-slate-600">→</span>
+                  <span className="text-slate-300 dark:text-slate-600 text-sm">→</span>
                   {to}
                 </h2>
               </div>
               <div className="text-right">
-                <p className="font-headline font-black text-3xl text-primary leading-none tracking-tighter mb-1">
+                <p className="font-headline font-black text-2xl text-primary leading-none tracking-tighter">
                   {Math.max(0, Math.round((etaMinutes * (100 - progress)) / 100))}
                 </p>
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Arrival Time</p>
+                <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Arrival Time</p>
               </div>
             </div>
+          </div>
 
-            {/* Stops Timeline */}
-            <div className="relative pl-12 space-y-10">
+          {/* Stops Timeline */}
+          <div className="px-5 py-3">
+            <div className="relative pl-10">
               {/* Vertical Line */}
-              <div className="absolute left-[19px] top-2 bottom-2 w-[2px] bg-slate-100 dark:bg-slate-800">
+              <div className="absolute left-[14px] top-3 bottom-3 w-[2px] bg-slate-200 dark:bg-slate-700">
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: `${progress}%` }}
@@ -1001,34 +988,34 @@ const TrackingPage = () => {
                 const isCurrent = Math.abs(progress - stop.progressAnchor) < 10;
                 
                 return (
-                  <div key={index} className="relative group">
+                  <div key={index} className="relative py-4">
                     {/* Circle/Icon Indicator */}
-                    <div className={`absolute -left-[32px] top-0 w-[42px] h-[42px] rounded-full flex items-center justify-center z-10 border-4 border-white dark:border-[#0f1522] transition-all duration-500 ${
+                    <div className={`absolute -left-[22px] top-4 w-8 h-8 rounded-full flex items-center justify-center z-10 border-[3px] border-white dark:border-[#0f1522] transition-all duration-500 ${
                       isCurrent 
-                        ? "bg-primary shadow-[0_0_15px_rgba(0,107,125,0.4)] scale-110" 
+                        ? "bg-primary shadow-[0_0_10px_rgba(0,107,125,0.3)]" 
                         : isPassed 
                           ? "bg-white dark:bg-slate-800"
-                          : "bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800"
+                          : "bg-white dark:bg-slate-900"
                     }`}>
                       {isCurrent ? (
-                        <Bus className="w-5 h-5 text-white" />
+                        <Bus className="w-4 h-4 text-white" />
                       ) : (
-                        <div className={`w-2 h-2 rounded-full ${isPassed ? "bg-primary" : "bg-slate-300 dark:bg-slate-700"}`} />
+                        <div className={`w-2 h-2 rounded-full ${isPassed ? "bg-primary" : "bg-slate-300 dark:bg-slate-600"}`} />
                       )}
                     </div>
 
-                    <div className="space-y-0.5">
+                    <div>
                       <div className="flex items-center gap-2">
-                         <h3 className={`font-headline font-bold text-base tracking-tight ${
-                             isCurrent ? "text-primary" : "text-on-surface"
+                         <h3 className={`font-bold text-sm tracking-tight ${
+                             isCurrent ? "text-primary" : "text-slate-900 dark:text-white"
                          }`}>
                            {stop.name}
                          </h3>
                          {isCurrent && (
-                           <span className="bg-primary/10 text-primary text-[8px] font-black px-1.5 py-0.5 rounded-full tracking-widest uppercase animate-pulse">Now</span>
+                           <span className="bg-primary/10 text-primary text-[7px] font-black px-1.5 py-0.5 rounded-full tracking-widest uppercase">Now</span>
                          )}
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 font-bold tracking-tight">
+                      <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">
                         {isPassed ? `Passed at ${stop.scheduledTime}` : `Scheduled at ${stop.scheduledTime}`}
                       </p>
                     </div>
@@ -1036,18 +1023,6 @@ const TrackingPage = () => {
                 );
               })}
             </div>
-          </div>
-        </div>
-
-        {/* Floating CTA Overlay */}
-        <div className="fixed bottom-0 left-0 right-0 p-6 z-50 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-[#0f1522] dark:via-[#0f1522]/80">
-          <div className="max-w-xl mx-auto">
-            <Button 
-                onClick={() => navigate('/book-ticket', { state: { route: activeRoute, tripType: activeTripType } })}
-                className="w-full h-16 rounded-3xl bg-gradient-to-r from-[#006B7D] to-[#008B9D] text-white font-headline font-black text-lg shadow-xl shadow-primary/20 active:scale-[0.98] transition-all"
-            >
-                Book Ticket
-            </Button>
           </div>
         </div>
       </div>
