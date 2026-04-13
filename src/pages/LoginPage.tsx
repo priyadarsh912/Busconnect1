@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
-import { ArrowLeft, Eye, EyeOff, Phone, Mail, Lock, User } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Phone, Mail, Lock, User, Bus } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { useToast } from "../components/ui/use-toast";
-import busHero from "../assets/bus-hero.jpg";
 
 import { authService } from "../services/authService";
 import { analyticsService } from "../services/AnalyticsService";
@@ -14,42 +13,50 @@ import { analyticsService } from "../services/AnalyticsService";
 const LoginPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isSignUp, setIsSignUp] = useState(true);
-  const [tab, setTab] = useState<"phone" | "email">("phone");
+  const [mode, setMode] = useState<"phone" | "email">("phone");
+  const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Form states
   const [name, setName] = useState("");
-  const [inputValue, setInputValue] = useState("+91 ");
+  const [inputValue, setInputValue] = useState(""); // Phone number (without +91) or Email
   const [password, setPassword] = useState("");
 
   const handleAuthAction = async () => {
+    const finalValue = mode === "phone" ? `+91 ${inputValue}` : inputValue;
+
     if (isSignUp && !name.trim()) {
       toast({ title: "Missing Name", description: "Please enter your full name.", variant: "destructive" });
       return;
     }
+
     if (!inputValue) {
-      toast({ title: "Missing Fields", description: `Please enter your ${tab === "phone" ? "phone number" : "email"}.`, variant: "destructive" });
+      toast({ title: "Missing Fields", description: `Please enter your ${mode === "phone" ? "phone number" : "email"}.`, variant: "destructive" });
       return;
     }
+
     setIsLoading(true);
     try {
-      if (tab === "phone") {
+      if (mode === "phone") {
         if (!isOtpSent) {
-          const checkRes = await authService.checkPhoneStatus(inputValue);
+          const checkRes = await authService.checkPhoneStatus(finalValue);
           if (isSignUp && checkRes.exists) {
-            toast({ title: "Account Exists", description: "This phone number is already registered. Please login.", variant: "destructive" });
+            toast({ title: "Account Exists", description: "Number registered. Please login.", variant: "destructive" });
             setIsLoading(false);
             return;
           }
           if (!isSignUp && !checkRes.exists) {
-            toast({ title: "Account Not Found", description: "This phone number is not registered. Please sign up.", variant: "destructive" });
+             // For a smoother UI, if login fails because user doesn't exist, we could switch to signup
+             // but here we follow original logic
+            toast({ title: "Account Not Found", description: "Number not registered. Please sign up.", variant: "destructive" });
             setIsLoading(false);
             return;
           }
-          const res = await authService.sendPhoneOtp(inputValue);
+
+          const res = await authService.sendPhoneOtp(finalValue);
           if (res.success) {
             setIsOtpSent(true);
             toast({ title: "OTP Sent", description: `Your OTP is: ${res.otp}` });
@@ -59,7 +66,7 @@ const LoginPage = () => {
         } else {
           const res = await authService.verifyPhoneOtp(otp, isSignUp ? name : undefined);
           if (res.success) {
-            toast({ title: "Success", description: "Phone number verified!" });
+            toast({ title: "Success", description: "Verification successful!" });
             analyticsService.logEvent(isSignUp ? 'user_registered' : 'user_logged_in', { method: 'phone' });
             navigate("/");
           } else {
@@ -67,15 +74,17 @@ const LoginPage = () => {
           }
         }
       } else {
+        // Email Flow
         if (!password) {
           toast({ title: "Missing Password", description: "Please enter your password.", variant: "destructive" });
           setIsLoading(false);
           return;
         }
+
         if (isSignUp) {
           const res = await authService.signup(name, inputValue, password);
           if (res.success) {
-            toast({ title: "Verify Email", description: "A verification email has been sent to your address." });
+            toast({ title: "Verify Email", description: "Verification email sent." });
             navigate("/");
           } else {
             toast({ title: "Signup Failed", description: res.error, variant: "destructive" });
@@ -83,7 +92,7 @@ const LoginPage = () => {
         } else {
           const res = await authService.login(inputValue, password);
           if (res.success) {
-            toast({ title: "Welcome!", description: "You are now logged in." });
+            toast({ title: "Welcome!", description: "Logged in successfully." });
             analyticsService.logEvent('user_logged_in', { method: 'email' });
             navigate("/");
           } else {
@@ -99,104 +108,210 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-surface flex flex-col pb-10">
-      <div className="flex items-center px-6 pt-6">
-        <button 
-          aria-label="Go back"
-          className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center transition-transform active:scale-90" 
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-slate-300" />
-        </button>
-        <h1 className="flex-1 text-center font-headline font-bold text-xl">{isSignUp ? "Sign Up" : "Login"}</h1>
-        <div className="w-10" />
+    <div className="max-w-md mx-auto min-h-screen bg-surface flex flex-col font-body text-on-surface">
+      {/* Background Micro-Pulses */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-primary/5 blur-[120px]" />
+        <div className="absolute bottom-[-5%] left-[-5%] w-[40%] h-[40%] rounded-full bg-tertiary/5 blur-[100px]" />
       </div>
 
-      <div className="px-6 pt-6">
-        <div className="relative h-48 w-full rounded-2xl overflow-hidden shadow-lg group">
-          <img src={busHero} alt="Bus" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div className="absolute bottom-4 left-6">
-            <h2 className="font-headline text-3xl font-extrabold text-white">Join the Journey</h2>
-            <p className="text-white/80 text-sm font-medium">Safe. Reliable. Smart.</p>
+      <header className="p-6">
+         <button 
+           aria-label="Go back"
+           className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-800 flex items-center justify-center transition-transform active:scale-90" 
+           onClick={() => {
+             if (isOtpSent) setIsOtpSent(false);
+             else if (mode === "email") setMode("phone");
+             else navigate(-1);
+           }}
+         >
+           <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+         </button>
+      </header>
+
+      <main className="flex-1 px-8 py-4 flex flex-col">
+        {/* Branding */}
+        <div className="mb-10 text-center md:text-left">
+          <div className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br from-primary to-primary-container shadow-lg text-white">
+            <Bus className="w-8 h-8" />
           </div>
-        </div>
-      </div>
-
-      <div className="px-6 pt-8 flex-1">
-        <div className="flex flex-col mb-8">
-          <h2 className="text-3xl font-headline font-extrabold tracking-tight text-on-surface">
-            {isSignUp ? "Create an account" : "Welcome back"}
-          </h2>
-          <p className="text-slate-500 font-medium mt-1">
-            {tab === "phone" ? (isSignUp ? "Sign up with your mobile number" : "Login with your mobile number") : (isSignUp ? "Sign up with your email" : "Login with your email")}
+          <h1 className="font-headline font-extrabold text-4xl text-on-surface tracking-tight mb-3 leading-[1.1]">
+            Welcome to <span className="bg-gradient-to-br from-primary to-primary-container bg-clip-text text-transparent italic">BusConnect</span>
+          </h1>
+          <p className="text-on-surface-variant text-base font-medium leading-relaxed max-w-sm">
+            {isSignUp ? "Create an account to start your reimagined daily journey." : "Your daily commute, reimagined with real-time intelligence."}
           </p>
         </div>
 
-        {!isOtpSent && (
-          <div className="flex bg-slate-100 dark:bg-slate-800 rounded-2xl p-1.5 mb-6">
-            <button onClick={() => { setTab("phone"); setInputValue("+91 "); }} className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${tab === "phone" ? "bg-white dark:bg-slate-700 text-primary shadow-sm" : "text-slate-500"}`}>Phone Number</button>
-            <button onClick={() => { setTab("email"); setInputValue(""); }} className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${tab === "email" ? "bg-white dark:bg-slate-700 text-primary shadow-sm" : "text-slate-500"}`}>Email ID</button>
+        {/* Input Form Card */}
+        <div className="glass-panel p-8 rounded-3xl shadow-[0_24px_48px_rgba(0,0,0,0.04)] border border-white/40 bg-white/70 backdrop-blur-xl">
+          <AnimatePresence mode="wait">
+            {!isOtpSent ? (
+               <motion.div
+                 key={mode}
+                 initial={{ opacity: 0, y: 10 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 exit={{ opacity: 0, y: -10 }}
+                 className="space-y-6"
+               >
+                 {isSignUp && (
+                   <div className="space-y-1.5">
+                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Full Name</label>
+                     <div className="relative group">
+                       <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                       <Input 
+                         placeholder="Enter your name" 
+                         className="pl-14 pr-6 py-4 bg-slate-50 border-none rounded-full h-14 text-base focus:ring-4 focus:ring-primary/10 shadow-inner"
+                         value={name}
+                         onChange={(e) => setName(e.target.value)}
+                       />
+                     </div>
+                   </div>
+                 )}
+
+                 {mode === "phone" ? (
+                   <div className="space-y-1.5">
+                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Mobile Number</label>
+                     <div className="relative group">
+                       <span className="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-sm">+91</span>
+                       <Input 
+                         type="tel"
+                         maxLength={10}
+                         placeholder="9876543210" 
+                         className="pl-16 pr-6 py-4 bg-slate-50 border-none rounded-full h-14 text-lg font-medium focus:ring-4 focus:ring-primary/10 shadow-inner"
+                         value={inputValue}
+                         onChange={(e) => setInputValue(e.target.value)}
+                       />
+                     </div>
+                   </div>
+                 ) : (
+                   <div className="space-y-4">
+                     <div className="space-y-1.5">
+                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Email Address</label>
+                       <div className="relative group">
+                         <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                         <Input 
+                           type="email"
+                           placeholder="you@example.com" 
+                           className="pl-14 pr-6 py-4 bg-slate-50 border-none rounded-full h-14 text-base focus:ring-4 focus:ring-primary/10 shadow-inner"
+                           value={inputValue}
+                           onChange={(e) => setInputValue(e.target.value)}
+                         />
+                       </div>
+                     </div>
+                     <div className="space-y-1.5">
+                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Password</label>
+                       <div className="relative group">
+                         <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                         <Input 
+                           type={showPassword ? "text" : "password"}
+                           placeholder="••••••••" 
+                           className="pl-14 pr-14 h-14 bg-slate-50 border-none rounded-full text-base focus:ring-4 focus:ring-primary/10 shadow-inner"
+                           value={password}
+                           onChange={(e) => setPassword(e.target.value)}
+                         />
+                         <button 
+                           onClick={() => setShowPassword(!showPassword)}
+                           className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400"
+                         >
+                           {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                         </button>
+                       </div>
+                     </div>
+                   </div>
+                 )}
+
+                 <Button 
+                   onClick={handleAuthAction}
+                   disabled={isLoading}
+                   className="w-full py-7 rounded-full bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center gap-2 group"
+                 >
+                   {isLoading ? "Processing..." : mode === "phone" ? "Send OTP" : (isSignUp ? "Sign Up" : "Login")}
+                   {!isLoading && <ArrowLeft className="w-5 h-5 rotate-180 transition-transform group-hover:translate-x-1" />}
+                 </Button>
+
+                 <div className="relative flex items-center py-2">
+                   <div className="flex-grow h-[1px] bg-slate-100" />
+                   <span className="px-4 text-[9px] font-black text-slate-300 uppercase tracking-widest leading-none">Or continue with</span>
+                   <div className="flex-grow h-[1px] bg-slate-100" />
+                 </div>
+
+                 <Button 
+                   variant="outline"
+                   onClick={() => {
+                     setMode(mode === "phone" ? "email" : "phone");
+                     setInputValue("");
+                   }}
+                   className="w-full py-6 rounded-full border-slate-100 bg-white text-on-surface font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-50 active:scale-95 transition-all"
+                 >
+                   {mode === "phone" ? <Mail className="w-4 h-4 text-primary" /> : <Phone className="w-4 h-4 text-primary" />}
+                   {mode === "phone" ? "Email & Password" : "Mobile Number"}
+                 </Button>
+               </motion.div>
+            ) : (
+               <motion.div
+                 key="otp"
+                 initial={{ opacity: 0, scale: 0.95 }}
+                 animate={{ opacity: 1, scale: 1 }}
+                 className="space-y-6 text-center"
+               >
+                 <div className="space-y-2">
+                   <h3 className="font-headline font-bold text-xl">Verification Code</h3>
+                   <p className="text-sm text-slate-500">Enter the 6-digit code sent to your phone.</p>
+                 </div>
+
+                 <Input 
+                   placeholder="123456" 
+                   maxLength={6} 
+                   className="text-center h-16 text-3xl font-black tracking-[0.5em] rounded-2xl bg-slate-50 border-none shadow-inner" 
+                   value={otp} 
+                   onChange={(e) => setOtp(e.target.value)} 
+                 />
+
+                 <Button 
+                   onClick={handleAuthAction}
+                   disabled={isLoading}
+                   className="w-full h-14 rounded-full bg-primary text-white font-bold shadow-lg"
+                 >
+                   {isLoading ? "Verifying..." : "Verify OTP"}
+                 </Button>
+
+                 <button 
+                   onClick={() => setIsOtpSent(false)} 
+                   className="text-xs font-bold text-primary uppercase tracking-widest"
+                 >
+                   Edit Phone Number
+                 </button>
+               </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <p className="mt-10 text-center text-sm font-medium text-slate-500">
+          {isSignUp ? "Already have an account?" : "New to the city?"} 
+          <button 
+            onClick={() => {
+              setIsSignUp(!isSignUp);
+              setIsOtpSent(false);
+            }} 
+            className="text-primary font-bold ml-1 hover:underline decoration-2 underline-offset-4"
+          >
+            {isSignUp ? "Log In" : "Create Account"}
+          </button>
+        </p>
+
+        {/* Support */}
+        <div className="mt-auto pt-10 pb-4 flex justify-center gap-8 text-slate-400">
+          <div className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors">
+            <span className="material-symbols-outlined text-lg">help_outline</span>
+            <span className="text-[10px] font-black uppercase tracking-widest">Support</span>
           </div>
-        )}
-
-        <div className="space-y-5">
-          {isSignUp && !isOtpSent && (
-            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-              <label className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 block">Full Name</label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><User className="w-5 h-5" /></span>
-                <Input placeholder="Alice Johnson" className="pl-12 h-14 rounded-2xl bg-white dark:bg-slate-800 border-none shadow-sm text-base" value={name} onChange={(e) => setName(e.target.value)} />
-              </div>
-            </div>
-          )}
-
-          {!isOtpSent ? (
-            <div>
-              <label className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 block">{tab === "phone" ? "Phone Number" : "Email Address"}</label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">{tab === "phone" ? <Phone className="w-5 h-5" /> : <Mail className="w-5 h-5" />}</span>
-                <Input type={tab === "phone" ? "tel" : "email"} autoComplete={tab === "phone" ? "tel" : "email"} placeholder={tab === "phone" ? "9876543210" : "you@example.com"} className="pl-12 h-14 rounded-2xl bg-white dark:bg-slate-800 border-none shadow-sm text-base" value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
-              </div>
-            </div>
-          ) : (
-            <div className="animate-in zoom-in duration-300">
-              <label className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 block">Enter 6-digit OTP</label>
-              <Input placeholder="123456" maxLength={6} className="text-center h-16 text-2xl font-bold tracking-[1em] rounded-2xl bg-white dark:bg-slate-800 border-none shadow-md" value={otp} onChange={(e) => setOtp(e.target.value)} />
-              <button onClick={() => setIsOtpSent(false)} className="mt-3 text-xs text-primary font-bold uppercase tracking-wider">Change Phone Number</button>
-            </div>
-          )}
-
-          {tab === "email" && (
-            <div>
-              <label className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 block">Password</label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><Lock className="w-5 h-5" /></span>
-                <Input type={showPassword ? "text" : "password"} placeholder="••••••••" className="pl-12 pr-12 h-14 rounded-2xl bg-white dark:bg-slate-800 border-none shadow-sm text-base" value={password} onChange={(e) => setPassword(e.target.value)} />
-                <button aria-label={showPassword ? "Hide password" : "Show password"} onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">{showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button>
-              </div>
-              {!isSignUp && (
-                <p className="text-right mt-2">
-                  <button onClick={() => { analyticsService.logEvent('forgot_password_clicked', {}); toast({ title: "Forgot Password", description: "Password reset link has been sent to your email." }); }} className="text-xs text-primary font-bold uppercase tracking-wider">Forgot Password?</button>
-                </p>
-              )}
-            </div>
-          )}
+          <div className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors">
+            <span className="material-symbols-outlined text-lg">language</span>
+            <span className="text-[10px] font-black uppercase tracking-widest">Language</span>
+          </div>
         </div>
-
-        <motion.div whileTap={{ scale: 0.98 }} className="mt-8">
-          <Button onClick={handleAuthAction} disabled={isLoading} className="w-full h-14 text-lg font-headline font-extrabold rounded-2xl bg-gradient-to-br from-primary to-primary-container shadow-lg shadow-primary/20">{isLoading ? "Processing..." : (isOtpSent ? "Verify OTP" : (isSignUp ? "Sign Up" : "Login"))}</Button>
-        </motion.div>
-
-        <div className="flex items-center gap-4 my-8">
-          <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
-          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">Other Sign-in Options</span>
-          <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
-        </div>
-
-        <div className="flex gap-4"><Button variant="outline" className="w-full h-14 rounded-2xl font-bold bg-white dark:bg-slate-800" onClick={() => navigate("/admin-login")}>Admin Access</Button></div>
-        <p className="text-center text-sm text-slate-500 font-medium mt-8 mb-10">{isSignUp ? "Already have an account?" : "Don't have an account?"} <button onClick={() => { setIsSignUp(!isSignUp); setIsOtpSent(false); }} className="text-primary font-bold">{isSignUp ? "Log In" : "Sign Up"}</button></p>
-      </div>
+      </main>
     </div>
   );
 };
