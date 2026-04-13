@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, ChevronRight, CreditCard, Settings, HelpCircle,
+  ArrowLeft, ChevronRight, Settings, HelpCircle,
   LogOut, BookOpen, MapPin, User, Pencil, X, Save, Mail, Phone, Lock, Eye, EyeOff,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 import { toast } from "sonner";
-import PageShell from "@/components/PageShell";
+import { motion } from "framer-motion";
+import PageShell from "../components/PageShell";
 import { authService } from "../services/authService";
 import { busService } from "../services/busService";
-import { useLanguage } from "@/lib/language";
+import { useLanguage } from "../lib/language";
 
 interface UserProfile {
   name: string;
@@ -23,7 +24,7 @@ const DEFAULT_PROFILE: UserProfile = {
   name: "Johnathan Smith",
   email: "johnathan.smith@email.com",
   phone: "+91 98765 43210",
-  password: "password123",
+  password: "••••••••",
 };
 
 const AccountPage = () => {
@@ -31,18 +32,17 @@ const AccountPage = () => {
   const { t } = useLanguage();
 
   const travelItems = [
-    { icon: BookOpen, label: t("account.myBookings"), path: "/my-bookings" },
-    { icon: MapPin, label: t("account.savedRoutes"), path: "/routes" },
+    { icon: BookOpen, label: t("account.myBookings"), path: "/my-bookings", color: "bg-blue-50 text-blue-600" },
+    { icon: MapPin, label: t("account.savedRoutes"), path: "/routes", color: "bg-teal-50 text-teal-600" },
   ];
 
   const appItems = [
-    { icon: Settings, label: t("account.settings"), path: "/settings" },
-    { icon: HelpCircle, label: t("account.helpSupport"), path: "/help" },
+    { icon: Settings, label: t("account.settings"), path: "/settings", color: "bg-slate-50 text-slate-600" },
+    { icon: HelpCircle, label: t("account.helpSupport"), path: "/help", color: "bg-orange-50 text-orange-600" },
   ];
 
   // ─── Profile state ───
   const [profile, setProfile] = useState<UserProfile>(() => {
-    // Basic initial state from local auth
     const currentUser = authService.getCurrentUser();
     if (currentUser) {
       const isEmail = currentUser.phoneOrEmail.includes("@");
@@ -99,13 +99,11 @@ const AccountPage = () => {
     if (!draft.name.trim()) { toast.error(t("account.nameRequired")); return; }
     if (!draft.email.trim() || !draft.email.includes("@")) { toast.error(t("account.validEmailRequired")); return; }
     if (!draft.phone.trim()) { toast.error(t("account.phoneRequired")); return; }
-    if (draft.password.length < 6) { toast.error(t("account.passwordLength")); return; }
 
     setProfile(draft);
     setEditing(false);
     toast.success(t("account.profileUpdated"));
 
-    // Auto-sync profile to Supabase
     const currentUser = authService.getCurrentUser();
     if (currentUser) {
       busService.syncUser(currentUser.id, {
@@ -125,151 +123,166 @@ const AccountPage = () => {
 
   return (
     <PageShell>
-      {/* Header */}
-      <div className="flex items-center mb-6">
-        <button onClick={() => navigate(-1)} className="p-1"><ArrowLeft className="w-5 h-5" /></button>
-        <h1 className="flex-1 text-center font-bold text-lg">{t("account.title")}</h1>
-        <div className="w-7" />
-      </div>
+      {/* Header & Hero Section */}
+      <div className="relative -mx-6 -mt-6 mb-8 px-6 pt-12 pb-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary-container" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32" />
+        
+        <div className="relative z-10 flex items-center justify-between mb-8">
+          <button 
+            onClick={() => navigate(-1)} 
+            className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all active:scale-95"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h1 className="text-white font-headline font-bold text-xl tracking-tight">{t("account.title")}</h1>
+          <div className="w-10" />
+        </div>
 
-      {/* ─── Profile Card ─── */}
-      {!editing ? (
-        <div className="flex flex-col items-center mb-6">
+        {/* Profile Card Overlay */}
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="absolute -bottom-6 left-6 right-6 bg-white dark:bg-slate-900 rounded-[2rem] shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-white/20 p-6 flex items-center gap-5"
+        >
           <div className="relative">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent flex items-center justify-center">
-              <User className="w-10 h-10 text-primary" />
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center border border-primary/10 overflow-hidden">
+                <div className="w-full h-full bg-primary/20 flex items-center justify-center">
+                    <User className="w-10 h-10 text-primary stroke-[1.5px]" />
+                </div>
             </div>
-            <button
-              onClick={handleStartEdit}
-              className="absolute bottom-0 right-0 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-md"
+            {!editing && (
+                <button
+                onClick={handleStartEdit}
+                className="absolute -bottom-1 -right-1 w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900 transition-transform active:scale-90"
+                >
+                <Pencil className="w-4 h-4 text-white" />
+                </button>
+            )}
+          </div>
+          
+          <div className="flex-1 min-w-0">
+            <h2 className="font-headline font-black text-2xl text-on-surface tracking-tight truncate">{profile.name}</h2>
+            <div className="flex items-center gap-2 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
+                <p className="text-slate-400 font-medium text-sm truncate">{profile.phone || profile.email}</p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      <div className="mt-12 space-y-8">
+        {/* Edit Form (if active) */}
+        {editing && (
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 p-8 pt-10 shadow-sm"
             >
-              <Pencil className="w-3 h-3 text-primary-foreground" />
-            </button>
-          </div>
-          <h2 className="font-extrabold text-lg mt-3">{profile.name}</h2>
-          <p className="text-sm text-muted-foreground">{profile.phone}</p>
-          <p className="text-xs text-muted-foreground">{profile.email}</p>
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="font-headline font-bold text-xl tracking-tight text-on-surface">Edit Profile</h3>
+                <button onClick={handleCancelEdit} className="p-2 bg-slate-50 dark:bg-slate-800 rounded-full text-slate-400">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Full Name</label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/40" />
+                    <Input
+                      value={draft.name}
+                      onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+                      className="pl-12 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none shadow-none text-base font-medium focus-visible:ring-primary/20"
+                      placeholder="Enter your name"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Email</label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/40" />
+                    <Input
+                      type="email"
+                      value={draft.email}
+                      onChange={(e) => setDraft({ ...draft, email: e.target.value })}
+                      className="pl-12 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none shadow-none text-base font-medium focus-visible:ring-primary/20"
+                      placeholder="email@example.com"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 pt-4">
+                    <Button variant="ghost" onClick={handleCancelEdit} className="h-14 rounded-2xl font-bold text-slate-500">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleSave} className="h-14 rounded-2xl font-headline font-bold text-base shadow-lg shadow-primary/20">
+                        <Save className="w-5 h-5 mr-2" /> Save
+                    </Button>
+                </div>
+              </div>
+            </motion.div>
+        )}
+
+        {/* Travel & App Management Section */}
+        <div className="space-y-6">
+            <div className="space-y-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">{t("account.travelManagement")}</p>
+                <div className="grid gap-3">
+                    {travelItems.map((item) => (
+                        <button 
+                            key={item.label} 
+                            onClick={() => navigate(item.path)} 
+                            className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-50 dark:border-slate-800 flex items-center gap-4 transition-all active:scale-[0.98] hover:shadow-md group"
+                        >
+                            <div className={`w-12 h-12 rounded-2xl ${item.color.split(' ')[0]} flex items-center justify-center transition-transform group-hover:scale-110`}>
+                                <item.icon className="w-6 h-6" />
+                            </div>
+                            <span className="flex-1 font-headline font-bold text-base text-on-surface tracking-tight">{item.label}</span>
+                            <ChevronRight className="w-5 h-5 text-slate-300" />
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <div className="space-y-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">{t("account.application")}</p>
+                <div className="grid gap-3">
+                    {appItems.map((item) => (
+                        <button 
+                            key={item.label} 
+                            onClick={() => navigate(item.path)} 
+                            className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-50 dark:border-slate-800 flex items-center gap-4 transition-all active:scale-[0.98] hover:shadow-md group"
+                        >
+                            <div className={`w-12 h-12 rounded-2xl ${item.color.split(' ')[0]} flex items-center justify-center transition-transform group-hover:scale-110`}>
+                                <item.icon className="w-6 h-6" />
+                            </div>
+                            <span className="flex-1 font-headline font-bold text-base text-on-surface tracking-tight">{item.label}</span>
+                            <ChevronRight className="w-5 h-5 text-slate-300" />
+                        </button>
+                    ))}
+                </div>
+            </div>
         </div>
-      ) : (
-        /* ─── Edit Profile Form ─── */
-        <div className="bg-card rounded-xl border border-border p-4 mb-6 space-y-4">
-          <div className="flex items-center justify-between mb-1">
-            <h2 className="font-bold text-base">{t("account.editProfile")}</h2>
-            <button onClick={handleCancelEdit} className="p-1 text-muted-foreground hover:text-foreground">
-              <X className="w-5 h-5" />
+
+        {/* Logout Section */}
+        <div className="pt-4 pb-12">
+            <button
+                onClick={handleLogout}
+                className="w-full h-16 rounded-3xl border border-red-100 dark:border-red-900/20 bg-red-50/30 dark:bg-red-900/5 flex items-center justify-center gap-3 text-red-600 font-headline font-black text-lg transition-all active:scale-[0.98] hover:bg-red-50 dark:hover:bg-red-900/10"
+            >
+                <LogOut className="w-5 h-5" /> {t("account.logOut")}
             </button>
-          </div>
-
-          {/* Name */}
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground mb-1 block">{t("account.fullName")}</label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                value={draft.name}
-                onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-                className="pl-10 rounded-xl h-11"
-                placeholder={t("account.yourFullName")}
-              />
-            </div>
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground mb-1 block">{t("account.emailAddress")}</label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                type="email"
-                value={draft.email}
-                onChange={(e) => setDraft({ ...draft, email: e.target.value })}
-                className="pl-10 rounded-xl h-11"
-                placeholder="email@example.com"
-              />
-            </div>
-          </div>
-
-          {/* Phone */}
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground mb-1 block">{t("account.phoneNumber")}</label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                type="tel"
-                value={draft.phone}
-                onChange={(e) => setDraft({ ...draft, phone: e.target.value })}
-                className="pl-10 rounded-xl h-11"
-                placeholder="+91 98765 43210"
-              />
-            </div>
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground mb-1 block">{t("account.password")}</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                type={showPassword ? "text" : "password"}
-                value={draft.password}
-                onChange={(e) => setDraft({ ...draft, password: e.target.value })}
-                className="pl-10 pr-10 rounded-xl h-11"
-                placeholder={t("account.minSixCharacters")}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-          </div>
-
-          <Button onClick={handleSave} className="w-full h-11 rounded-xl font-bold">
-            <Save className="w-4 h-4 mr-2" /> {t("account.saveChanges")}
-          </Button>
+            <p className="text-center text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-6">
+                BusConnect v1.2.4 • Made with Premium Care
+            </p>
         </div>
-      )}
-
-      {/* ─── Travel Management ─── */}
-      <p className="text-xs font-semibold text-muted-foreground tracking-wider mb-2">{t("account.travelManagement")}</p>
-      <div className="bg-card rounded-xl border border-border mb-5 divide-y divide-border">
-        {travelItems.map((item) => (
-          <button key={item.label} onClick={() => navigate(item.path)} className="w-full flex items-center gap-3 px-4 py-3.5 text-left">
-            <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
-              <item.icon className="w-4 h-4 text-foreground" />
-            </div>
-            <span className="flex-1 font-medium text-sm">{item.label}</span>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-          </button>
-        ))}
       </div>
-
-      {/* ─── Application ─── */}
-      <p className="text-xs font-semibold text-muted-foreground tracking-wider mb-2">{t("account.application")}</p>
-      <div className="bg-card rounded-xl border border-border mb-5 divide-y divide-border">
-        {appItems.map((item) => (
-          <button key={item.label} onClick={() => navigate(item.path)} className="w-full flex items-center gap-3 px-4 py-3.5 text-left">
-            <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
-              <item.icon className="w-4 h-4 text-foreground" />
-            </div>
-            <span className="flex-1 font-medium text-sm">{item.label}</span>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-          </button>
-        ))}
-      </div>
-
-      {/* ─── Logout ─── */}
-      <Button
-        variant="outline"
-        onClick={handleLogout}
-        className="w-full h-12 rounded-xl text-destructive border-destructive/20 hover:bg-destructive/5 font-bold"
-      >
-        <LogOut className="w-5 h-5 mr-2" /> {t("account.logOut")}
-      </Button>
     </PageShell>
   );
 };
 
 export default AccountPage;
+

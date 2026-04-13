@@ -29,43 +29,30 @@ const BottomNav = () => {
     return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border">
-      <div className="max-w-md mx-auto flex justify-around items-center py-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 pb-3 pt-2 shadow-2xl">
+      <div className="max-w-md mx-auto flex justify-between items-center px-4">
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.path;
           return (
             <motion.button
               key={tab.path}
               onClick={() => navigate(tab.path)}
-              whileTap={{ scale: 0.85 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors ${
+              whileTap={{ scale: 0.9 }}
+              className={`flex flex-col items-center justify-center gap-1 w-16 h-[3.25rem] transition-all duration-300 ${
                 isActive
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-primary text-white rounded-2xl shadow-md shadow-primary/20"
+                  : "text-slate-400 hover:text-primary"
               }`}
             >
-              <motion.div
-                animate={isActive ? { scale: 1.15, y: -2 } : { scale: 1, y: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <tab.icon
-                  className="w-5 h-5"
-                  strokeWidth={isActive ? 2.5 : 2}
-                />
-              </motion.div>
+              <tab.icon
+                className="w-5 h-5"
+                strokeWidth={isActive ? 2.5 : 2}
+              />
               <span
-                className={`text-[10px] ${isActive ? "font-semibold" : "font-medium"}`}
+                className={`text-[9px] font-black uppercase tracking-wider ${isActive ? "text-white" : ""}`}
               >
-                {label(tab.label)}
+                {t(tab.label) || tab.label}
               </span>
-              {isActive && (
-                <motion.div
-                  layoutId="activeTabIndicator"
-                  className="absolute -bottom-0 h-0.5 w-6 bg-primary rounded-full"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
             </motion.button>
           );
         })}
@@ -73,6 +60,7 @@ const BottomNav = () => {
     </nav>
   );
 };
+
 
 function label(text: string) {
   return text.toUpperCase();

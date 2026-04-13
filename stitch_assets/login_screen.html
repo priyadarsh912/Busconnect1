@@ -4,8 +4,8 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Login - BusConnect</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries" integrity="sha384-1DcZPGeODWbGGjS/i/n4ULX/pEc0DPcKK2WhyuWEmBXRfzOwoVTDQBN9C3C5jJHK" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -101,7 +101,7 @@
 <!-- Header Section (The Kinetic Anchor) -->
 <div class="w-full max-w-md mb-12 text-center md:text-left">
 <div class="inline-flex items-center justify-center w-16 h-16 mb-8 rounded-2xl bg-gradient-to-br from-primary to-primary-container shadow-lg">
-<span class="material-symbols-outlined text-white text-3xl" data-icon="directions_bus">directions_bus</span>
+<span class="material-symbols-outlined text-white text-3xl" aria-hidden="true">directions_bus</span>
 </div>
 <h1 class="font-headline font-extrabold text-4xl md:text-5xl text-on-surface tracking-tight mb-4">
                 Welcome to <span class="bg-gradient-to-br from-primary to-primary-container bg-clip-text text-transparent">BusConnect</span>
@@ -112,7 +112,7 @@
 </div>
 <!-- Login Container (Glassmorphism & Tonal Layering) -->
 <div class="w-full max-w-md glass-panel p-8 md:p-10 rounded-lg shadow-[0_24px_48px_rgba(0,0,0,0.04)] border border-white/20">
-<form class="space-y-8" onsubmit="return false;">
+<form class="space-y-8" onsubmit="event.preventDefault(); /* handleLogin logic */">
 <!-- Mobile Input Section -->
 <div class="space-y-3">
 <label for="mobile-number" class="font-label text-sm font-semibold uppercase tracking-widest text-on-surface-variant ml-1">
@@ -128,7 +128,7 @@
 <!-- Action Button (Primary Kinetic Pulse) -->
 <button aria-label="Send Verification OTP Code" class="w-full py-5 px-8 rounded-full bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold text-lg shadow-md hover:shadow-lg hover:-translate-y-1 active:scale-[0.98] transition-all flex items-center justify-center gap-3 group" type="submit">
 <span>Send OTP</span>
-<span class="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
+<span class="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1" aria-hidden="true">arrow_forward</span>
 </button>
 <!-- Divider (No-Line Principle: Soft Contrast) -->
 <div class="relative flex items-center py-2">
@@ -151,11 +151,11 @@
 <!-- Bottom Assistance (Asymmetric Detail) -->
 <div class="mt-12 flex items-center gap-8 text-on-surface-variant/60">
 <div class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
-<span class="material-symbols-outlined text-xl" data-icon="help_outline">help_outline</span>
+<span class="material-symbols-outlined text-xl" aria-hidden="true">help_outline</span>
 <span class="text-xs font-label font-bold uppercase tracking-wider">Support</span>
 </div>
 <div class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
-<span class="material-symbols-outlined text-xl" data-icon="language">language</span>
+<span class="material-symbols-outlined text-xl" aria-hidden="true">language</span>
 <span class="text-xs font-label font-bold uppercase tracking-wider">Language</span>
 </div>
 </div>

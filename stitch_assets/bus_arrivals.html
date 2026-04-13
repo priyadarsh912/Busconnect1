@@ -92,7 +92,7 @@
 <header class="fixed top-0 w-full z-50 bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.06)] flex justify-between items-center px-6 py-4">
 <div class="flex items-center gap-3">
 <div class="w-10 h-10 rounded-full overflow-hidden bg-primary-fixed">
-<img class="w-full h-full object-cover" alt="Close-up portrait of a professional man in a bright studio setting with soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfOBxa_UzkbYTrm8QejDZvfZ0bUZKsOGAPZ_q-v8sa6B04XaLHWo86wtGOGFPLf6SIy6Y1poTKayzwfPcdVafSaCOxcoqF8bHkvaNf4ltJOZ_4_QZSUJDobK2Tvj7TpSCeTE-UJK_2Iig3tiCKZ51igG5cDPAtDHtrbHckRzqXtgQovtiE_zn_RITHK81mddQg0Sy2Ah1WUAb_XVzteKlgADplWHwlo_1KE82UsNYZKq661PhtUfladZqLebskjnJVBe6uAImhqLOH"/>
+<img class="w-full h-full object-cover" width="40" height="40" alt="Close-up portrait of a professional man in a bright studio setting with soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfOBxa_UzkbYTrm8QejDZvfZ0bUZKsOGAPZ_q-v8sa6B04XaLHWo86wtGOGFPLf6SIy6Y1poTKayzwfPcdVafSaCOxcoqF8bHkvaNf4ltJOZ_4_QZSUJDobK2Tvj7TpSCeTE-UJK_2Iig3tiCKZ51igG5cDPAtDHtrbHckRzqXtgQovtiE_zn_RITHK81mddQg0Sy2Ah1WUAb_XVzteKlgADplWHwlo_1KE82UsNYZKq661PhtUfladZqLebskjnJVBe6uAImhqLOH"/>
 </div>
 <h1 class="font-headline font-bold text-2xl tracking-tight bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">BusConnect</h1>
 </div>
@@ -104,7 +104,7 @@
 <!-- Station Header Card -->
 <section class="mb-8">
 <div class="relative h-48 w-full rounded-lg overflow-hidden mb-6 shadow-sm">
-<img class="w-full h-full object-cover" alt="Modern bus stop station at dusk with cinematic street lights and glass architecture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSYrQ0CSgG8SmfHHcW7caMdpdHzu4sFE8aT8XAqqvsYWwxXqUBqnEAMMhhcalM4exRsyQF20FUIZFi_GXaPvd6MR7ryw9TnlN7315cnvP4Hfh3AXPEYed7rzSVPtZXpchKZXRjZ1OmpSe3Z_Kl2R4ZDZC18NqCng089DhMn5XJq9llxZGa_jDLNP-aPUEEzHVPd29_HIDB07JqtVkWtYmwReTuyNElEgeU9DxtkxEokGbK6y4FjVtS6OQnVTRCyWA4YYwil_22PHwz"/>
+<img class="w-full h-full object-cover" width="600" height="192" alt="Modern bus stop station at dusk with cinematic street lights and glass architecture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSYrQ0CSgG8SmfHHcW7caMdpdHzu4sFE8aT8XAqqvsYWwxXqUBqnEAMMhhcalM4exRsyQF20FUIZFi_GXaPvd6MR7ryw9TnlN7315cnvP4Hfh3AXPEYed7rzSVPtZXpchKZXRjZ1OmpSe3Z_Kl2R4ZDZC18NqCng089DhMn5XJq9llxZGa_jDLNP-aPUEEzHVPd29_HIDB07JqtVkWtYmwReTuyNElEgeU9DxtkxEokGbK6y4FjVtS6OQnVTRCyWA4YYwil_22PHwz"/>
 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
 <div class="absolute bottom-4 left-6">
 <div class="flex items-center gap-2 text-white/80 text-sm mb-1">
@@ -127,7 +127,7 @@
 <section class="mb-8">
 <h3 class="text-on-surface-variant font-semibold text-lg mb-4">Quick Actions</h3>
 <div class="grid grid-cols-2 gap-4">
-<div class="bg-gradient-to-br from-primary to-primary-container rounded-2xl p-4 text-white shadow-md flex justify-between items-end cursor-pointer active:scale-95 transition-transform">
+<button type="button" aria-label="Route to Work" class="w-full text-left focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 bg-gradient-to-br from-primary to-primary-container rounded-2xl p-4 text-white shadow-md flex justify-between items-end cursor-pointer active:scale-95 transition-transform">
 <div>
 <span class="material-symbols-outlined mb-2 text-white/80" style="font-variation-settings: 'FILL' 1;">work</span>
 <h4 class="font-headline font-bold text-lg">Work</h4>
@@ -136,21 +136,21 @@
 <div class="bg-white/20 p-2 rounded-full backdrop-blur-sm">
 <span class="material-symbols-outlined text-sm">arrow_forward</span>
 </div>
-</div>
-<div class="bg-white rounded-2xl p-4 text-on-surface shadow-sm border border-surface-container-high flex justify-between items-end cursor-pointer active:scale-95 transition-transform">
+</button>
+<button type="button" aria-label="Nearby Stops" class="w-full text-left focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 bg-white rounded-2xl p-4 text-on-surface shadow-sm border border-surface-container-high flex justify-between items-end cursor-pointer active:scale-95 transition-transform">
 <div>
 <span class="material-symbols-outlined mb-2 text-primary" style="font-variation-settings: 'FILL' 1;">directions_bus</span>
 <h4 class="font-headline font-bold text-lg">Nearby</h4>
 <p class="text-xs text-on-surface-variant">3 stops near you</p>
 </div>
-</div>
+</button>
 </div>
 </section>
 
 <!-- Arrival List -->
 <div class="space-y-4">
 <!-- Row 1 -->
-<div role="button" tabindex="0" aria-label="Bus 42 to North Terminal, arrives in 2 minutes" class="bg-surface-container-low rounded-lg p-5 flex items-center justify-between transition-transform active:scale-[0.98] cursor-pointer hover:bg-surface-container transition-colors">
+<div role="button" tabindex="0" aria-label="Bus 42 to North Terminal, arrives in 2 minutes" class="bg-surface-container-low rounded-lg p-5 flex items-center justify-between transition-transform active:scale-[0.98] cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 hover:bg-surface-container transition-colors">
 <div class="flex items-center gap-5">
 <div class="w-14 h-14 bg-gradient-to-br from-primary to-primary-container rounded-2xl flex items-center justify-center text-white shadow-md">
 <span class="font-headline text-xl font-extrabold">42</span>
@@ -170,7 +170,7 @@
 </div>
 </div>
 <!-- Row 2 -->
-<div role="button" tabindex="0" aria-label="Bus 108 to City Center, arrives in 5 minutes" class="bg-white rounded-xl p-5 flex items-center justify-between border border-surface-container-highest shadow-sm hover:shadow-md transition-all active:scale-[0.98] cursor-pointer">
+<div role="button" tabindex="0" aria-label="Bus 108 to City Center, arrives in 5 minutes" class="bg-white rounded-xl p-5 flex items-center justify-between border border-surface-container-highest shadow-sm hover:shadow-md transition-all active:scale-[0.98] cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1">
 <div class="flex items-center gap-5">
 <div class="w-14 h-14 bg-surface-container-high rounded-2xl flex items-center justify-center text-on-surface-variant">
 <span class="font-headline text-xl font-extrabold">108</span>
@@ -190,7 +190,7 @@
 </div>
 </div>
 <!-- Row 3 -->
-<div role="button" tabindex="0" aria-label="Bus A1 to Airport Express, arrives in 12 minutes" class="bg-white rounded-xl p-5 flex items-center justify-between border border-surface-container-highest shadow-sm hover:shadow-md transition-all active:scale-[0.98] cursor-pointer">
+<div role="button" tabindex="0" aria-label="Bus A1 to Airport Express, arrives in 12 minutes" class="bg-white rounded-xl p-5 flex items-center justify-between border border-surface-container-highest shadow-sm hover:shadow-md transition-all active:scale-[0.98] cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1">
 <div class="flex items-center gap-5">
 <div class="w-14 h-14 bg-surface-container-high rounded-2xl flex items-center justify-center text-on-surface-variant">
 <span class="font-headline text-xl font-extrabold">A1</span>
@@ -210,7 +210,7 @@
 </div>
 </div>
 <!-- Row 4 -->
-<div role="button" tabindex="0" aria-label="Bus 25C to University East, arrives in 18 minutes" class="bg-white rounded-xl p-5 flex items-center justify-between border border-surface-container-highest shadow-sm hover:shadow-md transition-all active:scale-[0.98] cursor-pointer">
+<div role="button" tabindex="0" aria-label="Bus 25C to University East, arrives in 18 minutes" class="bg-white rounded-xl p-5 flex items-center justify-between border border-surface-container-highest shadow-sm hover:shadow-md transition-all active:scale-[0.98] cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1">
 <div class="flex items-center gap-5">
 <div class="w-14 h-14 bg-surface-container-high rounded-2xl flex items-center justify-center text-on-surface-variant">
 <span class="font-headline text-xl font-extrabold">25C</span>
@@ -230,7 +230,7 @@
 </div>
 </div>
 <!-- Row 5 -->
-<div role="button" tabindex="0" aria-label="Bus 67 to West Waterfront, arrives in 24 minutes" class="bg-white rounded-xl p-5 flex items-center justify-between border border-surface-container-highest shadow-sm hover:shadow-md transition-all active:scale-[0.98] cursor-pointer">
+<div role="button" tabindex="0" aria-label="Bus 67 to West Waterfront, arrives in 24 minutes" class="bg-white rounded-xl p-5 flex items-center justify-between border border-surface-container-highest shadow-sm hover:shadow-md transition-all active:scale-[0.98] cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1">
 <div class="flex items-center gap-5">
 <div class="w-14 h-14 bg-surface-container-high rounded-2xl flex items-center justify-center text-on-surface-variant">
 <span class="font-headline text-xl font-extrabold">67</span>
@@ -257,11 +257,11 @@
 <span class="material-symbols-outlined">home</span>
 <span class="font-['Inter'] font-semibold text-[11px] uppercase tracking-wider mt-1">Home</span>
 </button>
-<button aria-label="Nearby" class="flex flex-col items-center justify-center bg-gradient-to-br from-primary to-primary-container text-white rounded-full px-5 py-2 transition-all duration-300 active:scale-90">
+<button aria-label="Nearby" aria-current="page" class="flex flex-col items-center justify-center bg-gradient-to-br from-primary to-primary-container text-white rounded-full px-5 py-2 transition-all duration-300 active:scale-90">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">near_me</span>
 <span class="font-['Inter'] font-semibold text-[11px] uppercase tracking-wider mt-1">Nearby</span>
 </button>
-<button aria-label="Routes" aria-current="page" class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-primary transition-transform active:scale-90">
+<button aria-label="Routes" class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-primary transition-transform active:scale-90">
 <span class="material-symbols-outlined">directions_bus</span>
 <span class="font-['Inter'] font-semibold text-[11px] uppercase tracking-wider mt-1">Routes</span>
 </button>
@@ -270,4 +270,14 @@
 <span class="font-['Inter'] font-semibold text-[11px] uppercase tracking-wider mt-1">Tickets</span>
 </button>
 </nav>
+<script>
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    if (e.target.matches('[role="button"][tabindex="0"]')) {
+      e.preventDefault();
+      e.target.click();
+    }
+  }
+});
+</script>
 </body></html>

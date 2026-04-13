@@ -205,162 +205,164 @@ const BusResultsPage = () => {
 
   return (
     <PageShell>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <motion.button whileTap={{ scale: 0.85 }} onClick={() => navigate(-1)} className="p-1"><ArrowLeft className="w-5 h-5" /></motion.button>
-        <div className="text-center">
-          <h1 className="font-bold text-base">{activeSearch.from || 'Anywhere'} to {activeSearch.to || 'Anywhere'}</h1>
-          <p className="text-xs text-muted-foreground">Today • {passengers} Adult{passengers > 1 ? 's' : ''} • {filteredBuses.length} Buses</p>
+      {/* Premium Header */}
+      <div className="flex items-center justify-between mb-8 px-2">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center transition-transform active:scale-95"
+          >
+            <ArrowLeft className="w-5 h-5 text-primary" />
+          </button>
+          <div className="flex flex-col">
+             <h1 className="font-headline font-bold text-xl tracking-tight text-on-surface">
+              {activeSearch.from || 'Select Origin'}
+             </h1>
+             <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none">
+               To {activeSearch.to || 'Destination'}
+             </p>
+          </div>
         </div>
-        <motion.button onClick={() => setIsPassengerModalOpen(true)} whileTap={{ scale: 0.85 }} className="p-1"><SlidersHorizontal className="w-5 h-5" /></motion.button>
+        <button 
+          onClick={() => setIsPassengerModalOpen(true)}
+          className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-500"
+        >
+          <SlidersHorizontal className="w-5 h-5" />
+        </button>
       </div>
 
-      <div className="bg-card rounded-xl border border-border p-4 mb-4">
-        <div className="flex items-center gap-3">
-          <div className="flex flex-col items-center">
+      {/* Search Input Area */}
+      <div className="bg-white dark:bg-slate-900 rounded-[2rem] shadow-[0_12px_40px_rgba(0,0,0,0.06)] border border-slate-100 dark:border-slate-800 p-6 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col items-center py-1">
             <div className="w-2.5 h-2.5 rounded-full border-2 border-primary" />
-            <div className="w-0.5 h-6 bg-border" />
-            <div className="w-2.5 h-2.5 rounded-full bg-destructive" />
+            <div className="w-[1px] h-8 border-l border-slate-200 dark:border-slate-700" />
+            <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />
           </div>
-          <div className="flex-1 space-y-2">
-            <div className="flex items-center border-b border-border pb-2">
-              <span className="text-xs font-semibold text-muted-foreground w-12">FROM</span>
-              <input
+          <div className="flex-1 space-y-3">
+             <input
                 type="text"
                 value={searchFrom}
                 onChange={(e) => setSearchFrom(e.target.value)}
-                placeholder={initialState.tripType === "outstation" ? "Origin city..." : "Origin sector..."}
-                className="bg-transparent font-bold text-sm outline-none w-full"
+                placeholder="From..."
+                className="w-full bg-transparent font-headline font-bold text-base outline-none text-on-surface placeholder:text-slate-300"
               />
-            </div>
-            <div className="flex items-center">
-              <span className="text-xs font-semibold text-muted-foreground w-12">TO</span>
+              <div className="h-px bg-slate-50 dark:bg-slate-800 w-full" />
               <input
                 type="text"
                 value={searchTo}
                 onChange={(e) => setSearchTo(e.target.value)}
-                placeholder={initialState.tripType === "outstation" ? "Destination city..." : "Destination sector..."}
-                className="bg-transparent font-bold text-sm outline-none w-full"
+                placeholder="To..."
+                className="w-full bg-transparent font-headline font-bold text-base outline-none text-on-surface placeholder:text-slate-300"
               />
-            </div>
           </div>
-          <button
-            onClick={() => {
-              const temp = searchFrom;
-              setSearchFrom(searchTo);
-              setSearchTo(temp);
-            }}
-            className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center flex-shrink-0"
+          <Button 
+            onClick={handleSearch}
+            className="w-12 h-24 rounded-2xl bg-primary text-white p-0 shadow-lg shadow-primary/20"
           >
-            <ArrowUpDown className="w-4 h-4 text-primary" />
-          </button>
+            <ArrowUpDown className="w-5 h-5" />
+          </Button>
         </div>
-        <motion.div whileTap={{ scale: 0.97 }}>
-          <Button className="w-full h-10 mt-4 rounded-xl font-bold" onClick={handleSearch}>Search Buses</Button>
-        </motion.div>
       </div>
 
-      {/* Bus Cards */}
-      <div className="space-y-4">
+      <div className="flex items-center justify-between mb-6 px-2">
+        <h3 className="text-on-surface-variant font-black text-[10px] uppercase tracking-[0.2em]">Available Journeys</h3>
+        <p className="text-[10px] text-primary font-bold">{filteredBuses.length} Results Found</p>
+      </div>
+
+      {/* Bus Cards List */}
+      <div className="space-y-4 pb-20">
         {filteredBuses.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            <Bus className="w-12 h-12 mx-auto mb-3 opacity-20" />
-            <p className="font-semibold">No buses found</p>
-            <p className="text-xs">Try searching different locations</p>
+          <div className="text-center py-20 bg-slate-50 dark:bg-slate-800/20 rounded-[2rem] border border-dashed border-slate-200 dark:border-slate-700">
+            <Bus className="w-16 h-16 mx-auto mb-4 text-slate-200" />
+            <p className="font-headline font-bold text-slate-400">No buses available</p>
+            <p className="text-[10px] uppercase tracking-widest text-slate-300 mt-1">Try adjusting your route</p>
           </div>
         ) : (
           filteredBuses.map((bus, index) => (
             <motion.div
               key={bus.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05, duration: 0.3, ease: "easeOut" }}
-              whileHover={{ scale: 1.02, y: -3 }}
-              className="bg-card rounded-xl p-4 border border-border shadow-sm"
+              transition={{ delay: index * 0.05 }}
+              className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group"
             >
-              {/* Top */}
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
-                    <Bus className="w-5 h-5 text-primary" />
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-container rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                    <span className="font-headline text-xl font-black">{bus.route_no}</span>
                   </div>
                   <div>
-                    <p className="font-bold text-sm">Route {bus.route_no}</p>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground font-medium">
-                      <span>{bus.distance_km.toFixed(1)} km &bull; {bus.price_inr} INR</span>
+                    <p className="font-headline font-bold text-lg text-on-surface group-hover:text-primary transition-colors">{bus.to_stop}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                       {(() => {
+                        const prediction = predictCrowd(bus.from_stop, bus.to_stop, { distanceKm: bus.distance_km });
+                        return <CrowdBadge level={prediction.level} score={prediction.percentage} />;
+                      })()}
+                      <span className="w-1 h-1 rounded-full bg-slate-200" />
+                      <span className="text-[10px] font-bold text-slate-400">{bus.distance_km.toFixed(1)} km</span>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-extrabold text-primary">₹{bus.price_inr}</p>
-                  <p className="text-[10px] text-muted-foreground">PER SEAT</p>
-                  {(() => {
-                    const prediction = predictCrowd(bus.from_stop, bus.to_stop, { distanceKm: bus.distance_km });
-                    return <CrowdBadge level={prediction.level} score={prediction.percentage} />;
-                  })()}
+                   <p className="font-headline text-2xl font-black text-primary leading-none">₹{bus.price_inr}</p>
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Adult</p>
                 </div>
               </div>
 
-              {/* Timeline */}
-              <div className="flex items-center justify-between mb-3 text-sm">
-                <div className="flex flex-col text-left truncate w-1/3">
-                  <p className="font-extrabold truncate">{bus.from_stop}</p>
-                  <p className="text-xs text-muted-foreground font-medium">{bus.departure}</p>
-                </div>
+              {/* Path/Timeline */}
+              <div className="flex items-center justify-between mb-8 px-2 relative">
+                 <div className="flex flex-col">
+                    <p className="text-xl font-headline font-black text-on-surface">{bus.departure}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Depart</p>
+                 </div>
+                 
+                 <div className="flex-1 px-4 flex flex-col items-center">
+                    <span className="text-[9px] font-black text-primary bg-primary/5 px-3 py-1 rounded-full mb-3 uppercase tracking-tighter">
+                      {bus.duration} Journey
+                    </span>
+                    <div className="w-full relative flex items-center h-1">
+                       <div className="absolute inset-0 bg-slate-100 dark:bg-slate-800 rounded-full" />
+                       <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: "100%" }}
+                        transition={{ duration: 1, delay: 0.2 }}
+                        className="absolute inset-0 bg-primary/30 rounded-full" 
+                       />
+                       <div className="absolute left-0 w-2 h-2 rounded-full bg-primary" />
+                       <div className="absolute right-0 w-2 h-2 rounded-full bg-primary ring-4 ring-primary/10" />
+                    </div>
+                    <p className="text-[9px] font-bold text-slate-400 mt-3 truncate max-w-[100px] uppercase tracking-widest">via {bus.stop}</p>
+                 </div>
 
-                <div className="flex-1 mx-2 flex flex-col items-center justify-center">
-                  <span className="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full mb-1 font-bold whitespace-nowrap">{bus.duration}</span>
-                  <div className="flex items-center w-full relative h-[2px] bg-border my-1 rounded-full">
-                    <div className="absolute left-0 w-2 h-2 -ml-1 rounded-full bg-muted border-2 border-primary -top-[3px]" />
-                    <div className="absolute left-1/2 -ml-[3px] w-1.5 h-1.5 rounded-full bg-primary -top-[2px]" />
-                    <div className="absolute right-0 w-2 h-2 -mr-1 rounded-full bg-primary border-2 border-primary -top-[3px]" />
-                  </div>
-                  <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider text-center line-clamp-1">{bus.stop}</span>
-                </div>
-
-                <div className="flex flex-col text-right truncate w-1/3">
-                  <p className="font-extrabold truncate">{bus.to_stop}</p>
-                  <p className="text-xs text-muted-foreground font-medium">{bus.arrival}</p>
-                </div>
-              </div>
-              <div className="flex justify-center w-full">
-                <span className={`text-[10px] font-medium flex items-center gap-0.5 ${bus.status === "On time" ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"
-                  }`}>
-                  {bus.status === "On time" ? (
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                  ) : (
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                  )}
-                  {bus.status}
-                </span>
+                 <div className="flex flex-col text-right">
+                    <p className="text-xl font-headline font-black text-on-surface">{bus.arrival}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Arrive</p>
+                 </div>
               </div>
 
-              {/* Actions */}
               <div className="flex gap-3">
-                <motion.div whileTap={{ scale: 0.95 }} className="flex-1">
-                  <Button
+                 <Button 
                     variant="outline"
-                    className="w-full h-10 rounded-xl text-sm font-semibold"
+                    className="flex-1 rounded-2xl border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold"
                     onClick={() => {
                       RouteHistoryManager.trackRoute(bus, initialState.tripType);
                       navigate("/tracking", { state: { route: bus, tripType: initialState.tripType } });
                     }}
-                  >
-                    <MapPin className="w-4 h-4 mr-1.5" /> Track
-                  </Button>
-                </motion.div>
-                <motion.div whileTap={{ scale: 0.95 }} className="flex-1">
-                  <Button className="w-full h-10 rounded-xl text-sm font-semibold" onClick={() => handleBookClick(bus)}>
-                    Book a Ticket
-                  </Button>
-                </motion.div>
+                 >
+                    <MapPin className="w-4 h-4 mr-2" /> Live Track
+                 </Button>
+                 <Button 
+                    className="flex-[2] rounded-2xl bg-slate-900 border-none text-white font-headline font-black text-sm shadow-xl active:scale-[0.98] transition-all"
+                    onClick={() => handleBookClick(bus)}
+                 >
+                    Review & Book
+                 </Button>
               </div>
-
-
             </motion.div>
-          )))
-        }
-      </div >
+          ))
+        )}
+      </div>
 
       {/* Confirmation Dialog */}
       < AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} >

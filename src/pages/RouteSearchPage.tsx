@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowLeftRight, MapPin, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import PageShell from "@/components/PageShell";
-import { Button } from "@/components/ui/button";
-import { useIntercityRoutes } from "@/hooks/useIntercityRoutes";
-import { useOutstationRoutes } from "@/hooks/useOutstationRoutes";
-import { BusRoute } from "@/services/busService";
+import PageShell from "../components/PageShell";
+import { Button } from "../components/ui/button";
+import { useIntercityRoutes } from "../hooks/useIntercityRoutes";
+import { useOutstationRoutes } from "../hooks/useOutstationRoutes";
+import { BusRoute } from "../services/busService";
+
 import { RouteHistoryManager } from "../utils/RouteHistoryManager";
 
 const fadeUp = {
@@ -127,29 +128,29 @@ const RouteSearchPage = () => {
     return (
         <PageShell>
             {/* Header */}
-            <motion.div variants={fadeUp} className="flex items-center gap-3 mb-5">
+            <motion.div variants={fadeUp} className="flex items-center gap-4 mb-8">
                 <motion.button
-                    whileTap={{ scale: 0.88 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={() => navigate(-1)}
-                    className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center shrink-0"
+                    className="w-11 h-11 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center shrink-0"
                 >
-                    <ArrowLeft className="w-4 h-4 text-foreground" />
+                    <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-slate-300" />
                 </motion.button>
                 <div>
-                    <h1 className="text-xl font-extrabold leading-tight">Search Routes</h1>
-                    <p className="text-xs text-muted-foreground mt-0.5 font-medium">
+                    <h1 className="text-2xl font-headline font-extrabold tracking-tight">Search Routes</h1>
+                    <p className="text-sm text-slate-500 font-medium">
                         {selectedState} &bull; {tripLabel}
                     </p>
                 </div>
             </motion.div>
 
             {/* State + trip type pill */}
-            <motion.div variants={fadeUp} className="flex items-center gap-2 mb-6">
-                <span className="bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full border border-primary/20 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse inline-block" />
+            <motion.div variants={fadeUp} className="flex items-center gap-2 mb-8">
+                <span className="bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full border border-primary/20 flex items-center gap-2 shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                     {selectedState}
                 </span>
-                <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${accentPill}`}>
+                <span className={`text-xs font-bold px-4 py-2 rounded-full shadow-sm ${accentPill}`}>
                     {tripLabel}
                 </span>
             </motion.div>
@@ -157,21 +158,21 @@ const RouteSearchPage = () => {
             {/* Search card */}
             <motion.div
                 variants={fadeUp}
-                className={`rounded-2xl border-2 ${accentBg} overflow-visible relative`}
+                className="bg-white dark:bg-slate-800 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 overflow-visible relative p-2"
             >
                 <div className="flex items-stretch">
-                    {/* Left: Dots + Line */}
-                    <div className="flex flex-col items-center py-4 pl-4 pr-2 w-8 shrink-0">
-                        <div className="w-3 h-3 rounded-full border-[2.5px] shrink-0" style={{ borderColor: accentColor }} />
-                        <div className="flex-1 w-[2px] my-1.5" style={{ background: "rgba(0,0,0,0.1)" }} />
-                        <div className="w-3 h-3 rounded-full shrink-0" style={{ background: accentColor }} />
+                    {/* Left: Path Connector Logic matching Stitch assets */}
+                    <div className="flex flex-col items-center py-6 pl-5 pr-2 w-10 shrink-0">
+                        <div className="w-3.5 h-3.5 rounded-full border-[3px] border-primary bg-white shrink-0 shadow-sm" />
+                        <div className="flex-1 w-[2px] my-2 bg-gradient-to-b from-primary/30 via-primary/10 to-transparent" />
+                        <div className="w-3.5 h-3.5 rounded-full bg-primary shrink-0 shadow-sm shadow-primary/30" />
                     </div>
 
                     {/* CENTER: Inputs */}
-                    <div className="flex-1 flex flex-col min-w-0">
+                    <div className="flex-1 flex flex-col min-w-0 pr-4">
                         {/* FROM */}
-                        <div className="relative px-2 pt-3 pb-2">
-                            <span className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">FROM</span>
+                        <div className="relative pt-4 pb-3">
+                            <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400 block mb-1">From Station</span>
                             <input
                                 ref={fromRef}
                                 type="text"
@@ -179,21 +180,16 @@ const RouteSearchPage = () => {
                                 onChange={(e) => handleFromChange(e.target.value)}
                                 onFocus={() => setFromSuggestions(getSuggestions(origin))}
                                 onBlur={() => setTimeout(() => setFromSuggestions([]), 250)}
-                                placeholder={tripType === "outstation" ? "Enter city name..." : "Enter sector or phase"}
-                                autoComplete="off"
-                                autoCorrect="off"
-                                autoCapitalize="words"
-                                spellCheck={false}
-                                className="w-full font-semibold text-[15px] outline-none bg-transparent border-none placeholder:text-muted-foreground/50 text-foreground mt-0.5"
+                                placeholder="Starting point..."
+                                className="w-full font-headline font-bold text-lg outline-none bg-transparent border-none placeholder:text-slate-300 text-on-surface"
                             />
                             <AnimatePresence>
                                 {fromSuggestions.length > 0 && (
                                     <motion.div
-                                        initial={{ opacity: 0, y: -6 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -6 }}
-                                        transition={{ duration: 0.15 }}
-                                        className="absolute left-0 right-0 top-full z-50 bg-background border border-border rounded-xl shadow-xl overflow-hidden mt-1"
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        className="absolute left-0 right-0 top-full z-50 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden mt-2 p-1"
                                     >
                                         {fromSuggestions.map((s) => (
                                             <button
@@ -205,9 +201,9 @@ const RouteSearchPage = () => {
                                                     setFromSuggestions([]);
                                                     toRef.current?.focus();
                                                 }}
-                                                className="w-full text-left px-4 py-2.5 text-sm hover:bg-secondary transition-colors flex items-center gap-2 text-foreground"
+                                                className="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors flex items-center gap-3 text-slate-700 dark:text-slate-200"
                                             >
-                                                <MapPin className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                                                <MapPin className="w-4 h-4 text-primary shrink-0" />
                                                 {s}
                                             </button>
                                         ))}
@@ -216,11 +212,11 @@ const RouteSearchPage = () => {
                             </AnimatePresence>
                         </div>
 
-                        <div className="mx-2 border-t border-border/40" />
+                        <div className="border-t border-slate-50 dark:border-slate-700/50" />
 
                         {/* TO */}
-                        <div className="relative px-2 pt-2 pb-3">
-                            <span className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">TO</span>
+                        <div className="relative pt-3 pb-4">
+                            <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400 block mb-1">To Destination</span>
                             <input
                                 ref={toRef}
                                 type="text"
@@ -228,21 +224,16 @@ const RouteSearchPage = () => {
                                 onChange={(e) => handleToChange(e.target.value)}
                                 onFocus={() => setToSuggestions(getSuggestions(destination))}
                                 onBlur={() => setTimeout(() => setToSuggestions([]), 250)}
-                                placeholder={tripType === "outstation" ? "Enter destination city..." : "Enter sector or phase"}
-                                autoComplete="off"
-                                autoCorrect="off"
-                                autoCapitalize="words"
-                                spellCheck={false}
-                                className="w-full font-semibold text-[15px] outline-none bg-transparent border-none placeholder:text-muted-foreground/50 text-foreground mt-0.5"
+                                placeholder="Where to?"
+                                className="w-full font-headline font-bold text-lg outline-none bg-transparent border-none placeholder:text-slate-300 text-on-surface"
                             />
                             <AnimatePresence>
                                 {toSuggestions.length > 0 && (
                                     <motion.div
-                                        initial={{ opacity: 0, y: -6 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -6 }}
-                                        transition={{ duration: 0.15 }}
-                                        className="absolute left-0 right-0 top-full z-50 bg-background border border-border rounded-xl shadow-xl overflow-hidden mt-1"
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        className="absolute left-0 right-0 top-full z-50 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden mt-2 p-1"
                                     >
                                         {toSuggestions.map((s) => (
                                             <button
@@ -253,9 +244,9 @@ const RouteSearchPage = () => {
                                                     setDestination(s);
                                                     setToSuggestions([]);
                                                 }}
-                                                className="w-full text-left px-4 py-2.5 text-sm hover:bg-secondary transition-colors flex items-center gap-2 text-foreground"
+                                                className="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors flex items-center gap-3 text-slate-700 dark:text-slate-200"
                                             >
-                                                <MapPin className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                                                <MapPin className="w-4 h-4 text-primary shrink-0" />
                                                 {s}
                                             </button>
                                         ))}
@@ -266,50 +257,59 @@ const RouteSearchPage = () => {
                     </div>
 
                     {/* Swap button */}
-                    <div className="flex items-center pr-4 pl-2 shrink-0">
+                    <div className="flex items-center pr-6 pl-2 shrink-0">
                         <motion.button
                             whileTap={{ scale: 0.85, rotate: 180 }}
-                            whileHover={{ scale: 1.1 }}
                             transition={{ type: "spring", stiffness: 400, damping: 20 }}
                             onClick={swap}
-                            className="w-9 h-9 rounded-full flex items-center justify-center shadow-md border border-border bg-background"
+                            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-md bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 text-primary active:text-primary-container"
                         >
-                            <ArrowLeftRight className="w-4 h-4 text-foreground" />
+                            <ArrowLeftRight className="w-5 h-5" />
                         </motion.button>
                     </div>
                 </div>
             </motion.div>
 
             {/* Search button */}
-            <motion.div variants={fadeUp} className="mt-5">
+            <motion.div variants={fadeUp} className="mt-8">
                 <motion.div
-                    whileTap={canSearch ? { scale: 0.97 } : {}}
-                    whileHover={canSearch ? { scale: 1.01 } : {}}
-                    transition={{ type: "spring", stiffness: 350, damping: 22 }}
+                    whileTap={canSearch ? { scale: 0.98 } : {}}
+                    whileHover={canSearch ? { y: -2 } : {}}
                 >
                     <Button
                         onClick={handleSearch}
                         disabled={!canSearch}
-                        className="w-full h-13 rounded-2xl font-bold text-base py-4 flex items-center justify-center gap-2"
-                        style={{ background: canSearch ? accentColor : undefined }}
+                        className={`w-full h-14 rounded-3xl font-headline font-extrabold text-lg flex items-center justify-center gap-3 shadow-lg transition-all duration-300 ${
+                          canSearch 
+                            ? "bg-gradient-to-r from-primary to-primary-container text-white shadow-primary/20" 
+                            : "bg-slate-100 text-slate-400"
+                        }`}
+                        style={{ background: canSearch ? `linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%)` : undefined }}
                     >
-                        <Search className="w-5 h-5" />
-                        Search Buses
+
+                        <Search className="w-6 h-6" />
+                        Find My Bus
                     </Button>
                 </motion.div>
             </motion.div>
 
             {/* Popular routes hint */}
-            <motion.div variants={fadeUp} className="mt-8 pb-20">
-                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">
-                    Popular {tripLabel} Routes
-                </p>
-                <div className="space-y-2">
+            <motion.div variants={fadeUp} className="mt-12 pb-24">
+                <div className="flex items-center justify-between mb-5">
+                    <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                        Popular {tripLabel} Routes
+                    </p>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-3">
                     {isLoading ? (
-                        <p className="text-sm text-muted-foreground">Loading routes…</p>
+                        <div className="py-10 text-center bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700">
+                             <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-3" />
+                             <p className="text-sm text-slate-400 font-medium">Finding available routes...</p>
+                        </div>
                     ) : popularRoutes.length === 0 ? (
-                        <div className="py-8 text-center bg-secondary/30 rounded-2xl border border-dashed border-border">
-                            <p className="text-sm text-muted-foreground">
+                        <div className="py-12 text-center bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-dashed border-slate-200 dark:border-slate-700">
+                            <p className="text-sm text-slate-500 font-medium">
                                 {tripType === "outstation"
                                     ? "No outstation routes available yet."
                                     : "No intercity routes found."}
@@ -323,11 +323,9 @@ const RouteSearchPage = () => {
                             return (
                                 <motion.button
                                     key={i}
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.1 + i * 0.06 }}
-                                    whileHover={{ scale: 1.02, x: 4 }}
-                                    whileTap={{ scale: 0.97 }}
+                                    variants={fadeUp}
+                                    whileHover={{ x: 6 }}
+                                    whileTap={{ scale: 0.98 }}
                                     onClick={() => {
                                         setOrigin(src);
                                         setDestination(dst);
@@ -335,15 +333,22 @@ const RouteSearchPage = () => {
                                             state: { state: selectedState, tripType, origin: src, destination: dst },
                                         });
                                     }}
-                                    className="w-full flex items-center justify-between bg-card border border-border rounded-xl px-4 py-3 text-left"
+                                    className="w-full flex items-center justify-between bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl px-5 py-4 text-left shadow-sm hover:shadow-md transition-all group"
                                 >
-                                    <div className="flex items-center gap-2">
-                                        <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: accentColor }} />
-                                        <span className="text-sm font-semibold text-foreground truncate block w-full pr-4 leading-relaxed">
-                                            {src} <span className="text-muted-foreground font-normal">→</span> {dst}
-                                        </span>
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                                           <MapPin className="w-5 h-5 text-primary" />
+                                        </div>
+                                        <div>
+                                            <span className="text-base font-headline font-bold text-on-surface block leading-tight">
+                                                {src}
+                                            </span>
+                                            <span className="text-xs text-slate-400 font-medium mt-0.5 block">
+                                                Travel to {dst}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <ArrowLeft className="w-3.5 h-3.5 text-muted-foreground rotate-180 shrink-0" />
+                                    <ArrowLeft className="w-5 h-5 text-slate-300 group-hover:text-primary transition-all rotate-180" />
                                 </motion.button>
                             );
                         })

@@ -84,12 +84,26 @@
         }
         body { font-family: 'Inter', sans-serif; }
         h1, h2, h3, .display-text { font-family: 'Plus Jakarta Sans', sans-serif; }
-    </style>
+      .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+</style>
 <style>
     body {
       min-height: max(884px, 100dvh);
     }
-  </style>
+    .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+</style>
   </head>
 <body class="bg-surface text-on-surface min-h-screen pb-32">
 <!-- TopAppBar -->

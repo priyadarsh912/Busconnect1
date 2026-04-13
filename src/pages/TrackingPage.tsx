@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
+
 import {
   ArrowLeft,
   Info,
@@ -8,20 +10,23 @@ import {
   Bus,
   Zap,
 } from "lucide-react";
-import CrowdBadge from "@/components/CrowdBadge";
-import { useCrowdPrediction } from "@/hooks/useCrowdPrediction";
-import { MostUsedRoutes } from "@/components/MostUsedRoutes";
-import PageShell from "@/components/PageShell";
-import { Button } from "@/components/ui/button";
+import CrowdBadge from "../components/CrowdBadge";
+import { useCrowdPrediction } from "../hooks/useCrowdPrediction";
+import { MostUsedRoutes } from "../components/MostUsedRoutes";
+import PageShell from "../components/PageShell";
+import { Button } from "../components/ui/button";
+
 import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useLanguage } from "@/lib/language";
+import { useLanguage } from "../lib/language";
+
 
 // Fix for default marker icon in Leaflet + bundlers
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import { validateStops } from "@/utils/corridorUtils";
+import { validateStops } from "../utils/corridorUtils";
+
 import { authService } from "../services/authService";
 import { busService } from "../services/busService";
 import { analyticsService } from "../services/AnalyticsService";
@@ -901,174 +906,135 @@ const TrackingPage = () => {
 
   return (
     <PageShell noPadding>
-      {/* Header */}
-      <div className="px-4 pt-4 flex items-center justify-between">
-        <button onClick={() => navigate(-1)} className="p-1">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <div className="text-center">
-          <h1 className="font-bold text-base">{t("tracking.title")}</h1>
-          <p className="text-xs text-crowd-low font-medium">
-            {from} → {viaStop ? viaStop + " → " : ""}{to}
-          </p>
-        </div>
-        <button className="p-1">
-          <Info className="w-5 h-5 text-muted-foreground" />
-        </button>
-      </div>
-
-      {/* Leaflet Map */}
-      <div className="mx-4 mt-3 rounded-xl bg-secondary h-64 relative overflow-hidden border border-border">
-        <div ref={mapContainer} className="absolute inset-0 z-0" />
-      </div>
-
-      {/* Info panel */}
-      <div className="px-4 pt-5 space-y-6 pb-20">
-        {!location.state?.route && !localStorage.getItem('user_route_history') && (
-          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-2 animate-in fade-in slide-in-from-top-4">
-             <div className="flex items-center gap-3 mb-2">
-               <Zap className="w-5 h-5 text-blue-600 fill-blue-600" />
-               <p className="text-sm font-bold text-blue-900">{t("tracking.getStarted")}</p>
-             </div>
-             <p className="text-xs text-blue-700 leading-relaxed mb-3">
-               {t("tracking.getStartedBody")}
-             </p>
+      <div className="relative h-screen w-full overflow-hidden bg-surface">
+        {/* Header - Glassmorphic */}
+        <header className="fixed top-0 w-full z-50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.06)] flex justify-between items-center px-6 py-4">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate(-1)}
+              className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center transition-transform active:scale-95"
+            >
+              <ArrowLeft className="w-5 h-5 text-primary" />
+            </button>
+            <h1 className="font-headline font-bold text-2xl tracking-tight bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">
+              Live Tracking
+            </h1>
           </div>
-        )}
+          <div className="flex items-center gap-3">
+            <button className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center text-slate-500">
+              <Info className="w-5 h-5" />
+            </button>
+          </div>
+        </header>
 
-        {/* Popular Routes Section */}
-        <MostUsedRoutes currentRouteId={location.state?.route ? (activeRoute?.route_id || activeRoute?.route_no) : undefined} />
+        {/* Full Screen Map Container */}
+        <main className="relative h-screen w-full pt-16">
+          <div ref={mapContainer} className="absolute inset-0 z-0 bg-slate-100 dark:bg-slate-900" />
+          
+          {/* Map Overlays (Gradients to help UI legibility) */}
+          <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-white/40 via-transparent to-black/20 dark:from-slate-950/40 dark:to-black/40" />
 
-        {/* Top Status Cards Grid */}
-        <div className={`grid grid-cols-2 gap-3 transition-opacity duration-300 ${!activeRoute ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-          <div className="bg-card border border-border rounded-xl p-3 shadow-sm flex flex-col justify-center">
-            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">
-              {t("tracking.currentStatus")}
-            </p>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-crowd-low relative">
-                <div className="absolute inset-0 bg-crowd-low rounded-full animate-ping opacity-75" />
+          {/* Floating Live Chip */}
+          <div className="absolute top-24 left-6 z-20">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white/20 flex items-center gap-2"
+            >
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(0,107,125,0.6)]" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface">Live Updates</span>
+            </motion.div>
+          </div>
+
+          {/* Map Controls */}
+          <div className="absolute right-6 top-24 flex flex-col gap-4 z-20">
+            <button className="w-12 h-12 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl shadow-xl rounded-2xl flex items-center justify-center text-on-surface border border-white/20 active:scale-90 transition-transform">
+              <MapPin className="w-5 h-5" />
+            </button>
+            <button className="w-12 h-12 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl shadow-xl rounded-2xl flex items-center justify-center text-on-surface border border-white/20 active:scale-90 transition-transform">
+              <Bus className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Floating Bottom Sheet */}
+          <div className="absolute bottom-6 left-0 w-full z-40 px-4">
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              className="max-w-xl mx-auto bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2.5rem] shadow-[0_-12px_40px_rgba(0,0,0,0.1)] border border-white/20 overflow-hidden"
+            >
+              {/* Handle */}
+              <div className="w-full flex justify-center py-4">
+                <div className="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full" />
               </div>
-              <p className="font-bold text-sm leading-none">{t("tracking.onTime")}</p>
-            </div>
-            {(() => {
-              const prediction = predictCrowd(from, to);
-              return <CrowdBadge level={prediction.level} score={prediction.percentage} />;
-            })()}
-          </div>
 
-          <div className="bg-card border border-border rounded-xl p-3 shadow-sm flex flex-col justify-center">
-            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">
-              {t("tracking.nextStop")}
-            </p>
-            {isLoading ? (
-              <p className="font-bold text-sm mb-1 text-muted-foreground animate-pulse">
-                {t("tracking.calculating")}
-              </p>
-            ) : (
-              (() => {
-                const nextStop =
-                  dynamicStops.find((s) => progress < s.progressAnchor) ||
-                  dynamicStops[dynamicStops.length - 1];
-                const timeRemaining = Math.max(
-                  0,
-                  Math.round(
-                    (etaMinutes *
-                      ((nextStop?.progressAnchor || 100) - progress)) /
-                    100,
-                  ),
-                );
-
-                return (
-                  <>
-                    <p className="font-bold text-sm truncate leading-none mb-1.5">
-                      {nextStop?.name || to}
-                    </p>
-                    <p className="text-[10px] text-primary font-medium">
-                      {t("tracking.arrivingIn", { minutes: timeRemaining })}
-                    </p>
-                  </>
-                );
-              })()
-            )}
-          </div>
-        </div>
-
-        {/* Route Timeline */}
-        <div className="bg-card rounded-xl border border-border p-4 shadow-sm">
-          <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4 ml-[73px]">
-            {t("tracking.routeTimeline")}
-          </h3>
-
-          <div className="relative">
-            <div className="absolute top-6 bottom-8 left-[73px] w-1.5 bg-blue-100 rounded-full overflow-hidden z-0">
-              <div
-                className="absolute top-0 left-0 w-full bg-blue-500 transition-all duration-1000 ease-linear"
-                style={{ height: `${progress}%` }}
-              />
-            </div>
-
-            <div className="relative z-10 flex flex-col">
-              {dynamicStops.map((stop, index) => {
-                const isPast = progress > stop.progressAnchor;
-                const prevAnchor =
-                  index === 0 ? -1 : dynamicStops[index - 1].progressAnchor;
-                const isActiveTransit =
-                  progress > prevAnchor && progress <= stop.progressAnchor;
-
-                return (
-                  <div key={index} className="flex items-stretch min-h-[60px]">
-                    <div className="w-[60px] flex flex-col justify-start items-end pr-3 py-2 shrink-0 border-r-4 border-transparent">
-                      <span
-                        className={`text-[10px] font-medium leading-none ${isPast ? "text-muted-foreground/60" : "text-foreground/80"}`}
-                      >
-                        {stop.scheduledTime}
+              <div className="p-8 pt-0">
+                <div className="flex justify-between items-start mb-8">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="bg-primary/10 text-primary font-bold text-[10px] px-2.5 py-1 rounded-full tracking-wider border border-primary/10">ON THE MOVE</span>
+                    </div>
+                    <h2 className="font-headline font-extrabold text-3xl tracking-tight text-on-surface">
+                      Bus {activeRoute?.route_no || activeRoute?.route_id || "402"} 
+                      <span className="text-slate-400 font-medium ml-2">to {to}</span>
+                    </h2>
+                    <p className="text-slate-500 font-medium">
+                      Next: <span className="font-bold text-on-surface">
+                        {dynamicStops.find((s) => progress < s.progressAnchor)?.name || to}
                       </span>
-                      {!stop.isStart && !isPast && (
-                        <span
-                          className={`text-[10px] font-bold mt-1 leading-none ${isActiveTransit ? "text-destructive" : "text-primary"}`}
-                        >
-                          {isActiveTransit
-                            ? stop.expectedTime
-                            : stop.scheduledTime}
-                        </span>
-                      )}
-                    </div>
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-headline font-black text-5xl text-primary leading-none">
+                      {Math.max(0, Math.round((etaMinutes * (100 - progress)) / 100))}
+                    </p>
+                    <p className="font-bold text-[10px] uppercase tracking-widest text-primary mt-1">mins away</p>
+                  </div>
+                </div>
 
-                    <div className="w-8 flex justify-center py-2 shrink-0 relative z-10">
-                      {isPast ? (
-                        <div className="w-3 h-3 rounded-full bg-blue-400 border border-white shadow-[0_0_0_2px_background] mt-0.5" />
-                      ) : isActiveTransit ? (
-                        <div className="w-8 h-8 rounded-full bg-blue-500 border-2 border-background flex items-center justify-center -mt-2 shadow-md relative group">
-                          <div className="absolute inset-0 bg-blue-500 rounded-full animate-ping opacity-40 group-hover:opacity-60" />
-                          <Bus className="w-4 h-4 text-white relative z-10 drop-shadow-sm" />
-                        </div>
-                      ) : (
-                        <div className="w-3 h-3 rounded-full bg-blue-100 border-[3px] border-white shadow-[0_0_0_1px_#e2e8f0] mt-0.5" />
-                      )}
+                {/* Info Bento Grid */}
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-3xl flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-700 shadow-sm flex items-center justify-center text-orange-500">
+                      <Clock className="w-6 h-6" />
                     </div>
-
-                    <div
-                      className={`flex-1 pl-3 py-1.5 ${!stop.isTerminal ? "border-b border-border/40" : ""} mb-2`}
-                    >
-                      <p
-                        className={`font-bold text-sm leading-tight ${isActiveTransit ? "text-blue-600" : isPast ? "text-muted-foreground/80 line-through decoration-muted/50" : "text-foreground/90"}`}
-                      >
-                        {stop.name}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-[10px] text-muted-foreground font-medium bg-secondary/50 px-1 rounded">
-                          {stop.distance}
-                        </span>
-                      </div>
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Crowd</p>
+                      <p className="font-headline font-bold text-base">Moderate</p>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+                  <div className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-3xl flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-700 shadow-sm flex items-center justify-center text-primary">
+                      <Zap className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Speed</p>
+                      <p className="font-headline font-bold text-base">42 km/h</p>
+                    </div>
+                  </div>
+                </div>
 
+                {/* Progress Bar Container */}
+                <div className="bg-slate-100 dark:bg-slate-800 h-2 w-full rounded-full overflow-hidden mb-8 relative">
+                   <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-primary-container"
+                   />
+                </div>
+
+                <div className="flex gap-4">
+                  <Button className="flex-1 h-14 rounded-full bg-gradient-to-r from-primary to-primary-container text-white font-headline font-extrabold text-lg shadow-lg shadow-primary/20 active:scale-95">
+                    View Full Route
+                  </Button>
+                  <Button variant="outline" className="w-14 h-14 rounded-full border-slate-200 dark:border-slate-700 flex items-center justify-center p-0 active:scale-90">
+                    <Info className="w-6 h-6 text-slate-500" />
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </main>
       </div>
     </PageShell>
   );

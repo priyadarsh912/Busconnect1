@@ -95,7 +95,7 @@
   </head>
 <body class="bg-surface text-on-surface overflow-hidden">
 <!-- Top Navigation Bar (Shared Component Strategy) -->
-<header class="fixed top-0 w-full z-50 bg-slate-50/70 backdrop-blur-xl flex justify-between items-center px-6 py-4 w-full shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
+<header class="fixed top-0 w-full z-50 bg-slate-50/70 backdrop-blur-xl flex justify-between items-center px-6 py-4  shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
 <div class="flex items-center gap-3">
 <button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-low hover:bg-slate-200/50 transition-colors active:scale-95" aria-label="Back">
 <span class="material-symbols-outlined text-primary">arrow_back</span>
@@ -159,7 +159,7 @@
 </button>
 </div>
 <!-- Floating Bottom Sheet -->
-<div class="absolute bottom-0 left-0 w-full z-40 px-4 pb-12">
+<div class="absolute bottom-0 left-0 w-full z-40 px-4 pb-safe-bottom pb-24 md:pb-12">
 <div class="max-w-2xl mx-auto bg-white/90 backdrop-blur-2xl rounded-xl shadow-[0_-12px_40px_rgba(0,0,0,0.08)] border border-surface-container-high overflow-hidden">
 <!-- Handle -->
 <div class="w-full flex justify-center py-3">

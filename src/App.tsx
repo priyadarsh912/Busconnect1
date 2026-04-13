@@ -154,7 +154,15 @@ const App = () => {
 
     // Request notification permission and save token on app start
     notificationService.requestPermissionAndToken().catch(err => console.error("FCM start err:", err));
+
+    // FAIL-SAFE: Ensure splash screen always dismisses even if init hangs
+    const splashFallback = setTimeout(() => {
+      setShowSplash(false);
+    }, 6000);
+
+    return () => clearTimeout(splashFallback);
   }, []);
+
 
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
@@ -186,6 +194,8 @@ const App = () => {
         </QueryClientProvider>
       </LanguageProvider>
     </ThemeProvider>
+
+
   );
 };
 
