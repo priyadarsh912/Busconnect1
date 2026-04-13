@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BusConnect - Smart Alerts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries" integrity="sha384-1DcZPGeODWbGGjS/i/n4ULX/pEc0DPcKK2WhyuWEmBXRfzOwoVTDQBN9C3C5jJHK" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#006B7D",
+                    "primary-container": "#0096B0",
+                    "secondary": "#fc9d41",
+                    "tertiary": "#008948",
+                    "error": "#D32F2F",
+                    "surface": "#f5f7fa",
+                    "on-surface": "#191c1d",
+                    "background": "#f5f7fa",
+                    "outline-variant": "#c1c6d6",
+                    "on-secondary-container": "#6b3900",
+                    "on-secondary-fixed": "#2e1500",
+                    "surface-bright": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#005229",
+                    "secondary-fixed-dim": "#ffb77a",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-variant": "#e1e3e4",
+                    "primary-fixed": "#d8e2ff",
+                    "on-secondary-fixed-variant": "#6d3a00",
+                    "surface-container-low": "#f3f4f5",
+                    "on-background": "#191c1d",
+                    "on-primary": "#ffffff",
+                    "outline": "#727785",
+                    "on-tertiary-fixed": "#00210d",
+                    "tertiary-fixed": "#6cfe9f",
+                    "on-error": "#ffffff",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed": "#001a41",
+                    "surface-container": "#edeeef",
+                    "surface-dim": "#d9dadb",
+                    "inverse-primary": "#adc7ff",
+                    "inverse-surface": "#2e3132",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#005bc0",
+                    "primary-fixed-dim": "#adc7ff",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-container": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface-variant": "#414754",
+                    "on-primary-fixed-variant": "#004493",
+                    "surface-container-high": "#e7e8e9",
+                    "secondary-fixed": "#ffdcc2"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans", "sans-serif"],
+                    "body": ["Inter", "sans-serif"],
+                    "label": ["Inter", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .kinetic-gradient {
+            background: linear-gradient(135deg, #006B7D 0%, #0096B0 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface antialiased overflow-hidden">
+<!-- Main Onboarding Canvas -->
+<main class="relative min-h-screen flex flex-col items-center justify-between px-8 py-12">
+<!-- Top Visual Composition (Bento-style asymmetric notification layout) -->
+<div class="relative w-full max-w-md mt-12 mb-8 aspect-square">
+<!-- Background Pulse Circles -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-64 h-64 bg-primary/5 rounded-full"></div>
+<div class="absolute w-48 h-48 bg-primary/10 rounded-full animate-pulse"></div>
+</div>
+<!-- Kinetic Elements (Floating Notification Cards) -->
+<div class="relative z-10 w-full h-full">
+<!-- Large Notification Card -->
+<div class="absolute top-0 right-4 w-64 glass-card p-5 rounded-lg shadow-[0_24px_48px_rgba(0,0,0,0.06)] border border-white/40">
+<div class="flex items-start gap-4">
+<div class="bg-primary/10 p-3 rounded-md text-primary">
+<span class="material-symbols-outlined" data-icon="notifications_active" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+</div>
+<div class="flex-1">
+<p class="font-headline font-bold text-sm text-on-surface">Bus Arriving Soon</p>
+<p class="text-xs text-on-surface-variant mt-1 leading-relaxed">Route 42B is 5 mins away from your current stop.</p>
+</div>
+</div>
+</div>
+<!-- Delay Alert (Tertiary Accent) -->
+<div class="absolute top-1/2 -left-2 w-56 glass-card p-4 rounded-lg shadow-[0_24px_48px_rgba(0,0,0,0.04)] border border-white/40">
+<div class="flex items-center gap-3">
+<div class="bg-tertiary/10 p-2 rounded-full text-tertiary">
+<span class="material-symbols-outlined text-xl" data-icon="schedule" style="font-variation-settings: 'FILL' 1;">schedule</span>
+</div>
+<div>
+<p class="font-headline font-bold text-xs text-tertiary">Live Delay Update</p>
+<div class="flex items-center gap-1 mt-0.5">
+<div class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></div>
+<span class="text-[10px] font-semibold text-tertiary uppercase tracking-tighter italic">Live Pulse</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Route Change Card -->
+<div class="absolute bottom-4 right-8 w-48 glass-card p-4 rounded-lg shadow-[0_24px_48px_rgba(0,0,0,0.06)] border border-white/40">
+<div class="flex items-center gap-3">
+<div class="bg-secondary/10 p-2 rounded-lg text-secondary">
+<span class="material-symbols-outlined" data-icon="alt_route">alt_route</span>
+</div>
+<p class="font-headline font-bold text-xs text-on-surface leading-tight">Route Diverted:<br/>City Center</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Content Section -->
+<div class="w-full max-w-md text-center">
+<h1 class="font-headline font-extrabold text-4xl tracking-tight text-on-surface leading-tight">
+                Smart alerts &amp; reminders
+            </h1>
+<p class="mt-4 text-on-surface-variant text-lg leading-relaxed font-normal px-4">
+                Get notified before your bus arrives and stay updated on delays or route changes.
+            </p>
+<!-- Progress Indicators (Contextual for Onboarding) -->
+<div class="flex justify-center gap-2 mt-10">
+<button aria-label="Step 1 of 3" class="h-1.5 w-4 rounded-full bg-surface-container-highest cursor-pointer hover:bg-surface-container-high transition-colors"></button>
+<button aria-label="Step 2 of 3" class="h-1.5 w-4 rounded-full bg-surface-container-highest cursor-pointer hover:bg-surface-container-high transition-colors"></button>
+<button aria-label="Step 3 of 3" class="h-1.5 w-8 rounded-full kinetic-gradient"></button>
+</div>
+</div>
+<!-- Action Section -->
+<div class="w-full max-w-md pb-4">
+<button aria-label="Get started with the app" class="w-full kinetic-gradient text-white py-5 rounded-full font-headline font-bold text-lg shadow-md hover:shadow-lg hover:-translate-y-1 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 group">
+                Get Started
+                <span class="material-symbols-outlined transition-transform group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<p class="text-center mt-6 text-sm text-slate-400 font-medium">
+                Step 3 of 3
+            </p>
+</div>
+</main>
+<!-- Background Decorative Elements (The "Kinetic Pulse" Soul) -->
+<div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-tertiary/5 rounded-full blur-[100px] pointer-events-none"></div>
+</body></html>

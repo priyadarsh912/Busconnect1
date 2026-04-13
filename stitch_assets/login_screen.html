@@ -4,9 +4,10 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Login - BusConnect</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries" integrity="sha384-1DcZPGeODWbGGjS/i/n4ULX/pEc0DPcKK2WhyuWEmBXRfzOwoVTDQBN9C3C5jJHK" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
         tailwind.config = {
@@ -14,20 +15,21 @@
           theme: {
             extend: {
               "colors": {
-                      "tertiary-fixed-dim": "#4be085",
-                      "secondary-container": "#fc9d41",
-                      "primary": "#005bbf",
-                      "on-tertiary-container": "#000602",
+                      "primary": "#006B7D",
+                      "primary-container": "#0096B0",
+                      "secondary": "#fc9d41",
+                      "tertiary": "#008948",
+                      "error": "#D32F2F",
+                      "surface": "#f5f7fa",
+                      "on-surface": "#191c1d",
+                      "background": "#f5f7fa",
                       "outline-variant": "#c1c6d6",
                       "on-secondary-container": "#6b3900",
                       "on-secondary-fixed": "#2e1500",
-                      "surface-bright": "#f8f9fa",
-                      "background": "#f8f9fa",
+                      "surface-bright": "#ffffff",
                       "on-error-container": "#93000a",
                       "on-tertiary-fixed-variant": "#005229",
                       "secondary-fixed-dim": "#ffb77a",
-                      "tertiary": "#006d38",
-                      "error": "#ba1a1a",
                       "inverse-on-surface": "#f0f1f2",
                       "surface-variant": "#e1e3e4",
                       "primary-fixed": "#d8e2ff",
@@ -42,7 +44,6 @@
                       "surface-container-highest": "#e1e3e4",
                       "on-secondary": "#ffffff",
                       "on-primary-fixed": "#001a41",
-                      "surface": "#f8f9fa",
                       "surface-container": "#edeeef",
                       "surface-dim": "#d9dadb",
                       "inverse-primary": "#adc7ff",
@@ -50,11 +51,7 @@
                       "error-container": "#ffdad6",
                       "surface-tint": "#005bc0",
                       "primary-fixed-dim": "#adc7ff",
-                      "primary-container": "#1a73e8",
-                      "on-surface": "#191c1d",
-                      "tertiary-container": "#008948",
                       "on-tertiary": "#ffffff",
-                      "secondary": "#8f4e00",
                       "on-primary-container": "#ffffff",
                       "surface-container-lowest": "#ffffff",
                       "on-surface-variant": "#414754",
@@ -69,9 +66,9 @@
                       "full": "9999px"
               },
               "fontFamily": {
-                      "headline": ["Plus Jakarta Sans"],
-                      "body": ["Inter"],
-                      "label": ["Inter"]
+                      "headline": ["Plus Jakarta Sans", "sans-serif"],
+                      "body": ["Inter", "sans-serif"],
+                      "label": ["Inter", "sans-serif"]
               }
             },
           },
@@ -103,11 +100,11 @@
 <main class="flex-1 flex flex-col items-center justify-center px-6 py-12 md:py-24">
 <!-- Header Section (The Kinetic Anchor) -->
 <div class="w-full max-w-md mb-12 text-center md:text-left">
-<div class="inline-flex items-center justify-center w-16 h-16 mb-8 rounded-lg bg-gradient-to-br from-primary to-tertiary-container shadow-[0_8px_32px_rgba(0,91,191,0.2)]">
+<div class="inline-flex items-center justify-center w-16 h-16 mb-8 rounded-2xl bg-gradient-to-br from-primary to-primary-container shadow-lg">
 <span class="material-symbols-outlined text-white text-3xl" data-icon="directions_bus">directions_bus</span>
 </div>
 <h1 class="font-headline font-extrabold text-4xl md:text-5xl text-on-surface tracking-tight mb-4">
-                Welcome to <span class="bg-gradient-to-br from-primary to-tertiary-container bg-clip-text text-transparent">BusConnect</span>
+                Welcome to <span class="bg-gradient-to-br from-primary to-primary-container bg-clip-text text-transparent">BusConnect</span>
 </h1>
 <p class="text-on-surface-variant text-lg font-medium leading-relaxed max-w-sm">
                 Your daily commute, reimagined with real-time intelligence.
@@ -118,20 +115,20 @@
 <form class="space-y-8" onsubmit="return false;">
 <!-- Mobile Input Section -->
 <div class="space-y-3">
-<label class="font-label text-sm font-semibold uppercase tracking-widest text-on-surface-variant ml-1">
+<label for="mobile-number" class="font-label text-sm font-semibold uppercase tracking-widest text-on-surface-variant ml-1">
                         Mobile Number
                     </label>
 <div class="relative group">
-<div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-on-surface-variant group-focus-within:text-primary transition-colors">
+<div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none text-on-surface-variant group-focus-within:text-primary transition-colors">
 <span class="font-label font-bold text-base">+91</span>
 </div>
-<input class="w-full pl-16 pr-5 py-5 bg-surface-container-highest border-none rounded-md font-body text-lg focus:ring-4 focus:ring-primary/20 transition-all placeholder:text-outline shadow-sm" placeholder="Enter 10 digit number" type="tel"/>
+<input id="mobile-number" name="mobile" required maxlength="10" pattern="\d{10}" class="w-full pl-16 pr-6 py-4 bg-surface-container-highest border-none rounded-full font-body text-lg focus:ring-4 focus:ring-primary/20 transition-all placeholder:text-outline shadow-inner" placeholder="Enter 10 digit number" type="tel"/>
 </div>
 </div>
 <!-- Action Button (Primary Kinetic Pulse) -->
-<button class="w-full py-5 px-8 rounded-full bg-gradient-to-br from-primary to-tertiary-container text-on-primary font-headline font-bold text-lg shadow-[0_12px_24px_rgba(0,91,191,0.25)] hover:shadow-[0_16px_32px_rgba(0,91,191,0.35)] active:scale-[0.98] transition-all flex items-center justify-center gap-3" type="submit">
+<button aria-label="Send Verification OTP Code" class="w-full py-5 px-8 rounded-full bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold text-lg shadow-md hover:shadow-lg hover:-translate-y-1 active:scale-[0.98] transition-all flex items-center justify-center gap-3 group" type="submit">
 <span>Send OTP</span>
-<span class="material-symbols-outlined text-xl" data-icon="arrow_forward">arrow_forward</span>
+<span class="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
 </button>
 <!-- Divider (No-Line Principle: Soft Contrast) -->
 <div class="relative flex items-center py-2">
@@ -141,14 +138,14 @@
 </div>
 <!-- Secondary Action (Surface Integrated) -->
 <button class="w-full py-4 px-8 rounded-full bg-surface-container-high border border-outline-variant/20 text-on-surface font-label font-semibold flex items-center justify-center gap-3 hover:bg-surface-container-highest active:scale-[0.98] transition-all" type="button">
-<img alt="" class="w-5 h-5" data-alt="Google colorful logo icon isolated on white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj39yRrQpRBZN0toH8epV0CMHvc2g1a1_iWshMaDPQnu-NHPqP4ncC2faHJ-gp7zt8hZavwaW0kHlOmR9f1b97PCppvieImAz_R5mJ8Blus-M9ZE-OsZqLuU7sUJczak3RMgCCxhXZpNpUdWprRsbo_L6x9b2H_x44qW9UE9c1eIFlgczmSvANeZujNnvBNhdGpI2VFkIh3pwOu056gk5xNUAQ90wB6AoLG1pPOs9SVk_oTFAZoWvWOKZiSkKbPzA-cTH-4NAbBbIt"/>
+<img alt="Google colorful logo icon isolated on white background" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj39yRrQpRBZN0toH8epV0CMHvc2g1a1_iWshMaDPQnu-NHPqP4ncC2faHJ-gp7zt8hZavwaW0kHlOmR9f1b97PCppvieImAz_R5mJ8Blus-M9ZE-OsZqLuU7sUJczak3RMgCCxhXZpNpUdWprRsbo_L6x9b2H_x44qW9UE9c1eIFlgczmSvANeZujNnvBNhdGpI2VFkIh3pwOu056gk5xNUAQ90wB6AoLG1pPOs9SVk_oTFAZoWvWOKZiSkKbPzA-cTH-4NAbBbIt"/>
 <span>Google Account</span>
 </button>
 </form>
 <!-- Footer micro-copy -->
 <p class="mt-10 text-center text-sm text-on-surface-variant font-body">
                 New to the city? 
-                <a class="text-primary font-bold ml-1 hover:underline decoration-2 underline-offset-4" href="#">Create Account</a>
+                <a class="text-primary font-bold ml-1 hover:underline decoration-2 underline-offset-4" href="javascript:void(0)">Create Account</a>
 </p>
 </div>
 <!-- Bottom Assistance (Asymmetric Detail) -->
@@ -167,8 +164,8 @@
 <div class="hidden md:block fixed bottom-12 right-12">
 <div class="flex items-center gap-4 bg-surface-container-lowest/80 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 shadow-lg">
 <div class="flex -space-x-2">
-<img alt="" class="w-8 h-8 rounded-full border-2 border-surface" data-alt="close-up portrait of a smiling young professional woman with natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmhA_6PbRYE58XzurwVTa3rBME_sMUs3J3XjXFe_8h2o-9Dd-Qa7ot-um2UvUmpAJKKZcAmTW8mfNxg2_MvVmPF1R7F84IK_hz7sayOaRwTNhkKKSZ9oGdO4ZpbRPmdNsToEFKe5c06c1QMi9--vG1iFf8QjZG0_bGGWFVQ0-G71lwkGZGKNwfVrP-4d1LA8jUqjwvwQ6nCe_LQULL72cbWhXacE8CVSlSKBQP6QpvAjcZ0e4MNFdDqABz9FoPBp7-W7X4t1QO5353"/>
-<img alt="" class="w-8 h-8 rounded-full border-2 border-surface" data-alt="portrait of a young man with a friendly expression in a modern urban setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBser-FNcDwY8A2pXL4MFiEzBBYGiYnWjUWLtBaxdBcUDWq-cLFc1RO-qmrXBUw9e-ChXe0ipJGN5CzlynemkSIdnKZ-qO1z1Rvk2EQs_hg5V0o7E7gzWPxkWWfGrzSCrnA9kof8uBN6BV422p4vPCFFulQFrn3qGzO-h25yM7I80syYbvdIcGBjscv8ptfZDQUHUOc7pNb2SEPuaEPuS8MFgTUHL0cad1j3a05TFPZpeZL85I3zhcK2Jl2tVj4m4epRY944CW0LCvu"/>
+<img alt="close-up portrait of a smiling young professional woman with natural lighting" class="w-8 h-8 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmhA_6PbRYE58XzurwVTa3rBME_sMUs3J3XjXFe_8h2o-9Dd-Qa7ot-um2UvUmpAJKKZcAmTW8mfNxg2_MvVmPF1R7F84IK_hz7sayOaRwTNhkKKSZ9oGdO4ZpbRPmdNsToEFKe5c06c1QMi9--vG1iFf8QjZG0_bGGWFVQ0-G71lwkGZGKNwfVrP-4d1LA8jUqjwvwQ6nCe_LQULL72cbWhXacE8CVSlSKBQP6QpvAjcZ0e4MNFdDqABz9FoPBp7-W7X4t1QO5353"/>
+<img alt="portrait of a young man with a friendly expression in a modern urban setting" class="w-8 h-8 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBser-FNcDwY8A2pXL4MFiEzBBYGiYnWjUWLtBaxdBcUDWq-cLFc1RO-qmrXBUw9e-ChXe0ipJGN5CzlynemkSIdnKZ-qO1z1Rvk2EQs_hg5V0o7E7gzWPxkWWfGrzSCrnA9kof8uBN6BV422p4vPCFFulQFrn3qGzO-h25yM7I80syYbvdIcGBjscv8ptfZDQUHUOc7pNb2SEPuaEPuS8MFgTUHL0cad1j3a05TFPZpeZL85I3zhcK2Jl2tVj4m4epRY944CW0LCvu"/>
 </div>
 <span class="text-xs font-label font-medium text-on-surface-variant">Trusted by 2M+ commuters</span>
 </div>
