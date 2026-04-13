@@ -132,11 +132,12 @@ const LoginPage = () => {
       <main className="flex-1 px-8 py-4 flex flex-col">
         {/* Branding */}
         <div className="mb-10 text-center md:text-left">
-          <div className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br from-primary to-primary-container shadow-lg text-white">
-            <Bus className="w-8 h-8" />
+          <div className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-[1.25rem] bg-primary shadow-lg overflow-hidden p-3">
+            <img src="/bus_app_icon.png" alt="BusConnect" className="w-full h-full object-contain brightness-0 invert" />
           </div>
-          <h1 className="font-headline font-extrabold text-4xl text-on-surface tracking-tight mb-3 leading-[1.1]">
-            Welcome to <span className="bg-gradient-to-br from-primary to-primary-container bg-clip-text text-transparent italic">BusConnect</span>
+          <h1 className="font-headline font-black text-5xl text-on-surface tracking-tighter mb-3 leading-[0.9]">
+            Welcome to <br />
+            <span className="text-primary italic">BusConnect</span>
           </h1>
           <p className="text-on-surface-variant text-base font-medium leading-relaxed max-w-sm">
             {isSignUp ? "Create an account to start your reimagined daily journey." : "Your daily commute, reimagined with real-time intelligence."}
@@ -171,14 +172,14 @@ const LoginPage = () => {
 
                  {mode === "phone" ? (
                    <div className="space-y-1.5">
-                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Mobile Number</label>
+                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400/80 ml-1">Mobile Number</label>
                      <div className="relative group">
-                       <span className="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-sm">+91</span>
+                       <span className="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-sm tracking-tight">+91</span>
                        <Input 
                          type="tel"
                          maxLength={10}
                          placeholder="9876543210" 
-                         className="pl-16 pr-6 py-4 bg-slate-50 border-none rounded-full h-14 text-lg font-medium focus:ring-4 focus:ring-primary/10 shadow-inner"
+                         className="pl-16 pr-6 py-4 bg-slate-50/50 border-none rounded-full h-14 text-lg font-medium focus:ring-4 focus:ring-primary/10 shadow-inner"
                          value={inputValue}
                          onChange={(e) => setInputValue(e.target.value)}
                        />
@@ -231,9 +232,9 @@ const LoginPage = () => {
                  </Button>
 
                  <div className="relative flex items-center py-2">
-                   <div className="flex-grow h-[1px] bg-slate-100" />
+                   <div className="flex-grow h-[1px] bg-slate-100/50" />
                    <span className="px-4 text-[9px] font-black text-slate-300 uppercase tracking-widest leading-none">Or continue with</span>
-                   <div className="flex-grow h-[1px] bg-slate-100" />
+                   <div className="flex-grow h-[1px] bg-slate-100/50" />
                  </div>
 
                  <Button 
@@ -242,10 +243,10 @@ const LoginPage = () => {
                      setMode(mode === "phone" ? "email" : "phone");
                      setInputValue("");
                    }}
-                   className="w-full py-6 rounded-full border-slate-100 bg-white text-on-surface font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-50 active:scale-95 transition-all"
+                   className="w-full py-6 rounded-full border-slate-100/60 bg-white text-on-surface font-headline font-bold text-sm shadow-sm flex items-center justify-center gap-2 hover:bg-slate-50 active:scale-95 transition-all"
                  >
                    {mode === "phone" ? <Mail className="w-4 h-4 text-primary" /> : <Phone className="w-4 h-4 text-primary" />}
-                   {mode === "phone" ? "Email & Password" : "Mobile Number"}
+                   <span className="tracking-tight">{mode === "phone" ? "Email & Password" : "Mobile Number"}</span>
                  </Button>
                </motion.div>
             ) : (
@@ -287,7 +288,7 @@ const LoginPage = () => {
           </AnimatePresence>
         </div>
 
-        <p className="mt-10 text-center text-sm font-medium text-slate-500">
+        <p className="mt-8 text-center text-sm font-medium text-slate-500">
           {isSignUp ? "Already have an account?" : "New to the city?"} 
           <button 
             onClick={() => {
@@ -299,18 +300,6 @@ const LoginPage = () => {
             {isSignUp ? "Log In" : "Create Account"}
           </button>
         </p>
-
-        {/* Support */}
-        <div className="mt-auto pt-10 pb-4 flex justify-center gap-8 text-slate-400">
-          <div className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors">
-            <span className="material-symbols-outlined text-lg">help_outline</span>
-            <span className="text-[10px] font-black uppercase tracking-widest">Support</span>
-          </div>
-          <div className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors">
-            <span className="material-symbols-outlined text-lg">language</span>
-            <span className="text-[10px] font-black uppercase tracking-widest">Language</span>
-          </div>
-        </div>
       </main>
     </div>
   );
