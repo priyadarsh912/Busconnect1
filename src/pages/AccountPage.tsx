@@ -34,14 +34,14 @@ const AccountPage = () => {
   const { theme, setTheme } = useTheme();
 
   const travelItems = [
-    { icon: BookOpen, label: t("account.myBookings"), path: "/my-bookings", color: "bg-blue-50 text-blue-600" },
-    { icon: MapPin, label: t("account.savedRoutes"), path: "/routes", color: "bg-teal-50 text-teal-600" },
+    { icon: BookOpen, label: t("account.myBookings"), path: "/my-bookings", color: "bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400" },
+    { icon: MapPin, label: t("account.savedRoutes"), path: "/routes", color: "bg-teal-50 text-teal-600 dark:bg-teal-900/40 dark:text-teal-400" },
   ];
 
   const appItems = [
-    { icon: theme === 'dark' ? Sun : Moon, label: theme === 'dark' ? "Light Mode" : "Dark Mode", action: () => setTheme(theme === 'dark' ? 'light' : 'dark'), color: "bg-indigo-50 text-indigo-600", isToggle: true },
-    { icon: Settings, label: t("account.settings"), path: "/settings", color: "bg-slate-50 text-slate-600" },
-    { icon: HelpCircle, label: t("account.helpSupport"), path: "/help", color: "bg-orange-50 text-orange-600" },
+    { icon: theme === 'dark' ? Sun : Moon, label: theme === 'dark' ? "Light Mode" : "Dark Mode", action: () => setTheme(theme === 'dark' ? 'light' : 'dark'), color: "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400", isToggle: true },
+    { icon: Settings, label: t("account.settings"), path: "/settings", color: "bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-400" },
+    { icon: HelpCircle, label: t("account.helpSupport"), path: "/help", color: "bg-orange-50 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400" },
   ];
 
   // ─── Profile state ───
