@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Welcome to BusConnect</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-surface": "#191c1d",
+                    "background": "#f8f9fa",
+                    "on-secondary-fixed-variant": "#6d3a00",
+                    "secondary-fixed-dim": "#ffb77a",
+                    "on-background": "#191c1d",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-tint": "#005bc0",
+                    "tertiary-fixed": "#6cfe9f",
+                    "surface-container-highest": "#e1e3e4",
+                    "surface-container": "#edeeef",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-container": "#6b3900",
+                    "tertiary-fixed-dim": "#4be085",
+                    "primary-fixed": "#d8e2ff",
+                    "inverse-surface": "#2e3132",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed": "#ffdcc2",
+                    "tertiary": "#006d38",
+                    "secondary-container": "#fc9d41",
+                    "on-error-container": "#93000a",
+                    "surface": "#f8f9fa",
+                    "primary": "#005bbf",
+                    "secondary": "#8f4e00",
+                    "on-primary-fixed-variant": "#004493",
+                    "primary-container": "#1a73e8",
+                    "surface-variant": "#e1e3e4",
+                    "primary-fixed-dim": "#adc7ff",
+                    "on-secondary-fixed": "#2e1500",
+                    "on-primary-fixed": "#001a41",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed": "#00210d",
+                    "inverse-primary": "#adc7ff",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#008948",
+                    "surface-bright": "#f8f9fa",
+                    "outline-variant": "#c1c6d6",
+                    "surface-container-low": "#f3f4f5",
+                    "surface-container-high": "#e7e8e9",
+                    "on-tertiary-fixed-variant": "#005229",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-container": "#000602",
+                    "surface-dim": "#d9dadb",
+                    "outline": "#727785",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#414754"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .kinetic-pulse-bg {
+            background: radial-gradient(circle at 0% 0%, #d8e2ff 0%, transparent 50%),
+                        radial-gradient(circle at 100% 100%, #6cfe9f 0%, transparent 50%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed overflow-x-hidden min-h-screen">
+<!-- Hero Background Layer -->
+<div class="fixed inset-0 -z-10 kinetic-pulse-bg opacity-30"></div>
+<main class="relative flex flex-col min-h-screen px-6 pt-12 pb-24 lg:flex-row lg:items-center lg:justify-between lg:max-w-7xl lg:mx-auto">
+<!-- Left Side: Editorial Branding & Text -->
+<div class="flex-1 lg:max-w-2xl">
+<header class="mb-12">
+<div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container-low mb-8 shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-xs font-label font-semibold uppercase tracking-widest text-on-surface-variant">Live in your city</span>
+</div>
+<h1 class="font-headline font-extrabold text-5xl md:text-7xl lg:text-8xl tracking-tight leading-[1.1] mb-6 text-on-surface">
+                    Welcome to <span class="bg-gradient-to-br from-primary to-tertiary-container bg-clip-text text-transparent">BusConnect</span>
+</h1>
+<p class="font-body text-lg md:text-xl text-on-surface-variant max-w-lg leading-relaxed mb-10">
+                    Your journey to a smarter, faster commute begins here. Experience real-time tracking and seamless ticketing in one elegant interface.
+                </p>
+<!-- Desktop CTAs (Hidden on mobile) -->
+<div class="hidden lg:flex flex-col sm:flex-row gap-4 items-center">
+<button class="w-full sm:w-auto px-10 py-5 bg-gradient-to-br from-primary to-tertiary-container text-white font-headline font-bold text-lg rounded-full shadow-[0_20px_40px_rgba(0,91,191,0.2)] hover:scale-105 active:scale-95 transition-all duration-300">
+                        Sign In / Sign Up
+                    </button>
+<button class="w-full sm:w-auto px-10 py-5 bg-surface-container-high text-primary font-headline font-bold text-lg rounded-full hover:bg-surface-container-highest transition-colors duration-300">
+                        Explore as Guest
+                    </button>
+</div>
+</header>
+</div>
+<!-- Right Side: Kinetic Visuals / Bento Grid -->
+<div class="flex-1 w-full relative mt-12 lg:mt-0">
+<div class="grid grid-cols-6 grid-rows-6 gap-4 h-[450px] md:h-[600px] w-full">
+<!-- Main Visual Card -->
+<div class="col-span-4 row-span-4 rounded-lg overflow-hidden shadow-2xl relative">
+<img class="w-full h-full object-cover" data-alt="Modern blue transit bus driving through a clean futuristic city street during daytime with soft reflections" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6M9J1HaBWGBj-qjVBw87oosD_lv09JPZNIQYwJB-mRXCyLVIuYGf0x1Hk41yMlR8ThQzR3fBDBr6f1wne5BPQrhhmwApwSL9QmT5ngkAH9jx4jxPWqwf_08gs0AmOxm91HhrvGOekYzXUT9B4VQf4X8LHB9FTIQKH0kU4qJT7hkpYLy9zrLYACXYZ4r2JGSwsuvExAc67Y2_jxWFjqOMfUVXJVo7Mq6ajPAx-q5tUqbqoqZJ5nyLGia2j0PHD03cucHz7-VmJr8cJ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+<div class="absolute bottom-6 left-6 flex items-center gap-3">
+<div class="glass-effect rounded-2xl p-4 flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined">directions_bus</span>
+</div>
+<div>
+<p class="text-white font-headline font-bold">Route 42X</p>
+<p class="text-white/80 text-sm">Arriving in 4 mins</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Live Pulse Chip Grid Item -->
+<div class="col-span-2 row-span-2 rounded-lg bg-surface-container-lowest shadow-lg flex flex-col items-center justify-center p-4 border-outline-variant/15 border">
+<div class="relative mb-2">
+<span class="flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-tertiary"></span>
+</span>
+</div>
+<p class="font-label font-bold text-tertiary text-xs uppercase tracking-tighter">Live Updates</p>
+<p class="font-headline font-bold text-2xl mt-1">98%</p>
+<p class="text-[10px] text-on-surface-variant font-medium">ON TIME</p>
+</div>
+<!-- Secondary Data Card -->
+<div class="col-span-2 row-span-2 rounded-lg bg-primary-container p-6 flex flex-col justify-between text-white">
+<span class="material-symbols-outlined text-4xl">confirmation_number</span>
+<p class="font-headline font-bold text-lg leading-tight">Digital Tickets Ready</p>
+</div>
+<!-- Map Micro-interaction -->
+<div class="col-span-3 row-span-2 rounded-lg overflow-hidden shadow-lg border border-outline-variant/10">
+<img class="w-full h-full object-cover" data-alt="Abstract minimalist city map view with blue and teal route highlights and soft grey background" data-location="Mumbai" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmH6NKi7-z2lEipGK6jbLYixFp77H7kZ9kPcAeGQ-vPiKO5SoR7_v1KOIMHajwChyvKYKBIwPZM-pYonyVLJTlFYLePNhV-50VuihJVT1ELE6uCBUsQTqUGrniomihpsL2vyQ0LdWb0Y9Qqf01tXPp-750xWzv3_GTbBSqvX13zjKacHgfYqMiEQMB-cMn2IiEr7NYUtcKpLyX-Pg-wkcdYNH7vn4QhC9JgX0ood5q9UmCvMXPlpZ3LBvfjccTR9iMvL6dcAezWsUU"/>
+</div>
+<!-- User Stats Card -->
+<div class="col-span-3 row-span-2 rounded-lg bg-secondary-container p-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">eco</span>
+</div>
+<div>
+<p class="text-[10px] font-bold text-on-secondary-container uppercase opacity-70">Eco Saving</p>
+<p class="font-headline font-extrabold text-xl text-on-secondary-container leading-none">12.4kg</p>
+<p class="text-[10px] font-medium text-on-secondary-container opacity-80">CO2 saved today</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Mobile CTAs (Bottom fixed-ish layout) -->
+<div class="lg:hidden fixed bottom-0 left-0 w-full p-6 glass-effect rounded-t-xl z-50">
+<div class="flex flex-col gap-3">
+<button class="w-full py-5 bg-gradient-to-br from-primary to-tertiary-container text-white font-headline font-bold text-lg rounded-full shadow-xl active:scale-95 transition-transform duration-100">
+                    Sign In / Sign Up
+                </button>
+<button class="w-full py-4 text-primary font-headline font-bold text-base hover:bg-surface-container-low transition-colors duration-300">
+                    Explore as Guest
+                </button>
+</div>
+</div>
+</main>
+<!-- Footer Decoration -->
+<footer class="hidden lg:block fixed bottom-8 left-1/2 -translate-x-1/2">
+<div class="flex items-center gap-8 text-on-surface-variant/40 font-label font-bold text-xs uppercase tracking-[0.2em]">
+<span>Privacy Policy</span>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<span>Terms of Service</span>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<span>Help Center</span>
+</div>
+</footer>
+</body></html>
