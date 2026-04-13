@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ArrowLeft, Search, Loader2, MapPin, Bus, ChevronDown, ChevronUp, ArrowDownUp, Users, X, Radar as RadarIcon, Clock } from "lucide-react";
@@ -466,27 +466,44 @@ const HighwayRadarPage = () => {
         });
     }, [nearbyBuses, navigate]);
 
+    // --- Handle Auto-refocus (Only on range change or initial load) ---
+    const initialLoadRef = useRef(true);
+    const lastRangeRef = useRef<RadarRange>(range);
+
     useEffect(() => {
         if (!map.current || !userLocation) return;
+        
+        // If range changed or it's the very first load with buses, we refocus
+        const rangeChanged = lastRangeRef.current !== range;
+        const shouldRefocus = rangeChanged || (initialLoadRef.current && nearbyBuses.length > 0);
 
-        const viewConfig = RANGE_VIEW_CONFIG[range];
-        radarCircleRef.current?.setLatLng(userLocation);
-        radarCircleRef.current?.setRadius(viewConfig.radiusMeters);
+        if (shouldRefocus) {
+            const viewConfig = RANGE_VIEW_CONFIG[range];
+            radarCircleRef.current?.setLatLng(userLocation);
+            radarCircleRef.current?.setRadius(viewConfig.radiusMeters);
 
-        const bounds = L.latLngBounds([userLocation]);
-        nearbyBuses.forEach((bus) => {
-            bounds.extend([bus.current_lat || bus.start_lat, bus.current_lon || bus.start_lon]);
-        });
-
-        if (nearbyBuses.length > 0) {
-            map.current.fitBounds(bounds, {
-                padding: [48, 48],
-                maxZoom: viewConfig.zoom,
+            const bounds = L.latLngBounds([userLocation]);
+            nearbyBuses.forEach((bus) => {
+                bounds.extend([bus.current_lat || bus.start_lat, bus.current_lon || bus.start_lon]);
             });
-            return;
-        }
 
-        map.current.flyTo(userLocation, viewConfig.zoom, { duration: 0.6 });
+            if (nearbyBuses.length > 0) {
+                map.current.fitBounds(bounds, {
+                    padding: [48, 48],
+                    maxZoom: viewConfig.zoom,
+                });
+                initialLoadRef.current = false;
+            } else {
+                map.current.flyTo(userLocation, viewConfig.zoom, { duration: 0.6 });
+            }
+            
+            lastRangeRef.current = range;
+        } else {
+            // Even if we don't refocus the view, we must keep the radar circle synced with settings
+            const viewConfig = RANGE_VIEW_CONFIG[range];
+            radarCircleRef.current?.setLatLng(userLocation);
+            radarCircleRef.current?.setRadius(viewConfig.radiusMeters);
+        }
     }, [nearbyBuses, range, userLocation]);
 
 

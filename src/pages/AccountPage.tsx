@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, ChevronRight, Settings, HelpCircle,
-  LogOut, BookOpen, MapPin, User, Pencil, X, Save, Mail, Phone, Lock, Eye, EyeOff,
+  LogOut, BookOpen, MapPin, User, Pencil, X, Save, Mail, Moon, Sun,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -12,6 +12,7 @@ import PageShell from "../components/PageShell";
 import { authService } from "../services/authService";
 import { busService } from "../services/busService";
 import { useLanguage } from "../lib/language";
+import { useTheme } from "../components/theme-provider";
 
 interface UserProfile {
   name: string;
@@ -30,6 +31,7 @@ const DEFAULT_PROFILE: UserProfile = {
 const AccountPage = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { theme, setTheme } = useTheme();
 
   const travelItems = [
     { icon: BookOpen, label: t("account.myBookings"), path: "/my-bookings", color: "bg-blue-50 text-blue-600" },
@@ -37,6 +39,7 @@ const AccountPage = () => {
   ];
 
   const appItems = [
+    { icon: theme === 'dark' ? Sun : Moon, label: theme === 'dark' ? "Light Mode" : "Dark Mode", action: () => setTheme(theme === 'dark' ? 'light' : 'dark'), color: "bg-indigo-50 text-indigo-600", isToggle: true },
     { icon: Settings, label: t("account.settings"), path: "/settings", color: "bg-slate-50 text-slate-600" },
     { icon: HelpCircle, label: t("account.helpSupport"), path: "/help", color: "bg-orange-50 text-orange-600" },
   ];
@@ -130,14 +133,19 @@ const AccountPage = () => {
         
         <div className="relative z-10 flex items-center justify-between mb-8">
           <button 
-            onClick={() => navigate(-1)} 
-            aria-label="Go back"
+            onClick={() => navigate("/")} 
+            aria-label="Go home"
             className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all active:scale-95"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-white font-headline font-bold text-xl tracking-tight">{t("account.title")}</h1>
-          <div className="w-10" />
+          <h1 className="text-white font-headline font-black text-2xl tracking-tighter uppercase">{t("account.title")}</h1>
+          <button 
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all active:scale-95 shadow-lg"
+          >
+            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" /> }
+          </button>
         </div>
 
         {/* Profile Card Overlay */}
@@ -162,11 +170,11 @@ const AccountPage = () => {
             )}
           </div>
           
-          <div className="flex-1 min-w-0">
-            <h2 className="font-headline font-black text-2xl text-on-surface tracking-tight truncate">{profile.name}</h2>
-            <div className="flex items-center gap-2 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
-                <p className="text-slate-400 font-medium text-sm truncate">{profile.phone || profile.email}</p>
+          <div className="flex-1">
+            <h2 className="font-headline font-black text-2xl text-on-surface tracking-tighter leading-none mb-1">{profile.name}</h2>
+            <div className="flex items-center gap-1.5 py-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
+                <p className="text-slate-500 dark:text-slate-400 font-bold text-sm tracking-tight">{profile.phone || profile.email}</p>
             </div>
           </div>
         </motion.div>
@@ -251,17 +259,23 @@ const AccountPage = () => {
             <div className="space-y-4">
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">{t("account.application")}</p>
                 <div className="grid gap-3">
-                    {appItems.map((item) => (
+                    {appItems.map((item: any) => (
                         <button 
                             key={item.label} 
-                            onClick={() => navigate(item.path)} 
+                            onClick={() => item.action ? item.action() : navigate(item.path)} 
                             className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-50 dark:border-slate-800 flex items-center gap-4 transition-all active:scale-[0.98] hover:shadow-md group"
                         >
                             <div className={`w-12 h-12 rounded-2xl ${item.color.split(' ')[0]} flex items-center justify-center transition-transform group-hover:scale-110`}>
                                 <item.icon className="w-6 h-6" />
                             </div>
-                            <span className="flex-1 font-headline font-bold text-base text-on-surface tracking-tight">{item.label}</span>
-                            <ChevronRight className="w-5 h-5 text-slate-300" />
+                            <span className="flex-1 font-headline font-bold text-sm text-on-surface tracking-tight text-left">{item.label}</span>
+                            {item.isToggle ? (
+                                <div className={`w-10 h-5 rounded-full relative transition-colors ${theme === 'dark' ? 'bg-primary' : 'bg-slate-200'}`}>
+                                    <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${theme === 'dark' ? 'left-6' : 'left-1'}`} />
+                                </div>
+                            ) : (
+                                <ChevronRight className="w-5 h-5 text-slate-300" />
+                            )}
                         </button>
                     ))}
                 </div>
@@ -276,9 +290,6 @@ const AccountPage = () => {
             >
                 <LogOut className="w-5 h-5" /> {t("account.logOut")}
             </button>
-            <p className="text-center text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-6">
-                BusConnect v1.2.4 • Made with Premium Care
-            </p>
         </div>
       </div>
     </PageShell>
