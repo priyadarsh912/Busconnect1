@@ -74,12 +74,12 @@ const SettingsPage = () => {
                 onClick={() => setSelected(lang.code as AppLanguage)}
                 className={`w-full flex items-center justify-between rounded-3xl border p-5 transition-all active:scale-[0.98] ${
                   selected === lang.code
-                    ? "border-primary bg-primary/5 shadow-sm shadow-primary/5"
-                    : "border-slate-50 dark:border-slate-800 bg-white dark:bg-slate-900"
+                    ? "border-primary bg-primary/5 dark:bg-primary/10 shadow-sm shadow-primary/5"
+                    : "border-slate-100 dark:border-slate-700/50 bg-white dark:bg-[#1a2332]"
                 }`}
               >
                 <div className="text-left">
-                  <p className={`font-headline font-bold text-base transition-colors ${selected === lang.code ? "text-primary" : "text-on-surface"}`}>
+                  <p className={`font-headline font-bold text-base transition-colors ${selected === lang.code ? "text-primary" : "text-slate-900 dark:text-white"}`}>
                     {lang.name}
                   </p>
                   <p className="text-xs font-medium text-slate-400">{lang.secondary}</p>

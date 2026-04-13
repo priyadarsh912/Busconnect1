@@ -112,7 +112,7 @@ const MyBookingsPage = () => {
                           transition={{ delay: idx * 0.1 }}
                           key={booking.id} 
                           onClick={() => navigate("/e-ticket", { state: { booking } })}
-                          className="group relative bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-50 dark:border-slate-800 p-6 shadow-sm overflow-hidden transition-all active:scale-[0.98] hover:shadow-md cursor-pointer"
+                          className="group relative bg-white dark:bg-[#1a2332] rounded-[2rem] border border-slate-100 dark:border-slate-700/50 p-6 shadow-sm overflow-hidden transition-all active:scale-[0.98] hover:shadow-md cursor-pointer"
                         >
                             {/* Decorative elements */}
                             <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-[3rem] -z-0" />
@@ -127,10 +127,10 @@ const MyBookingsPage = () => {
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex items-center justify-between">
-                                            <p className="font-headline font-black text-lg text-on-surface tracking-tight">{booking.from}</p>
+                                            <p className="font-headline font-black text-lg text-slate-900 dark:text-white tracking-tight">{booking.from}</p>
                                         </div>
                                         <div className="flex items-center justify-between mt-1">
-                                            <p className="font-headline font-black text-lg text-on-surface tracking-tight">{booking.to}</p>
+                                            <p className="font-headline font-black text-lg text-slate-900 dark:text-white tracking-tight">{booking.to}</p>
                                         </div>
                                     </div>
                                 </div>

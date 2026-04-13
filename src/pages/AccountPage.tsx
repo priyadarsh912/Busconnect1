@@ -34,14 +34,14 @@ const AccountPage = () => {
   const { theme, setTheme } = useTheme();
 
   const travelItems = [
-    { icon: BookOpen, label: t("account.myBookings"), path: "/my-bookings", color: "bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400" },
-    { icon: MapPin, label: t("account.savedRoutes"), path: "/routes", color: "bg-teal-50 text-teal-600 dark:bg-teal-900/40 dark:text-teal-400" },
+    { icon: BookOpen, label: t("account.myBookings"), path: "/my-bookings", iconBg: "bg-blue-50 dark:bg-blue-500/15", iconColor: "text-blue-600 dark:text-blue-400" },
+    { icon: MapPin, label: t("account.savedRoutes"), path: "/routes", iconBg: "bg-teal-50 dark:bg-teal-500/15", iconColor: "text-teal-600 dark:text-teal-400" },
   ];
 
   const appItems = [
-    { icon: theme === 'dark' ? Sun : Moon, label: theme === 'dark' ? "Light Mode" : "Dark Mode", action: () => setTheme(theme === 'dark' ? 'light' : 'dark'), color: "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400", isToggle: true },
-    { icon: Settings, label: t("account.settings"), path: "/settings", color: "bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-400" },
-    { icon: HelpCircle, label: t("account.helpSupport"), path: "/help", color: "bg-orange-50 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400" },
+    { icon: theme === 'dark' ? Sun : Moon, label: theme === 'dark' ? "Light Mode" : "Dark Mode", action: () => setTheme(theme === 'dark' ? 'light' : 'dark'), iconBg: "bg-indigo-50 dark:bg-indigo-500/15", iconColor: "text-indigo-600 dark:text-indigo-400", isToggle: true },
+    { icon: Settings, label: t("account.settings"), path: "/settings", iconBg: "bg-slate-100 dark:bg-slate-700/40", iconColor: "text-slate-600 dark:text-slate-400" },
+    { icon: HelpCircle, label: t("account.helpSupport"), path: "/help", iconBg: "bg-orange-50 dark:bg-orange-500/15", iconColor: "text-orange-600 dark:text-orange-400" },
   ];
 
   // ─── Profile state ───
@@ -127,7 +127,7 @@ const AccountPage = () => {
   return (
     <PageShell>
       {/* Header & Hero Section */}
-      <div className="relative -mx-6 -mt-6 mb-8 px-6 pt-12 pb-24 overflow-hidden">
+      <div className="relative -mx-4 -mt-4 mb-8 px-6 pt-12 pb-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary-container" />
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32" />
         
@@ -146,29 +146,27 @@ const AccountPage = () => {
         <motion.div 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="absolute -bottom-6 left-6 right-6 bg-white dark:bg-slate-900 rounded-[2rem] shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-white/20 p-6 flex items-center gap-5"
+          className="absolute -bottom-6 left-6 right-6 bg-white dark:bg-[#1a2332] rounded-[2rem] shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-slate-100 dark:border-slate-700/50 p-6 flex items-center gap-5"
         >
           <div className="relative">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center border border-primary/10 overflow-hidden">
-                <div className="w-full h-full bg-primary/20 flex items-center justify-center">
-                    <User className="w-10 h-10 text-primary stroke-[1.5px]" />
-                </div>
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 dark:from-primary/30 dark:to-primary/15 flex items-center justify-center border border-primary/10 overflow-hidden">
+                <User className="w-10 h-10 text-primary stroke-[1.5px]" />
             </div>
             {!editing && (
                 <button
                 onClick={handleStartEdit}
-                className="absolute -bottom-1 -right-1 w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900 transition-transform active:scale-90"
+                className="absolute -bottom-1 -right-1 w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-lg border-2 border-white dark:border-[#1a2332] transition-transform active:scale-90"
                 >
                 <Pencil className="w-4 h-4 text-white" />
                 </button>
             )}
           </div>
           
-          <div className="flex-1">
-            <h2 className="font-headline font-black text-2xl text-on-surface tracking-tighter leading-none mb-1">{profile.name}</h2>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-headline font-black text-2xl text-slate-900 dark:text-white tracking-tighter leading-none mb-1 truncate">{profile.name}</h2>
             <div className="flex items-center gap-1.5 py-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
-                <p className="text-slate-500 dark:text-slate-400 font-bold text-sm tracking-tight">{profile.phone || profile.email}</p>
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse shrink-0" />
+                <p className="text-slate-500 dark:text-slate-400 font-bold text-sm tracking-tight truncate">{profile.phone || profile.email}</p>
             </div>
           </div>
         </motion.div>
@@ -180,11 +178,11 @@ const AccountPage = () => {
             <motion.div 
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
-              className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 p-8 pt-10 shadow-sm"
+              className="bg-white dark:bg-[#1a2332] rounded-[2rem] border border-slate-100 dark:border-slate-700/50 p-8 pt-10 shadow-sm"
             >
               <div className="flex items-center justify-between mb-8">
-                <h3 className="font-headline font-bold text-xl tracking-tight text-on-surface">{t('account.editProfile')}</h3>
-                <button onClick={handleCancelEdit} className="p-2 bg-slate-50 dark:bg-slate-800 rounded-full text-slate-400">
+                <h3 className="font-headline font-bold text-xl tracking-tight text-slate-900 dark:text-white">{t('account.editProfile')}</h3>
+                <button onClick={handleCancelEdit} className="p-2 bg-slate-50 dark:bg-slate-700/50 rounded-full text-slate-400">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -197,7 +195,7 @@ const AccountPage = () => {
                     <Input
                       value={draft.name}
                       onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-                      className="pl-12 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none shadow-none text-base font-medium focus-visible:ring-primary/20"
+                      className="pl-12 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-none shadow-none text-base font-medium text-slate-900 dark:text-white focus-visible:ring-primary/20"
                       placeholder="Enter your name"
                     />
                   </div>
@@ -211,7 +209,7 @@ const AccountPage = () => {
                       type="email"
                       value={draft.email}
                       onChange={(e) => setDraft({ ...draft, email: e.target.value })}
-                      className="pl-12 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none shadow-none text-base font-medium focus-visible:ring-primary/20"
+                      className="pl-12 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-none shadow-none text-base font-medium text-slate-900 dark:text-white focus-visible:ring-primary/20"
                       placeholder="email@example.com"
                     />
                   </div>
@@ -238,13 +236,13 @@ const AccountPage = () => {
                         <button 
                             key={item.label} 
                             onClick={() => navigate(item.path)} 
-                            className="bg-white dark:bg-slate-900 p-3.5 rounded-3xl border border-slate-50 dark:border-slate-800 flex items-center gap-4 transition-all active:scale-[0.98] hover:shadow-md group"
+                            className="bg-white dark:bg-[#1a2332] p-4 rounded-2xl border border-slate-100 dark:border-slate-700/50 flex items-center gap-4 transition-all active:scale-[0.98] hover:shadow-md group"
                         >
-                            <div className={`w-10 h-10 rounded-2xl ${item.color.split(' ')[0]} flex items-center justify-center transition-transform group-hover:scale-110 shadow-sm shadow-black/5`}>
-                                <item.icon className="w-5 h-5" />
+                            <div className={`w-11 h-11 rounded-xl ${item.iconBg} flex items-center justify-center transition-transform group-hover:scale-110`}>
+                                <item.icon className={`w-5 h-5 ${item.iconColor}`} />
                             </div>
-                            <span className="flex-1 font-headline font-bold text-sm text-on-surface tracking-tight text-left">{item.label}</span>
-                            <div className="p-1 px-3 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center gap-1">
+                            <span className="flex-1 font-bold text-[15px] text-slate-900 dark:text-white tracking-tight text-left">{item.label}</span>
+                            <div className="p-1 px-3 bg-slate-50 dark:bg-slate-700/40 rounded-full flex items-center gap-1">
                                 <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
                             </div>
                         </button>
@@ -259,18 +257,18 @@ const AccountPage = () => {
                         <button 
                             key={item.label} 
                             onClick={() => item.action ? item.action() : navigate(item.path)} 
-                            className="bg-white dark:bg-slate-900 p-3.5 rounded-3xl border border-slate-50 dark:border-slate-800 flex items-center gap-4 transition-all active:scale-[0.98] hover:shadow-md group"
+                            className="bg-white dark:bg-[#1a2332] p-4 rounded-2xl border border-slate-100 dark:border-slate-700/50 flex items-center gap-4 transition-all active:scale-[0.98] hover:shadow-md group"
                         >
-                            <div className={`w-10 h-10 rounded-2xl ${item.color.split(' ')[0]} flex items-center justify-center transition-transform group-hover:scale-110 shadow-sm shadow-black/5`}>
-                                <item.icon className="w-5 h-5" />
+                            <div className={`w-11 h-11 rounded-xl ${item.iconBg} flex items-center justify-center transition-transform group-hover:scale-110`}>
+                                <item.icon className={`w-5 h-5 ${item.iconColor}`} />
                             </div>
-                            <span className="flex-1 font-headline font-bold text-sm text-on-surface tracking-tight text-left">{item.label}</span>
+                            <span className="flex-1 font-bold text-[15px] text-slate-900 dark:text-white tracking-tight text-left">{item.label}</span>
                             {item.isToggle ? (
-                                <div className={`w-10 h-5 rounded-full relative transition-colors ${theme === 'dark' ? 'bg-primary' : 'bg-slate-200'}`}>
-                                    <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${theme === 'dark' ? 'left-6' : 'left-1'}`} />
+                                <div className={`w-11 h-6 rounded-full relative transition-colors ${theme === 'dark' ? 'bg-primary' : 'bg-slate-200'}`}>
+                                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all shadow-sm ${theme === 'dark' ? 'left-6' : 'left-1'}`} />
                                 </div>
                             ) : (
-                                <div className="p-1 px-3 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center gap-1">
+                                <div className="p-1 px-3 bg-slate-50 dark:bg-slate-700/40 rounded-full flex items-center gap-1">
                                     <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
                                 </div>
                             )}
@@ -284,7 +282,7 @@ const AccountPage = () => {
         <div className="pt-4 pb-12">
             <button
                 onClick={handleLogout}
-                className="w-full h-16 rounded-3xl border border-red-100 dark:border-red-900/20 bg-red-50/30 dark:bg-red-900/5 flex items-center justify-center gap-3 text-red-600 font-headline font-black text-lg transition-all active:scale-[0.98] hover:bg-red-50 dark:hover:bg-red-900/10"
+                className="w-full h-16 rounded-2xl border border-red-200/80 dark:border-red-800/30 bg-red-50/50 dark:bg-red-900/10 flex items-center justify-center gap-3 text-red-600 dark:text-red-400 font-headline font-black text-lg transition-all active:scale-[0.98] hover:bg-red-50 dark:hover:bg-red-900/20"
             >
                 <LogOut className="w-5 h-5" /> {t("account.logOut")}
             </button>
