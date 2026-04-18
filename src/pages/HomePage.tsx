@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, MapPin, Ticket, ChevronRight, User, Bus, Calendar, Users, X } from "lucide-react";
+import { Search, MapPin, Ticket, ChevronRight, User, Bus, Calendar, Users, X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "../components/ui/input";
 import PageShell from "../components/PageShell";
 import { authService } from "../services/authService";
+import { busService, BusRoute } from "../services/busService";
 import AnimatedBusLogo from "../components/AnimatedBusLogo";
 
 const fadeUp = {
@@ -30,6 +31,22 @@ const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showWelcomeSplash, setShowWelcomeSplash] = useState(false);
   const [pendingCity, setPendingCity] = useState("");
+  const [routes, setRoutes] = useState<BusRoute[]>([]);
+  const [loadingRoutes, setLoadingRoutes] = useState(true);
+
+  useEffect(() => {
+    const fetchRoutes = async () => {
+      try {
+        const data = await busService.getAllRoutes();
+        setRoutes(data || []);
+      } catch (err) {
+        console.error("Error fetching routes:", err);
+      } finally {
+        setLoadingRoutes(false);
+      }
+    };
+    fetchRoutes();
+  }, []);
 
   const handleSearch = () => {
     navigate("/route-search");
@@ -84,24 +101,30 @@ const HomePage = () => {
 
       {/* Quick Recent Routes */}
       <motion.div variants={fadeUp} initial="initial" animate="animate" className="flex gap-3 mb-10 overflow-x-auto pb-2 scrollbar-none">
-        <button onClick={() => navigate("/route-details", { state: { route: { number: "18", destination: "Nandan Vihar" } } })} className="flex-none bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-2xl flex items-center gap-3 shadow-sm min-w-[140px] active:scale-95 transition-transform">
-          <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded-xl">
-             <Bus className="w-4 h-4 text-slate-400" />
+        {loadingRoutes ? (
+          <div className="flex items-center gap-2 px-4">
+            <Loader2 className="w-4 h-4 text-slate-300 animate-spin" />
+            <span className="text-xs font-bold text-slate-300 italic uppercase tracking-wider">Fetching routes...</span>
           </div>
-          <div className="text-left">
-             <p className="font-headline font-bold text-sm leading-none mb-1">18</p>
-             <p className="text-[10px] text-slate-400 font-medium">To Nandan Vihar</p>
-          </div>
-        </button>
-        <button onClick={() => navigate("/route-details", { state: { route: { number: "10", destination: "KIIT Square" } } })} className="flex-none bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-2xl flex items-center gap-3 shadow-sm min-w-[140px] active:scale-95 transition-transform">
-          <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded-xl">
-             <Bus className="w-4 h-4 text-slate-400" />
-          </div>
-          <div className="text-left">
-             <p className="font-headline font-bold text-sm leading-none mb-1">10</p>
-             <p className="text-[10px] text-slate-400 font-medium">To KIIT Square</p>
-          </div>
-        </button>
+        ) : routes.length > 0 ? (
+          routes.map((route) => (
+            <button 
+              key={route.id}
+              onClick={() => navigate("/route-details", { state: { route } })} 
+              className="flex-none bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-2xl flex items-center gap-3 shadow-sm min-w-[140px] active:scale-95 transition-transform"
+            >
+              <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded-xl">
+                 <Bus className="w-4 h-4 text-slate-400" />
+              </div>
+              <div className="text-left">
+                 <p className="font-headline font-bold text-sm leading-none mb-1">{route.route_number}</p>
+                 <p className="text-[10px] text-slate-400 font-medium truncate max-w-[80px]">To {route.destination}</p>
+              </div>
+            </button>
+          ))
+        ) : (
+          <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest px-4 py-2">No routes available</div>
+        )}
       </motion.div>
 
       {/* Quick Payments */}

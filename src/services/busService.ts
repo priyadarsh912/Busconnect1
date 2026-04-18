@@ -2,18 +2,11 @@ import { supabase } from '../lib/supabase';
 
 export interface BusRoute {
   id: string;
-  name: string;
-  source_stop_id: string;
-  destination_stop_id: string;
+  route_number: string;
+  origin: string;
+  destination: string;
   distance_km: number;
-  base_fare: number;
-  pricing?: PricingConfig;
-}
-
-export interface PricingConfig {
-  price_per_km: number;
-  surge_multiplier: number;
-  min_fare: number;
+  price_inr: number;
 }
 
 export interface BusStop {
@@ -21,26 +14,22 @@ export interface BusStop {
   name: string;
   latitude: number;
   longitude: number;
+  city_id?: string;
 }
 
 export const busService = {
   /**
-   * Search for routes between two stops
+   * Search for routes between two points
    */
-  async searchRoutes(sourceName: string, destinationName: string): Promise<BusRoute[]> {
+  async searchRoutes(origin: string, destination: string): Promise<BusRoute[]> {
     const { data, error } = await supabase
       .from('routes')
-      .select(`
-        *,
-        source:source_stop_id (name),
-        destination:destination_stop_id (name),
-        pricing:pricing_configs (*)
-      `)
-      .ilike('source.name', `%${sourceName}%`)
-      .ilike('destination.name', `%${destinationName}%`);
+      .select('*')
+      .ilike('origin', `%${origin}%`)
+      .ilike('destination', `%${destination}%`);
 
     if (error) throw error;
-    return data as any[];
+    return data as BusRoute[];
   },
 
   /**
@@ -50,30 +39,41 @@ export const busService = {
     const { data, error } = await supabase
       .from('route_stops')
       .select(`
-        stop_order,
+        stop_sequence,
         stops (*)
       `)
       .eq('route_id', routeId)
-      .order('stop_order', { ascending: true });
+      .order('stop_sequence', { ascending: true });
 
     if (error) throw error;
-    return data.map(item => item.stops) as any[];
+    
+    // Type checking and mapping to ensure BusStop interface consistency
+    return (data || []).map(item => {
+      const s = item.stops as any;
+      return {
+        id: s.id,
+        name: s.name,
+        latitude: s.latitude,
+        longitude: s.longitude,
+        city_id: s.city_id,
+        stop_sequence: item.stop_sequence
+      };
+    });
   },
+
 
   /**
    * Calculate fare dynamically based on latest pricing from DB
    */
   async calculateFare(routeId: string, distanceKm: number): Promise<number> {
-    const { data: config, error } = await supabase
-      .from('pricing_configs')
-      .select('*')
-      .eq('route_id', routeId)
+    const { data: route, error } = await supabase
+      .from('routes')
+      .select('price_inr')
+      .eq('id', routeId)
       .single();
 
-    if (error || !config) return 10; // Fallback base fare
-
-    const totalFare = distanceKm * Number(config.price_per_km) * Number(config.surge_multiplier);
-    return Math.max(totalFare, Number(config.min_fare));
+    if (error || !route) return 10; // Fallback base fare
+    return Number(route.price_inr);
   },
 
   /**
@@ -162,10 +162,7 @@ export const busService = {
       .from('bookings')
       .select(`
         *,
-        routes (
-          source:source_stop_id (name),
-          destination:destination_stop_id (name)
-        )
+        routes (*)
       `)
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
@@ -177,11 +174,11 @@ export const busService = {
   /**
    * Update pricing (Admin logic)
    */
-  async updateSurge(routeId: string, multiplier: number) {
+  async updateRoutePrice(routeId: string, price: number) {
     const { error } = await supabase
-      .from('pricing_configs')
-      .update({ surge_multiplier: multiplier, updated_at: new Date() })
-      .eq('route_id', routeId);
+      .from('routes')
+      .update({ price_inr: price, updated_at: new Date() })
+      .eq('id', routeId);
 
     if (error) throw error;
   },
@@ -232,15 +229,10 @@ export const busService = {
   async getAllRoutes(): Promise<BusRoute[]> {
     const { data, error } = await supabase
       .from('routes')
-      .select(`
-        *,
-        source:source_stop_id (name),
-        destination:destination_stop_id (name),
-        pricing:pricing_configs (*)
-      `);
+      .select('*');
 
     if (error) throw error;
-    return data as any[];
+    return data as BusRoute[];
   },
 
   /**
@@ -253,5 +245,19 @@ export const busService = {
 
     if (error) throw error;
     return data as any[];
+  },
+
+  /**
+   * Get route details by its number
+   */
+  async getRouteByNumber(routeNumber: string): Promise<BusRoute | null> {
+    const { data, error } = await supabase
+      .from('routes')
+      .select('*')
+      .eq('route_number', routeNumber)
+      .single();
+
+    if (error) return null;
+    return data as BusRoute;
   }
 };

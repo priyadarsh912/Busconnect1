@@ -63,31 +63,53 @@ CREATE TABLE IF NOT EXISTS public.bus_locations (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
--- ─────────────────────────────────────────────────
--- SECURITY CONFIGURATION (Row Level Security)
--- ─────────────────────────────────────────────────
+-- 6. CITIES
+CREATE TABLE IF NOT EXISTS public.cities (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL,
+    state TEXT DEFAULT 'Odisha',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+);
 
--- Enable RLS
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.search_history ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.user_routes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.bus_locations ENABLE ROW LEVEL SECURITY;
+-- 7. STOPS
+CREATE TABLE IF NOT EXISTS public.stops (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    name TEXT NOT NULL,
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL,
+    city_id UUID REFERENCES public.cities(id) ON DELETE SET NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    UNIQUE(name, city_id)
+);
 
--- Profiles: Users can read/edit only their own data
-CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+-- 8. ROUTES
+CREATE TABLE IF NOT EXISTS public.routes (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    route_number TEXT UNIQUE NOT NULL,
+    origin TEXT NOT NULL,
+    destination TEXT NOT NULL,
+    distance_km DECIMAL(10, 2) DEFAULT 0.0,
+    price_inr DECIMAL(10, 2) DEFAULT 10.0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+);
 
--- Bookings: Users can see/create only their own bookings
-CREATE POLICY "Users can view own bookings" ON public.bookings FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can create own bookings" ON public.bookings FOR INSERT WITH CHECK (auth.uid() = user_id);
+-- 9. ROUTE STOPS (Junction table with sequence)
+CREATE TABLE IF NOT EXISTS public.route_stops (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    route_id UUID REFERENCES public.routes(id) ON DELETE CASCADE,
+    stop_id UUID REFERENCES public.stops(id) ON DELETE CASCADE,
+    stop_sequence INTEGER NOT NULL,
+    UNIQUE(route_id, stop_sequence)
+);
 
--- Search History: Users can manage their own history
-CREATE POLICY "Users can manage own search history" ON public.search_history FOR ALL USING (auth.uid() = user_id);
+-- Row Level Security for new tables
+ALTER TABLE public.cities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.stops ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.routes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.route_stops ENABLE ROW LEVEL SECURITY;
 
--- User Routes: Users can manage their own routes
-CREATE POLICY "Users can manage own routes" ON public.user_routes FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Anyone can view cities" ON public.cities FOR SELECT USING (true);
+CREATE POLICY "Anyone can view stops" ON public.stops FOR SELECT USING (true);
+CREATE POLICY "Anyone can view routes" ON public.routes FOR SELECT USING (true);
+CREATE POLICY "Anyone can view route_stops" ON public.route_stops FOR SELECT USING (true);
 
--- Bus Locations: Everyone authenticated can see, only drivers/api can write
-CREATE POLICY "Anyone can view bus locations" ON public.bus_locations FOR SELECT TO authenticated USING (true);
-CREATE POLICY "Auth users can update bus locations" ON public.bus_locations FOR ALL TO authenticated USING (true);

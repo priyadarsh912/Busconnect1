@@ -1,77 +1,60 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, MoreVertical } from "lucide-react";
+import { ArrowLeft, MoreVertical, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-
-// Route stop databases for Bhubaneswar city buses
-const ROUTE_STOPS: Record<string, { name: string; lat: number; lng: number }[]> = {
-    "18": [
-        { name: "Baramunda BSABT", lat: 20.2719, lng: 85.8061 },
-        { name: "Khandagiri Square", lat: 20.2577, lng: 85.7790 },
-        { name: "Jaydev Vihar Square", lat: 20.2961, lng: 85.8136 },
-        { name: "Nalco Square", lat: 20.3011, lng: 85.8240 },
-        { name: "Vani Vihar", lat: 20.3046, lng: 85.8396 },
-        { name: "Acharya Vihar", lat: 20.3025, lng: 85.8345 },
-        { name: "Rasulgarh", lat: 20.3059, lng: 85.8563 },
-        { name: "Nandan Vihar", lat: 20.3176, lng: 85.8621 },
-        { name: "Jagatpur", lat: 20.3455, lng: 85.8498 },
-    ],
-    "10": [
-        { name: "Master Canteen", lat: 20.2728, lng: 85.8406 },
-        { name: "Ram Mandir", lat: 20.2707, lng: 85.8365 },
-        { name: "Rajmahal Square", lat: 20.2690, lng: 85.8321 },
-        { name: "PMG Square", lat: 20.2671, lng: 85.8282 },
-        { name: "AG Square", lat: 20.2729, lng: 85.8244 },
-        { name: "Sishu Bhawan", lat: 20.2730, lng: 85.8195 },
-        { name: "Saheed Nagar", lat: 20.2920, lng: 85.8412 },
-        { name: "KIIT Square", lat: 20.3541, lng: 85.8143 },
-    ],
-    "47": [
-        { name: "Baramunda BSABT", lat: 20.2719, lng: 85.8061 },
-        { name: "Rajdhani College", lat: 20.2674, lng: 85.8157 },
-        { name: "Fire Station Square", lat: 20.2595, lng: 85.8219 },
-        { name: "Gopabandhu Nagar", lat: 20.2521, lng: 85.8288 },
-        { name: "CRPF Square", lat: 20.2465, lng: 85.8350 },
-        { name: "Nayapalli", lat: 20.2910, lng: 85.8038 },
-        { name: "Settlement Office", lat: 20.2802, lng: 85.8426 },
-    ],
-    "54S": [
-        { name: "Patrapada Bus Depot", lat: 20.2340, lng: 85.7850 },
-        { name: "K9", lat: 20.2380, lng: 85.7900 },
-        { name: "Kalinga Vihar Square", lat: 20.2450, lng: 85.7950 },
-        { name: "Patrapada 1", lat: 20.2520, lng: 85.8010 },
-        { name: "Alu Godam 1", lat: 20.2590, lng: 85.8070 },
-        { name: "Aiginia 1", lat: 20.2660, lng: 85.8130 },
-        { name: "Kalpana Square", lat: 20.2710, lng: 85.8190 },
-        { name: "NLUO", lat: 20.3800, lng: 85.8300 },
-    ],
-};
-
-// Fallback stops for any unknown route
-const DEFAULT_STOPS = [
-    { name: "Start Point", lat: 20.2719, lng: 85.8061 },
-    { name: "Midway Stop", lat: 20.2900, lng: 85.8200 },
-    { name: "End Point", lat: 20.3100, lng: 85.8400 },
-];
+import { busService, BusStop, BusRoute } from "../services/busService";
 
 const RouteDetailsPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const routeData = location.state?.route || { number: "47", destination: "Settlement Office" };
+    const [routeData, setRouteData] = useState<any>(location.state?.route || { number: "DD1", destination: "Jagannath Ballav Parking" });
     
     const mapRef = useRef<HTMLDivElement>(null);
     const mapInstance = useRef<L.Map | null>(null);
     const [mapReady, setMapReady] = useState(false);
+    const [stops, setStops] = useState<BusStop[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    // Get the stops for this route
-    const routeNumber = String(routeData.number || routeData.route_no || "47");
-    const stops = ROUTE_STOPS[routeNumber] || DEFAULT_STOPS;
+    const routeNumber = String(routeData.number || routeData.route_number || "DD1");
+
+    // Fetch dynamic stops from database
+    useEffect(() => {
+        const fetchRouteAndStops = async () => {
+            setLoading(true);
+            try {
+                // 1. Get detailed route info if we only have the number
+                let fullRoute = routeData;
+                if (!routeData.id) {
+                    const dbRoute = await busService.getRouteByNumber(routeNumber);
+                    if (dbRoute) {
+                        fullRoute = dbRoute;
+                        setRouteData(dbRoute);
+                    }
+                }
+
+                // 2. Get stops for this route
+                if (fullRoute.id) {
+                    const dbStops = await busService.getStopsForRoute(fullRoute.id);
+                    setStops(dbStops);
+                } else {
+                    console.error("Route ID not found for", routeNumber);
+                }
+            } catch (err) {
+                console.error("Error fetching route data:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchRouteAndStops();
+    }, [routeNumber]);
+
     const destination = routeData.destination || stops[stops.length - 1]?.name || "Destination";
 
     useEffect(() => {
-        if (!mapRef.current) return;
+        if (!mapRef.current || stops.length === 0) return;
 
         // Clean up any existing map instance on this container
         const container = mapRef.current as any;
@@ -80,8 +63,8 @@ const RouteDetailsPage = () => {
         }
 
         // Calculate center from stops
-        const avgLat = stops.reduce((sum, s) => sum + s.lat, 0) / stops.length;
-        const avgLng = stops.reduce((sum, s) => sum + s.lng, 0) / stops.length;
+        const avgLat = stops.reduce((sum, s) => sum + s.latitude, 0) / stops.length;
+        const avgLng = stops.reduce((sum, s) => sum + s.longitude, 0) / stops.length;
 
         const map = L.map(container, {
             center: [avgLat, avgLng],
@@ -96,26 +79,19 @@ const RouteDetailsPage = () => {
             maxZoom: 19,
         }).addTo(map);
 
-        // Fix map sizing and fit bounds after tiles load
-        setTimeout(() => {
-            map.invalidateSize();
-            const b = L.latLngBounds(routeLatLngs);
-            map.fitBounds(b, { padding: [50, 50], maxZoom: 14 });
-        }, 300);
-
-        // Draw the route line
-        const routeLatLngs: L.LatLngExpression[] = stops.map(s => [s.lat, s.lng]);
+        // Draw the route line and markers
+        const routeLatLngs: L.LatLngExpression[] = stops.map(s => [s.latitude, s.longitude]);
         
-        // Route line — thick dark line
+        // Route line - thick dark line
         L.polyline(routeLatLngs, {
-            color: "#1a1a2e",
+            color: "#006B7D",
             weight: 6,
             opacity: 0.9,
             lineCap: "round",
             lineJoin: "round",
         }).addTo(map);
 
-        // Stop markers — white circles with dark border
+        // Stop markers
         stops.forEach((stop, i) => {
             const isFirst = i === 0;
             const isLast = i === stops.length - 1;
@@ -126,7 +102,7 @@ const RouteDetailsPage = () => {
                 html: `<div style="
                     width: ${size}px; height: ${size}px;
                     background: white;
-                    border: 3px solid #1a1a2e;
+                    border: 3px solid ${isFirst || isLast ? '#006B7D' : '#1a1a2e'};
                     border-radius: 50%;
                     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
                 "></div>`,
@@ -134,9 +110,8 @@ const RouteDetailsPage = () => {
                 iconAnchor: [size / 2, size / 2],
             });
 
-            const marker = L.marker([stop.lat, stop.lng], { icon }).addTo(map);
+            const marker = L.marker([stop.latitude, stop.longitude], { icon }).addTo(map);
             
-            // Label for first and last stops
             if (isFirst || isLast) {
                 marker.bindTooltip(isFirst ? "Start" : "End", {
                     permanent: true,
@@ -151,25 +126,39 @@ const RouteDetailsPage = () => {
         const bounds = L.latLngBounds(routeLatLngs);
         map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
 
+        // Fix map sizing after tiles load
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 300);
+
         setMapReady(true);
 
         return () => {
             map.remove();
             mapInstance.current = null;
         };
-    }, [routeNumber]);
+    }, [stops]);
 
     const handleBookTicket = () => {
         navigate("/book-ticket", { 
             state: { 
-                route_id: routeNumber,
-                origin: stops[0]?.name || "Start",
+                route_id: routeData.id,
+                origin: stops[0]?.name || routeData.origin || "Start",
                 destination: destination,
-                price: 25,
+                price: routeData.price_inr || 25,
                 operator: "Mo Bus"
             } 
         });
     };
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center h-screen bg-slate-50 dark:bg-[#0f1522]">
+                <Loader2 className="w-10 h-10 text-primary animate-spin" />
+                <p className="mt-4 text-sm font-bold text-slate-400">Loading route details...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-md mx-auto flex flex-col h-screen bg-white dark:bg-[#0f1522] overflow-hidden">
@@ -222,7 +211,9 @@ const RouteDetailsPage = () => {
                 <div className="px-5 py-3">
                     <div className="relative">
                         {/* Vertical connecting line */}
-                        <div className="absolute left-[11px] top-4 bottom-4 w-[2px] bg-slate-200 dark:bg-slate-700" />
+                        {stops.length > 0 && (
+                            <div className="absolute left-[11px] top-4 bottom-4 w-[2px] bg-slate-200 dark:bg-slate-700" />
+                        )}
 
                         <div className="space-y-0">
                             {stops.map((stop, i) => {
@@ -230,18 +221,16 @@ const RouteDetailsPage = () => {
                                 const isLast = i === stops.length - 1;
                                 
                                 return (
-                                    <div key={stop.name} className="relative flex items-start gap-4 py-4">
+                                    <div key={stop.id} className="relative flex items-start gap-4 py-4">
                                         {/* Circle indicator */}
                                         <div className="relative z-10 shrink-0 mt-0.5">
                                             <div className={`w-6 h-6 rounded-full border-[2.5px] flex items-center justify-center ${
-                                                isFirst
-                                                    ? "border-slate-800 dark:border-white bg-white dark:bg-[#0f1522]"
-                                                    : isLast
-                                                        ? "border-slate-800 dark:border-white bg-white dark:bg-[#0f1522]"
-                                                        : "border-slate-300 dark:border-slate-600 bg-white dark:bg-[#0f1522]"
+                                                isFirst || isLast
+                                                    ? "border-[#006B7D] dark:border-[#006B7D] bg-white dark:bg-[#0f1522]"
+                                                    : "border-slate-300 dark:border-slate-600 bg-white dark:bg-[#0f1522]"
                                             }`}>
                                                 {(isFirst || isLast) && (
-                                                    <div className="w-2 h-2 rounded-full bg-slate-800 dark:bg-white" />
+                                                    <div className="w-2 h-2 rounded-full bg-[#006B7D]" />
                                                 )}
                                             </div>
                                         </div>
@@ -259,6 +248,12 @@ const RouteDetailsPage = () => {
                                     </div>
                                 );
                             })}
+                            
+                            {stops.length === 0 && (
+                                <div className="py-10 text-center text-slate-400">
+                                    No stops found for this route.
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

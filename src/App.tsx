@@ -47,7 +47,6 @@ import AdminNotificationsPage from "./pages/admin/AdminNotificationsPage";
 import { LanguageProvider } from "./lib/language";
 import SplashScreen from "./components/SplashScreen";
 import { useState, useEffect } from "react";
-import OnboardingPage from "./pages/OnboardingPage";
 import { notificationService } from "./services/notificationService";
 import { useNotifications } from "./hooks/useNotifications";
 import { sqlService } from "./services/offline/SQLService";
@@ -115,7 +114,6 @@ const AnimatedRoutes = () => {
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
-  const [showOnboarding, setShowOnboarding] = useState(localStorage.getItem("hasSeenOnboarding") !== "true");
   const [isOffline, setIsOffline] = useState(!networkManager.getStatus());
   const [suppressOffline, setSuppressOffline] = useState(false);
   
@@ -176,8 +174,6 @@ const App = () => {
             <AnimatePresence mode="wait">
               {showSplash ? (
                 <SplashScreen key="splash" onFinish={() => setShowSplash(false)} />
-              ) : showOnboarding ? (
-                <OnboardingPage key="onboarding" onFinish={() => setShowOnboarding(false)} />
               ) : (
                 <motion.div 
                   key="main-app" 
