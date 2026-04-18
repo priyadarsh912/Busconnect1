@@ -79,12 +79,12 @@ export const adminService = {
     const driverNames = ["Raman Singh", "Gurpreet Singh", "Jaswinder Kumar", "Amit Sharma", "Baljit Singh", "Sundeep Yadav"];
     
     return routes.slice(0, 5).map((r: any, i) => {
-      const fromName = r.source?.name || "Terminal A";
-      const toName = r.destination?.name || "Terminal B";
+      const fromName = r.origin || "Terminal A";
+      const toName = r.destination || "Terminal B";
       
       return {
         id: `bus_${i}`,
-        routeNo: r.id.toString(),
+        routeNo: r.route_number || r.id.toString(),
         status: i % 4 === 0 ? "Warning" : (i % 3 === 0 ? "Delayed" : "On Time"),
         time: "Just now",
         occupancy: 40 + (i * 10) + Math.floor(Math.random() * 20),
@@ -104,11 +104,11 @@ export const adminService = {
       const routeBookings = bookings.filter((b: any) => b.route_id === r.id);
       const bookingRevenue = routeBookings.reduce((sum: number, b: any) => sum + Number(b.fare), 0);
       
-      const fromName = r.source?.name || "Terminal A";
-      const toName = r.destination?.name || "Terminal B";
+      const fromName = r.origin || "Terminal A";
+      const toName = r.destination || "Terminal B";
 
       return {
-        id: r.id.toString(),
+        id: r.route_number || r.id.toString(),
         name: `${fromName} → ${toName}`,
         from: fromName,
         to: toName,

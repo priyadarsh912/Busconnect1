@@ -155,114 +155,103 @@ const RoutesPage = () => {
             animate="animate"
             className="space-y-3 pb-24"
         >
-          {routes.map((route, i) => (
-            <motion.div
-              key={i}
-              variants={fadeUp}
-              whileHover={{ scale: 1.015, y: -2 }}
-              transition={{ type: "spring", stiffness: 300, damping: 22 }}
-              className="bg-card rounded-2xl border border-border p-4 cursor-pointer"
-              onClick={() => {
-                const from = tripType === "intercity" ? (route as RouteEntry).from_stop : ((route as any).start_city || (route as any).start_stop);
-                const to = tripType === "intercity" ? (route as RouteEntry).to_stop : ((route as any).end_city || (route as any).end_stop);
+          {routes.map((route, i) => {
+            const routeNumber = route.route_number || route.route_no || "N/A";
+            const from = route.origin || route.from_stop || "Unknown";
+            const to = route.destination || route.to_stop || "Unknown";
+            const distance = route.distance_km || 0;
+            const price = route.price_inr || 0;
+            const crowd = route.crowd || "Low";
+            const eta = route.eta_min || Math.round(distance * 2) || 15;
 
-                // Auto-save: search history to Supabase
-                const user = authService.getCurrentUser();
-                if (user && from && to) {
-                  busService.saveSearchHistory(user.id, from, to, tripType).catch(() => {});
-                }
+            return (
+              <motion.div
+                key={route.id || i}
+                variants={fadeUp}
+                whileHover={{ scale: 1.015, y: -2 }}
+                transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                className="bg-card rounded-2xl border border-border p-4 cursor-pointer"
+                onClick={() => {
+                  // Auto-save: search history to Supabase
+                  const user = authService.getCurrentUser();
+                  if (user && from && to) {
+                    busService.saveSearchHistory(user.id, from, to, tripType).catch(() => {});
+                  }
 
-                navigate("/bus-results", {
-                  state: { from, to, state: selectedState, tripType },
-                });
-              }}
-            >
-              <div className="flex justify-between items-start mb-2">
-                <div className="min-w-0 flex-1 pr-3">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span
-                      className="text-[11px] font-bold px-2 py-0.5 rounded-md"
-                      style={{ background: accentColor + "20", color: accentColor }}
-                    >
-                      {route.route_no || (route as any).route_id}
-                    </span>
-                    <span
-                      className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${route.crowd.toLowerCase() === "low" ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300" :
-                        route.crowd.toLowerCase() === "medium" || route.crowd.toLowerCase() === "moderate" ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300" :
-                          "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"
-                        }`}
-                    >
-                      {route.crowd} Crowd
-                    </span>
+                  navigate("/bus-results", {
+                    state: { from, to, state: selectedState, tripType, route },
+                  });
+                }}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <div className="min-w-0 flex-1 pr-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        className="text-[11px] font-bold px-2 py-0.5 rounded-md"
+                        style={{ background: accentColor + "20", color: accentColor }}
+                      >
+                        {routeNumber}
+                      </span>
+                      <span
+                        className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                          crowd.toLowerCase() === "low" ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300" :
+                          crowd.toLowerCase() === "medium" || crowd.toLowerCase() === "moderate" ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300" :
+                            "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"
+                          }`}
+                      >
+                        {crowd} Crowd
+                      </span>
+                    </div>
+                    <p className="font-bold text-sm text-foreground">
+                      {from} <span className="text-muted-foreground font-normal">→</span>{" "}
+                      {to}
+                    </p>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                      <Clock className="w-3 h-3" />
+                      {estimateTime(eta)}
+                    </p>
                   </div>
-                  <p className="font-bold text-sm text-foreground">
-                    {tripType === "intercity" ? (
-                      <>
-                        {(route as RouteEntry).from_stop}{" "}
-                        <span className="text-muted-foreground font-normal">→</span>{" "}
-                        <span className="text-primary">{(route as RouteEntry).stop}</span>{" "}
-                        <span className="text-muted-foreground font-normal">→</span>{" "}
-                        {(route as RouteEntry).to_stop}
-                      </>
-                    ) : (
-                      <>
-                        {((route as any).start_city || (route as any).start_stop)}{" "}
-                        <span className="text-muted-foreground font-normal">→</span>{" "}
-                        <span className="text-primary">{((route as any).stop_city || (route as any).stop_1)}</span>{" "}
-                        <span className="text-muted-foreground font-normal">→</span>{" "}
-                        {((route as any).end_city || (route as any).end_stop)}
-                      </>
-                    )}
-                  </p>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                    <Clock className="w-3 h-3" />
-                    {tripType === "intercity" ? `~${(route as RouteEntry).eta_min} min` : ((route as any).eta || `~${(route as any).eta_min} min`)}
-                  </p>
+                  <div className="text-right shrink-0 flex flex-col items-end gap-1">
+                    <p className="font-extrabold text-base" style={{ color: accentColor }}>
+                      ₹{price}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {distance.toFixed(1)} km
+                    </p>
+                  </div>
                 </div>
-                <div className="text-right shrink-0 flex flex-col items-end gap-1">
-                  <p className="font-extrabold text-base" style={{ color: accentColor }}>
-                    ₹{tripType === "intercity" ? (route as RouteEntry).price_inr : (route as OutstationRouteEntry).price}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {route.distance_km.toFixed(1)} km
-                  </p>
+                <div className="flex gap-2 mt-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 rounded-xl text-xs"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const user = authService.getCurrentUser();
+                      if (user && from && to) {
+                        busService.saveSearchHistory(user.id, from, to, tripType).catch(() => {});
+                      }
+                      navigate("/tracking", { state: { route, tripType } });
+                    }}
+                  >
+                    <MapPin className="w-3 h-3 mr-1" /> Track
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="flex-1 rounded-xl text-xs"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate("/bus-results", {
+                        state: { from, to, state: selectedState, tripType, route },
+                      });
+                    }}
+                  >
+                    Book Ticket <ChevronRight className="w-3 h-3 ml-0.5" />
+                  </Button>
                 </div>
-              </div>
-              <div className="flex gap-2 mt-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 rounded-xl text-xs"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const user = authService.getCurrentUser();
-                    const from = tripType === "intercity" ? (route as RouteEntry).from_stop : (route as OutstationRouteEntry).start_city;
-                    const to = tripType === "intercity" ? (route as RouteEntry).to_stop : (route as OutstationRouteEntry).end_city;
-                    if (user && from && to) {
-                      busService.saveSearchHistory(user.id, from, to, tripType).catch(() => {});
-                    }
-                    navigate("/tracking", { state: { route, tripType } });
-                  }}
-                >
-                  <MapPin className="w-3 h-3 mr-1" /> Track
-                </Button>
-                <Button
-                  size="sm"
-                  className="flex-1 rounded-xl text-xs"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const from = tripType === "intercity" ? (route as RouteEntry).from_stop : (route as OutstationRouteEntry).start_city;
-                    const to = tripType === "intercity" ? (route as RouteEntry).to_stop : (route as OutstationRouteEntry).end_city;
-                    navigate("/bus-results", {
-                      state: { from, to, state: selectedState, tripType },
-                    });
-                  }}
-                >
-                  Book Ticket <ChevronRight className="w-3 h-3 ml-0.5" />
-                </Button>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </motion.div>
       )}
     </PageShell>

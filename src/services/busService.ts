@@ -226,10 +226,15 @@ export const busService = {
   /**
    * Get all routes (Admin/General)
    */
-  async getAllRoutes(): Promise<BusRoute[]> {
-    const { data, error } = await supabase
-      .from('routes')
-      .select('*');
+  async getAllRoutes(cityName?: string): Promise<BusRoute[]> {
+    let query = supabase.from('routes').select('*');
+    
+    if (cityName) {
+      // Filter routes where origin or destination includes the city name
+      query = query.or(`origin.ilike.%${cityName}%,destination.ilike.%${cityName}%`);
+    }
+
+    const { data, error } = await query;
 
     if (error) throw error;
     return data as BusRoute[];
@@ -259,5 +264,24 @@ export const busService = {
 
     if (error) return null;
     return data as BusRoute;
+  },
+
+  /**
+   * Get stops within a specific city
+   */
+  async getStopsByCity(cityName: string): Promise<BusStop[]> {
+    const { data, error } = await supabase
+      .from('stops')
+      .select('*')
+      .ilike('name', `%${cityName}%`);
+    
+    // If no direct name match, try fetching all and returning a generic set for now
+    // In a real DB, we would have a city_id relationship
+    if (error) throw error;
+    if (data && data.length > 0) return data as BusStop[];
+
+    // Fallback: Get some random stops if city name doesn't match stop names
+    const { data: allStops } = await supabase.from('stops').select('*').limit(5);
+    return (allStops || []) as BusStop[];
   }
 };

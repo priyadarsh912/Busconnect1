@@ -96,17 +96,10 @@ const ConfirmationPage = () => {
       {/* Actions */}
       <div className="space-y-4">
         <Button 
-          onClick={() => navigate("/tracking", { state: { route: bus } })} 
+          onClick={() => navigate("/e-ticket", { state: { bus, passengers } })} 
           className="w-full py-7 rounded-3xl bg-primary text-white font-headline font-black text-lg shadow-xl shadow-primary/20 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
         >
-          <Navigation className="w-6 h-6" /> Track My Bus
-        </Button>
-        <Button 
-          onClick={() => navigate("/e-ticket", { state: { bus, passengers } })} 
-          variant="outline" 
-          className="w-full py-7 rounded-3xl border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 text-on-surface font-headline font-bold shadow-sm active:scale-[0.98] transition-all flex items-center justify-center gap-3"
-        >
-          <Download className="w-6 h-6" /> Download Ticket
+          <Download className="w-6 h-6" /> View E-Ticket
         </Button>
 
         <button 

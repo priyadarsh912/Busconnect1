@@ -108,7 +108,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-surface flex flex-col font-body text-on-surface">
+    <div className="max-w-md mx-auto min-h-screen bg-background flex flex-col font-body text-foreground">
       {/* Background Micro-Pulses */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-primary/5 blur-[120px]" />
@@ -132,25 +132,24 @@ const LoginPage = () => {
       <main className="flex-1 px-8 py-4 flex flex-col">
         {/* Branding */}
         <div className="mb-10 text-center md:text-left">
-          <div className="inline-flex items-center justify-center w-20 h-20 mb-6 rounded-3xl bg-white shadow-xl shadow-primary/10 border border-slate-50 relative group p-3 overflow-hidden">
+          <div className="inline-flex items-center justify-center w-20 h-20 mb-6 rounded-[1.5rem] bg-white dark:bg-slate-800 shadow-xl shadow-primary/10 border border-slate-50 dark:border-slate-800 relative group p-4 overflow-hidden">
              <img 
                src="/b_logo.png" 
                alt="BusConnect" 
                className="w-full h-full object-contain" 
-               style={{ filter: "brightness(0) saturate(100%) invert(23%) sepia(87%) saturate(1461%) hue-rotate(152deg) brightness(89%) contrast(101%)" }}
              />
           </div>
           <h1 className="font-headline font-black text-5xl text-primary italic tracking-tighter mb-3 leading-[0.9]">
             Welcome to <br />
             BusConnect
           </h1>
-          <p className="text-on-surface-variant text-base font-medium leading-relaxed max-w-sm">
+          <p className="text-muted-foreground text-base font-medium leading-relaxed max-w-sm">
             {isSignUp ? "Create an account to start your reimagined daily journey." : "Your daily commute, reimagined with real-time intelligence."}
           </p>
         </div>
 
         {/* Input Form Card */}
-        <div className="glass-panel p-8 rounded-3xl shadow-[0_24px_48px_rgba(0,0,0,0.04)] border border-white/40 bg-white/70 backdrop-blur-xl">
+        <div className="glass-panel p-8 rounded-3xl shadow-[0_24px_48px_rgba(0,0,0,0.04)] border border-white/40 dark:border-slate-800/50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl">
           <AnimatePresence mode="wait">
             {!isOtpSent ? (
                <motion.div
@@ -167,7 +166,7 @@ const LoginPage = () => {
                        <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                        <Input 
                          placeholder="Enter your name" 
-                         className="pl-14 pr-6 py-4 bg-slate-50 border-none rounded-full h-14 text-base focus:ring-4 focus:ring-primary/10 shadow-inner"
+                         className="pl-14 pr-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-none rounded-full h-14 text-base focus:ring-4 focus:ring-primary/10 shadow-inner"
                          value={name}
                          onChange={(e) => setName(e.target.value)}
                        />
@@ -184,7 +183,7 @@ const LoginPage = () => {
                          type="tel"
                          maxLength={10}
                          placeholder="9876543210" 
-                         className="pl-16 pr-6 py-4 bg-slate-50/50 border-none rounded-full h-14 text-lg font-medium focus:ring-4 focus:ring-primary/10 shadow-inner"
+                         className="pl-16 pr-6 py-4 bg-slate-50/50 dark:bg-slate-800/50 border-none rounded-full h-14 text-lg font-medium focus:ring-4 focus:ring-primary/10 shadow-inner"
                          value={inputValue}
                          onChange={(e) => setInputValue(e.target.value)}
                        />
@@ -199,7 +198,7 @@ const LoginPage = () => {
                          <Input 
                            type="email"
                            placeholder="you@example.com" 
-                           className="pl-14 pr-6 py-4 bg-slate-50 border-none rounded-full h-14 text-base focus:ring-4 focus:ring-primary/10 shadow-inner"
+                           className="pl-14 pr-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-none rounded-full h-14 text-base focus:ring-4 focus:ring-primary/10 shadow-inner"
                            value={inputValue}
                            onChange={(e) => setInputValue(e.target.value)}
                          />
@@ -212,7 +211,7 @@ const LoginPage = () => {
                          <Input 
                            type={showPassword ? "text" : "password"}
                            placeholder="••••••••" 
-                           className="pl-14 pr-14 h-14 bg-slate-50 border-none rounded-full text-base focus:ring-4 focus:ring-primary/10 shadow-inner"
+                           className="pl-14 pr-14 h-14 bg-slate-50 dark:bg-slate-800/50 border-none rounded-full text-base focus:ring-4 focus:ring-primary/10 shadow-inner"
                            value={password}
                            onChange={(e) => setPassword(e.target.value)}
                          />
@@ -248,7 +247,7 @@ const LoginPage = () => {
                      setMode(mode === "phone" ? "email" : "phone");
                      setInputValue("");
                    }}
-                   className="w-full py-6 rounded-full border-slate-100/60 bg-white text-on-surface font-headline font-bold text-sm shadow-sm flex items-center justify-center gap-2 hover:bg-slate-50 active:scale-95 transition-all"
+                   className="w-full py-6 rounded-full border-slate-100/60 dark:border-slate-800/60 bg-white dark:bg-slate-800 text-foreground font-headline font-bold text-sm shadow-sm flex items-center justify-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 transition-all"
                  >
                    {mode === "phone" ? <Mail className="w-4 h-4 text-primary" /> : <Phone className="w-4 h-4 text-primary" />}
                    <span className="tracking-tight">{mode === "phone" ? "Email & Password" : "Mobile Number"}</span>
@@ -269,7 +268,7 @@ const LoginPage = () => {
                  <Input 
                    placeholder="123456" 
                    maxLength={6} 
-                   className="text-center h-16 text-3xl font-black tracking-[0.5em] rounded-2xl bg-slate-50 border-none shadow-inner" 
+                   className="text-center h-16 text-3xl font-black tracking-[0.5em] rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-none shadow-inner" 
                    value={otp} 
                    onChange={(e) => setOtp(e.target.value)} 
                  />

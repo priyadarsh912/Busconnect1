@@ -98,7 +98,7 @@ const ETicketPage = () => {
           <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center transition-transform active:scale-95">
             <ArrowLeft className="w-5 h-5 text-primary" />
           </button>
-          <h1 className="font-headline font-bold text-2xl tracking-tight text-on-surface">Digital E-Ticket</h1>
+          <h1 className="font-headline font-bold text-2xl tracking-tight text-foreground">Digital E-Ticket</h1>
         </div>
         <button onClick={handleShare} className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center text-slate-500">
           <Share2 className="w-5 h-5" />
@@ -141,7 +141,7 @@ const ETicketPage = () => {
                   <div className="flex items-center justify-between gap-4">
                       <div className="flex-1">
                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">From</p>
-                          <p className="font-headline font-bold text-xl leading-snug text-on-surface">{ticketData.bus.from}</p>
+                          <p className="font-headline font-bold text-xl leading-snug text-foreground">{ticketData.bus.from}</p>
                           <p className="text-sm font-bold text-primary mt-2">{ticketData.startTime}</p>
                       </div>
                       <div className="flex flex-col items-center justify-center px-6">
@@ -152,19 +152,19 @@ const ETicketPage = () => {
                       </div>
                       <div className="flex-1 text-right">
                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">To</p>
-                          <p className="font-headline font-bold text-xl leading-snug text-on-surface">{ticketData.bus.to}</p>
+                          <p className="font-headline font-bold text-xl leading-snug text-foreground">{ticketData.bus.to}</p>
                           <p className="text-sm font-bold text-primary mt-2">{ticketData.endTime}</p>
                       </div>
                   </div>
               </div>
               <div className="relative py-4 flex items-center bg-white dark:bg-slate-900">
-                  <div className="absolute -left-5 w-10 h-10 bg-surface dark:bg-background rounded-full border border-slate-100 dark:border-slate-800" />
+                  <div className="absolute -left-5 w-10 h-10 bg-background rounded-full border border-slate-100 dark:border-slate-800" />
                   <div className="w-full border-t-2 border-dashed border-slate-100 dark:border-slate-800 mx-8" />
-                  <div className="absolute -right-5 w-10 h-10 bg-surface dark:bg-background rounded-full border border-slate-100 dark:border-slate-800" />
+                  <div className="absolute -right-5 w-10 h-10 bg-background rounded-full border border-slate-100 dark:border-slate-800" />
               </div>
               <div className="p-8 pb-10 flex items-center justify-between bg-white dark:bg-slate-900 rounded-b-[2rem]">
                   <div className="space-y-6">
-                      <div className="flex flex-col"><span className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Passenger</span><span className="font-headline font-extrabold text-lg text-on-surface">{ticketData.passengerName}</span></div>
+                      <div className="flex flex-col"><span className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Passenger</span><span className="font-headline font-extrabold text-lg text-foreground">{ticketData.passengerName}</span></div>
                       <div className="flex flex-col"><span className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Ticket ID</span><span className="font-headline font-extrabold text-lg text-primary">{ticketData.ticketId}</span></div>
                       <div className="flex items-center gap-2"><div className="px-3 py-1 bg-slate-50 dark:bg-slate-800 rounded-full border border-slate-100 dark:border-slate-800"><span className="text-[10px] font-bold text-slate-500">{ticketData.date}</span></div></div>
                   </div>

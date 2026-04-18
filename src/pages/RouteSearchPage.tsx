@@ -45,9 +45,9 @@ const RouteSearchPage = () => {
             const stops = new Set<string>();
             
             routes.forEach(r => {
-                // In Supabase schema, source and destination are objects with 'name'
-                const src = (r as any).source?.name || (r as any).from_stop;
-                const dst = (r as any).destination?.name || (r as any).to_stop;
+                const rt = r as any;
+                const src = rt.origin || rt.source?.name || rt.from_stop;
+                const dst = rt.destination || rt.destination?.name || rt.to_stop;
                 if (src) stops.add(src);
                 if (dst) stops.add(dst);
             });
@@ -57,10 +57,11 @@ const RouteSearchPage = () => {
             const seen = new Set<string>();
             const popular: BusRoute[] = [];
             for (const r of routes) {
-                const src = (r as any).source?.name || (r as any).from_stop;
-                const dst = (r as any).destination?.name || (r as any).to_stop;
+                const rt = r as any;
+                const src = rt.origin || rt.source?.name || rt.from_stop;
+                const dst = rt.destination || rt.destination?.name || rt.to_stop;
                 const key = `${src}|${dst}`;
-                if (seen.has(key)) continue;
+                if (!src || !dst || seen.has(key)) continue;
                 seen.add(key);
                 popular.push(r);
                 if (popular.length >= 5) break;
@@ -317,8 +318,9 @@ const RouteSearchPage = () => {
                         </div>
                     ) : (
                         popularRoutes.map((route, i) => {
-                            const src = (route as any).source?.name || (route as any).from_stop;
-                            const dst = (route as any).destination?.name || (route as any).to_stop;
+                            const rt = route as any;
+                            const src = rt.origin || rt.source?.name || rt.from_stop;
+                            const dst = rt.destination || rt.destination?.name || rt.to_stop;
                             
                             return (
                                 <motion.button

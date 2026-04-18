@@ -25,61 +25,48 @@ export interface UnifiedRoute {
  */
 function mapSupabaseToUnifiedRoute(route: any): UnifiedRoute {
   return {
-    route_id: route.id?.toString() || 'unknown',
-    start_stop: route.source?.name || 'Unknown',
-    stop_1: '', // Intermediate stops are handled separately now
+    route_id: route.route_number || route.id?.toString() || 'unknown',
+    start_stop: route.origin || 'Unknown',
+    stop_1: '', 
     stop_2: '',
-    end_stop: route.destination?.name || 'Unknown',
+    end_stop: route.destination || 'Unknown',
     distance_km: Number(route.distance_km || 0),
-    eta_min: Math.round(Number(route.distance_km || 0) * 1.5), // Heuristic estimate
-    price_inr: Number(route.pricing?.min_fare || route.base_fare || 0),
-    crowd: 'Low', // Placeholder for upcoming AI integration
+    eta_min: Math.round(Number(route.distance_km || 0) * 2) || 30, 
+    price_inr: Number(route.price_inr || 10),
+    crowd: 'Low', 
     operator: 'BusConnect Express',
-    route_type: 'outstation',
-    start_lat: route.source?.latitude || 0,
-    start_lon: route.source?.longitude || 0,
-    end_lat: route.destination?.latitude || 0,
-    end_lon: route.destination?.longitude || 0,
-    highway: route.destination?.name?.includes('Delhi') ? 'NH44' : 'NH7'
+    route_type: route.distance_km > 50 ? 'outstation' : 'intercity',
+    start_lat: 0,
+    start_lon: 0,
+    end_lat: 0,
+    end_lon: 0,
+    highway: 'Main Road'
   };
 }
 
 export const getRoutesForState = async (stateName: string, tripType: "intercity" | "outstation" = "outstation"): Promise<UnifiedRoute[]> => {
     try {
-        // Query routes with nested joins for source/destination/state data
-        const { data, error } = await supabase
-            .from('routes')
-            .select(`
-                *,
-                source:source_stop_id (
-                    name, 
-                    latitude, 
-                    longitude, 
-                    district:district_id (
-                        state:state_id (name)
-                    )
-                ),
-                destination:destination_stop_id (
-                    name, 
-                    latitude, 
-                    longitude
-                ),
-                pricing:pricing_configs (*)
-            `);
+        const query = supabase.from('routes').select('*');
+        
+        if (stateName) {
+            query.or(`origin.ilike.%${stateName}%,destination.ilike.%${stateName}%`);
+        }
+
+        if (tripType === "intercity") {
+            query.lte('distance_km', 50);
+        } else {
+            query.gt('distance_km', 50);
+        }
+
+        const { data, error } = await query;
 
         if (error) throw error;
-
         if (!data) return [];
 
-        // Filter routes where the source state matches the requested state
-        const stateRoutes = data.filter((r: any) => {
-            const sourceState = (r.source as any)?.district?.state?.name;
-            return sourceState === stateName;
-        });
-
-        return stateRoutes.map(mapSupabaseToUnifiedRoute);
+        // For now, return all routes (or filter by city if we add that logic)
+        return data.map(mapSupabaseToUnifiedRoute);
     } catch (err) {
-        console.error(`Supabase fetch failed for ${stateName}:`, err);
+        console.error(`Supabase fetch failed:`, err);
         return [];
     }
 };

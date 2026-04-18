@@ -13,7 +13,7 @@ export const useIntercityRoutes = (stateName: string = "Chandigarh") => {
                 // In a production app, we would filter by state in the query.
                 // For now, we fetch all and can filter client-side if needed, 
                 // but busService.getAllRoutes() is the new source of truth.
-                const data = await busService.getAllRoutes();
+                const data = await busService.getAllRoutes(stateName);
                 
                 // Assuming intercity routes are those with distance <= 50km or marked as such
                 const intercity = data.filter(r => r.distance_km <= 50);

@@ -51,7 +51,7 @@ const RouteDetailsPage = () => {
         fetchRouteAndStops();
     }, [routeNumber]);
 
-    const destination = routeData.destination || stops[stops.length - 1]?.name || "Destination";
+    const destination = routeData.destination || routeData.to || stops[stops.length - 1]?.name || "Destination";
 
     useEffect(() => {
         if (!mapRef.current || stops.length === 0) return;

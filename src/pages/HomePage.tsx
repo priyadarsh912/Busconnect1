@@ -33,20 +33,29 @@ const HomePage = () => {
   const [pendingCity, setPendingCity] = useState("");
   const [routes, setRoutes] = useState<BusRoute[]>([]);
   const [loadingRoutes, setLoadingRoutes] = useState(true);
+  const [nearestStops, setNearestStops] = useState<any[]>([]);
+  const [loadingStops, setLoadingStops] = useState(true);
 
   useEffect(() => {
-    const fetchRoutes = async () => {
+    const fetchData = async () => {
+      setLoadingRoutes(true);
+      setLoadingStops(true);
       try {
-        const data = await busService.getAllRoutes();
-        setRoutes(data || []);
+        const [routesData, stopsData] = await Promise.all([
+          busService.getAllRoutes(selectedCity),
+          busService.getStopsByCity(selectedCity)
+        ]);
+        setRoutes(routesData || []);
+        setNearestStops(stopsData || []);
       } catch (err) {
-        console.error("Error fetching routes:", err);
+        console.error("Error fetching homepage data:", err);
       } finally {
         setLoadingRoutes(false);
+        setLoadingStops(false);
       }
     };
-    fetchRoutes();
-  }, []);
+    fetchData();
+  }, [selectedCity]);
 
   const handleSearch = () => {
     navigate("/route-search");
@@ -64,6 +73,7 @@ const HomePage = () => {
     // Auto transition back to home after splash
     setTimeout(() => {
       setSelectedCity(city);
+      localStorage.setItem("selectedState", city);
       setShowWelcomeSplash(false);
       setSearchQuery("");
     }, 2500);
@@ -95,7 +105,7 @@ const HomePage = () => {
         <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 to-primary-container/10 rounded-[2rem] blur opacity-25" />
         <div className="relative flex items-center h-14 bg-white dark:bg-slate-900 rounded-2xl px-5 shadow-sm border border-slate-50 dark:border-slate-800" onClick={handleSearch}>
           <Search className="w-5 h-5 text-primary" />
-          <span className="text-sm font-bold text-slate-400 ml-3">Find and track your bus</span>
+          <span className="text-sm font-bold text-slate-400 ml-3">Find your bus routes</span>
         </div>
       </motion.div>
 
@@ -161,7 +171,9 @@ const HomePage = () => {
                <div className="w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center border border-slate-200 dark:border-slate-700">
                   <MapPin className="w-5 h-5 text-on-surface" />
                </div>
-               <h3 className="font-headline font-bold text-base">Jaydev Vihar Square</h3>
+               <h3 className="font-headline font-bold text-base">
+                 {loadingStops ? "Locating..." : nearestStops[0]?.name || `Main Square, ${selectedCity}`}
+               </h3>
              </div>
              <div className="bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full flex items-center gap-1.5">
                 <User className="w-3 h-3 text-slate-400" />
@@ -171,55 +183,46 @@ const HomePage = () => {
 
            {/* Bus List */}
            <div className="space-y-4">
-             {/* Bus 1 */}
-             <div className="flex items-center justify-between group cursor-pointer" onClick={() => navigate("/route-details", { state: { route: { number: "18", destination: "Jagatpur" } } })}>
-                <div className="flex items-center gap-3">
-                  <Bus className="w-5 h-5 text-slate-400" />
-                  <div>
-                    <p className="font-headline font-bold text-base leading-none mb-1">18</p>
-                    <p className="text-xs text-slate-400 font-medium">To Jagatpur</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-primary font-bold text-sm flex items-center gap-1">
-                     <span className="relative flex h-2 w-2 mr-1">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                     </span>
-                     In 8 min
-                  </span>
-                  <div className="flex text-green-500">
-                     <User className="w-3.5 h-3.5" />
-                     <User className="w-3.5 h-3.5" />
-                     <User className="w-3.5 h-3.5 text-slate-200 dark:text-slate-700" />
-                  </div>
-                </div>
-             </div>
-
-             {/* Bus 2 */}
-             <div className="flex items-center justify-between group cursor-pointer border-t border-slate-50 dark:border-slate-800/50 pt-4" onClick={() => navigate("/route-details", { state: { route: { number: "47", destination: "Settlement Office" } } })}>
-                <div className="flex items-center gap-3">
-                  <Bus className="w-5 h-5 text-slate-400" />
-                  <div>
-                    <p className="font-headline font-bold text-base leading-none mb-1">47</p>
-                    <p className="text-xs text-slate-400 font-medium">To Settlement Office</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-primary font-bold text-sm flex items-center gap-1">
-                     <span className="relative flex h-2 w-2 mr-1">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                     </span>
-                     In 20 min
-                  </span>
-                  <div className="flex text-orange-500">
-                     <User className="w-3.5 h-3.5" />
-                     <User className="w-3.5 h-3.5" />
-                     <User className="w-3.5 h-3.5" />
-                  </div>
-                </div>
-             </div>
+             {loadingRoutes ? (
+               <div className="py-4 text-center">
+                 <Loader2 className="w-6 h-6 text-primary animate-spin mx-auto mb-2" />
+                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">Checking departures...</p>
+               </div>
+             ) : routes.length > 0 ? (
+               routes.slice(0, 2).map((route, i) => (
+                 <div 
+                   key={route.id} 
+                   className={`flex items-center justify-between group cursor-pointer ${i > 0 ? "border-t border-slate-50 dark:border-slate-800/50 pt-4" : ""}`} 
+                   onClick={() => navigate("/route-details", { state: { route } })}
+                 >
+                    <div className="flex items-center gap-3">
+                      <Bus className="w-5 h-5 text-slate-400" />
+                      <div>
+                        <p className="font-headline font-bold text-base leading-none mb-1">{route.route_number}</p>
+                        <p className="text-xs text-slate-400 font-medium">To {route.destination}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-primary font-bold text-sm flex items-center gap-1">
+                         <span className="relative flex h-2 w-2 mr-1">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                         </span>
+                         In {8 + (i * 12)} min
+                      </span>
+                      <div className="flex text-green-500">
+                         <User className="w-3.5 h-3.5" />
+                         <User className="w-3.5 h-3.5" />
+                         <User className="w-3.5 h-3.5 text-slate-200 dark:text-slate-700" />
+                      </div>
+                    </div>
+                 </div>
+               ))
+             ) : (
+               <div className="py-4 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                 No active buses found
+               </div>
+             )}
            </div>
         </div>
 

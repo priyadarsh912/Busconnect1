@@ -1,8 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
-const dotenv = require('dotenv');
 const path = require('path');
-
-dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -23,7 +20,7 @@ async function checkDB() {
 
   const { data: routes, error: routesError } = await supabase.from('routes').select('*');
   if (routesError) console.error('Routes Error:', routesError);
-  else console.log('Routes Count:', routes?.length);
+  else console.log('Routes:', JSON.stringify(routes, null, 2));
 
   const { data: stops, error: stopsError } = await supabase.from('stops').select('*');
   if (stopsError) console.error('Stops Error:', stopsError);

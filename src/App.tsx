@@ -10,7 +10,6 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import BusResultsPage from "./pages/BusResultsPage";
 import ConfirmationPage from "./pages/ConfirmationPage";
-import TrackingPage from "./pages/TrackingPage";
 import ETicketPage from "./pages/ETicketPage";
 import RoutesPage from "./pages/RoutesPage";
 import AccountPage from "./pages/AccountPage";
@@ -39,7 +38,6 @@ import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminRoutesPage from "./pages/admin/AdminRoutesPage";
 import AdminAnalyticsPage from "./pages/admin/AdminAnalyticsPage";
 import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
-import AdminBusTrackingPage from "./pages/admin/AdminBusTrackingPage";
 import AdminRouteDetailsPage from "./pages/admin/AdminRouteDetailsPage";
 import AdminDriversPage from "./pages/admin/AdminDriversPage";
 import AdminSecurityPage from "./pages/admin/AdminSecurityPage";
@@ -73,7 +71,6 @@ const AnimatedRoutes = () => {
           <Route path="routes" element={<AdminRoutesPage />} />
           <Route path="analytics" element={<AdminAnalyticsPage />} />
           <Route path="settings" element={<AdminSettingsPage />} />
-          <Route path="tracking" element={<AdminBusTrackingPage />} />
           <Route path="route-details" element={<AdminRouteDetailsPage />} />
           <Route path="drivers" element={<AdminDriversPage />} />
           <Route path="security" element={<AdminSecurityPage />} />
@@ -84,7 +81,6 @@ const AnimatedRoutes = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/bus-results" element={<BusResultsPage />} />
           <Route path="/confirmation" element={<ConfirmationPage />} />
-          <Route path="/tracking" element={<TrackingPage />} />
           <Route path="/e-ticket" element={<ETicketPage />} />
           <Route path="/routes" element={<RoutesPage />} />
           <Route path="/my-bookings" element={<MyBookingsPage />} />

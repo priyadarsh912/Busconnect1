@@ -40,7 +40,7 @@ const OnboardingPage = ({ onFinish }: { onFinish: () => void }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-surface flex flex-col font-body text-on-surface select-none">
+    <div className="fixed inset-0 z-[9999] bg-background flex flex-col font-body text-foreground select-none">
       {/* Editorial Background */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-primary/5 blur-[120px]" />
@@ -80,10 +80,10 @@ const OnboardingPage = ({ onFinish }: { onFinish: () => void }) => {
               />
             </div>
 
-            <h1 className="font-headline font-extrabold text-4xl tracking-tight text-on-surface leading-tight mb-4">
+            <h1 className="font-headline font-extrabold text-4xl tracking-tight text-foreground leading-tight mb-4">
               {slides[current].title}
             </h1>
-            <p className="text-on-surface-variant text-lg leading-relaxed font-normal px-4">
+            <p className="text-muted-foreground text-lg leading-relaxed font-normal px-4">
               {slides[current].description}
             </p>
           </motion.div>

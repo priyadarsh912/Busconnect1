@@ -63,6 +63,9 @@ const mapRoutesToBuses = (routes: UnifiedRoute[], tripType: string): BusRoute[] 
     return {
       id: i,
       route_no: r.route_id,
+      name: r.route_id,
+      from: from_stop,
+      to: to_stop,
       from_stop,
       to_stop,
       stop,
@@ -289,20 +292,13 @@ const BusResultsPage = () => {
                  </div>
               </div>
 
-              <div className="flex gap-3">
-                 <Button 
-                    variant="outline"
-                    className="flex-1 rounded-2xl border-slate-100 dark:border-slate-800 text-xs font-bold"
-                    onClick={() => { RouteHistoryManager.trackRoute(bus, initialState.tripType); navigate("/tracking", { state: { route: bus, tripType: initialState.tripType } }); }}
-                 >
-                    <MapPin className="w-4 h-4 mr-2" /> Live Track
-                 </Button>
-                 <Button 
-                    className="flex-[2] rounded-2xl bg-primary dark:bg-primary/80 border-none text-white font-headline font-black text-sm shadow-xl active:scale-[0.98] transition-all"
-                    onClick={() => handleBookClick(bus)}
-                 >
-                    Review & Book
-                 </Button>
+              <div className="mt-4">
+                <Button 
+                   className="w-full rounded-2xl bg-primary text-white font-headline font-black text-sm shadow-xl py-6"
+                   onClick={() => handleBookClick(bus)}
+                >
+                   Review & Book Journey
+                </Button>
               </div>
             </motion.div>
           ))

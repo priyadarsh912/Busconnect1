@@ -12,7 +12,7 @@ export const useOutstationRoutes = (stateName: string = "Chandigarh") => {
                 setIsLoading(true);
                 // Outstation routes are generally longer distance (>50km).
                 // Fetching from Supabase via busService is the new single source of truth.
-                const data = await busService.getAllRoutes();
+                const data = await busService.getAllRoutes(stateName);
                 
                 // Outstation filtering (distance > 50km or explicit flag if we had one)
                 const outstation = data.filter(r => r.distance_km > 50);
