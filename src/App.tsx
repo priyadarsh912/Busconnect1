@@ -45,14 +45,7 @@ import AdminNotificationsPage from "./pages/admin/AdminNotificationsPage";
 import { LanguageProvider } from "./lib/language";
 import SplashScreen from "./components/SplashScreen";
 import { useState, useEffect } from "react";
-import { notificationService } from "./services/notificationService";
-import { useNotifications } from "./hooks/useNotifications";
-import { sqlService } from "./services/offline/SQLService";
-import { syncEngine } from "./services/offline/SyncEngine";
-import { networkManager } from "./services/offline/NetworkManager";
-
-import OfflineOverlay from "./components/OfflineOverlay";
-import { analyticsService } from "./services/AnalyticsService";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
@@ -110,59 +103,52 @@ const AnimatedRoutes = () => {
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
-  const [isOffline, setIsOffline] = useState(!networkManager.getStatus());
-  const [suppressOffline, setSuppressOffline] = useState(false);
-  
-  // Initialize unified notifications hook (proximity + reminders + location sync)
-  useNotifications();
 
   useEffect(() => {
-    // 1. Track App Open
-    analyticsService.trackAppOpen();
-
-    // 2. Watch location and network status
-    networkManager.onStatusChange((isOnline) => {
-      setIsOffline(!isOnline);
-      if (isOnline) {
-        setSuppressOffline(false); // Reset when online
-        analyticsService.logEvent('offline_mode_exited');
-      } else {
-        analyticsService.logEvent('offline_mode_entered');
-      }
-    });
-
-    // Initialize Offline Architecture
-    const initOffline = async () => {
-      try {
-        await sqlService.initialize();
-        console.log("App: Offline DB Initialized");
-        
-        // Start sync engine processing
-        if (networkManager.getStatus()) {
-          syncEngine.processQueue();
-        }
-      } catch (err) {
-        console.error("App: Offline init error:", err);
-      }
-    };
-    initOffline();
-
-    // Set up foreground message listener
-    notificationService.listenForMessages();
-
-    // Request notification permission and save token on app start
-    notificationService.requestPermissionAndToken().catch(err => console.error("FCM start err:", err));
-
-    // FAIL-SAFE: Ensure splash screen always dismisses even if init hangs
+    // FAIL-SAFE: Ensure splash screen always dismisses
     const splashFallback = setTimeout(() => {
       setShowSplash(false);
     }, 6000);
+
+    // Initialize services safely in background
+    const initServices = async () => {
+      try {
+        // Lazy-load heavy services to avoid blocking render
+        const { sqlService } = await import("./services/offline/SQLService");
+        await sqlService.initialize();
+        console.log("App: Offline DB Initialized");
+        
+        const { syncEngine } = await import("./services/offline/SyncEngine");
+        syncEngine.start();
+        console.log("App: SyncEngine Started");
+      } catch (err) {
+        console.error("App: Offline init error:", err);
+      }
+
+      try {
+        const { notificationService } = await import("./services/notificationService");
+        notificationService.listenForMessages();
+        notificationService.requestPermissionAndToken().catch(err => console.error("FCM err:", err));
+      } catch (err) {
+        console.error("App: Notification init error:", err);
+      }
+
+      try {
+        const { analyticsService } = await import("./services/AnalyticsService");
+        analyticsService.trackAppOpen();
+      } catch (err) {
+        console.error("App: Analytics init error:", err);
+      }
+    };
+
+    initServices();
 
     return () => clearTimeout(splashFallback);
   }, []);
 
 
   return (
+    <ErrorBoundary>
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <LanguageProvider>
         <QueryClientProvider client={queryClient}>
@@ -178,14 +164,6 @@ const App = () => {
                   transition={{ duration: 0.6 }}
                   className="h-full w-full"
                 >
-                  <OfflineOverlay 
-                    isOffline={isOffline && !suppressOffline} 
-                    onContinueOffline={() => setSuppressOffline(true)}
-                    onRetry={() => {
-                      console.log("Retrying connection...");
-                    }}
-                  />
-
                   <Toaster />
                   <Sonner />
                   <BrowserRouter>
@@ -200,8 +178,7 @@ const App = () => {
         </QueryClientProvider>
       </LanguageProvider>
     </ThemeProvider>
-
-
+    </ErrorBoundary>
   );
 };
 

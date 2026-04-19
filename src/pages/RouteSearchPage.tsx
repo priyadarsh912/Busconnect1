@@ -43,13 +43,19 @@ const RouteSearchPage = () => {
         if (!loading) {
             const routes = tripType === "intercity" ? intercity.routes : outstation.routes;
             const stops = new Set<string>();
-            
             routes.forEach(r => {
                 const rt = r as any;
                 const src = rt.origin || rt.source?.name || rt.from_stop;
                 const dst = rt.destination || rt.destination?.name || rt.to_stop;
                 if (src) stops.add(src);
                 if (dst) stops.add(dst);
+                
+                // Add intermediate stops to suggestions
+                if (rt.stops) {
+                    rt.stops.forEach((s: any) => {
+                        if (s.name) stops.add(s.name);
+                    });
+                }
             });
             setAllCities(Array.from(stops).sort());
 

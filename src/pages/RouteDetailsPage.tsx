@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { busService, BusStop, BusRoute } from "../services/busService";
+import { routingService } from "../services/routingService";
 
 const RouteDetailsPage = () => {
     const navigate = useNavigate();
@@ -16,15 +17,17 @@ const RouteDetailsPage = () => {
     const [mapReady, setMapReady] = useState(false);
     const [stops, setStops] = useState<BusStop[]>([]);
     const [loading, setLoading] = useState(true);
+    const [routePath, setRoutePath] = useState<[number, number][]>([]);
+    const [pathLoading, setPathLoading] = useState(false);
+    const [pathError, setPathError] = useState(false);
 
     const routeNumber = String(routeData.number || routeData.route_number || "DD1");
 
-    // Fetch dynamic stops from database
+    // ── Step 1: Fetch stops from the database ────────────────────
     useEffect(() => {
         const fetchRouteAndStops = async () => {
             setLoading(true);
             try {
-                // 1. Get detailed route info if we only have the number
                 let fullRoute = routeData;
                 if (!routeData.id) {
                     const dbRoute = await busService.getRouteByNumber(routeNumber);
@@ -34,7 +37,6 @@ const RouteDetailsPage = () => {
                     }
                 }
 
-                // 2. Get stops for this route
                 if (fullRoute.id) {
                     const dbStops = await busService.getStopsForRoute(fullRoute.id);
                     setStops(dbStops);
@@ -51,70 +53,154 @@ const RouteDetailsPage = () => {
         fetchRouteAndStops();
     }, [routeNumber]);
 
-    const destination = routeData.destination || routeData.to || stops[stops.length - 1]?.name || "Destination";
+    // ── Step 2: Fetch the real road path once stops are loaded ────
+    useEffect(() => {
+        if (stops.length < 2) {
+            setRoutePath([]);
+            return;
+        }
 
+        let cancelled = false;
+
+        const fetchRoadPath = async () => {
+            setPathLoading(true);
+            setPathError(false);
+
+            try {
+                const waypoints = stops.map(
+                    s => [s.latitude, s.longitude] as [number, number]
+                );
+                const roadCoords = await routingService.getRoutePath(waypoints);
+
+                if (!cancelled) {
+                    // Validate: a good road path has many more points than just the stops
+                    if (roadCoords.length > waypoints.length) {
+                        setRoutePath(roadCoords);
+                    } else {
+                        // OSRM returned too few points — essentially straight lines
+                        console.warn("Road path has too few points, likely failed");
+                        setRoutePath([]);
+                        setPathError(true);
+                    }
+                }
+            } catch (err) {
+                console.error("Road path error:", err);
+                if (!cancelled) {
+                    setRoutePath([]);
+                    setPathError(true);
+                }
+            } finally {
+                if (!cancelled) setPathLoading(false);
+            }
+        };
+
+        fetchRoadPath();
+        return () => { cancelled = true; };
+    }, [stops]);
+
+    // ── Step 3: Render the map ───────────────────────────────────
     useEffect(() => {
         if (!mapRef.current || stops.length === 0) return;
 
-        // Clean up any existing map instance on this container
-        const container = mapRef.current as any;
-        if (container._leaflet_id !== undefined) {
-            container._leaflet_id = null;
+        // Destroy previous map instance
+        if (mapInstance.current) {
+            mapInstance.current.remove();
+            mapInstance.current = null;
         }
 
-        // Calculate center from stops
-        const avgLat = stops.reduce((sum, s) => sum + s.latitude, 0) / stops.length;
-        const avgLng = stops.reduce((sum, s) => sum + s.longitude, 0) / stops.length;
+        // Calculate center
+        const avgLat = stops.reduce((s, st) => s + st.latitude, 0) / stops.length;
+        const avgLng = stops.reduce((s, st) => s + st.longitude, 0) / stops.length;
 
-        const map = L.map(container, {
+        const map = L.map(mapRef.current, {
             center: [avgLat, avgLng],
-            zoom: 12,
+            zoom: 13,
             zoomControl: false,
             attributionControl: false,
         });
         mapInstance.current = map;
 
-        // Use a clean tile layer
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            maxZoom: 19,
-        }).addTo(map);
+        // High-quality tile layer
+        L.tileLayer(
+            'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+            { maxZoom: 19 }
+        ).addTo(map);
 
-        // Draw the route line and markers
-        const routeLatLngs: L.LatLngExpression[] = stops.map(s => [s.latitude, s.longitude]);
-        
-        // Route line - thick dark line
-        L.polyline(routeLatLngs, {
+        // ── Draw the route polyline ──────────────────────────────
+        // Use road path if available, otherwise fall back to straight stop-to-stop lines
+        const pathToRender: L.LatLngExpression[] =
+            routePath.length > 0
+                ? routePath.map(c => [c[0], c[1]] as L.LatLngExpression)
+                : stops.map(s => [s.latitude, s.longitude] as L.LatLngExpression);
+
+        // Outer glow line (wider, semi-transparent)
+        L.polyline(pathToRender, {
             color: "#006B7D",
-            weight: 6,
-            opacity: 0.9,
+            weight: 10,
+            opacity: 0.2,
             lineCap: "round",
             lineJoin: "round",
         }).addTo(map);
 
-        // Stop markers
+        // Main route line
+        L.polyline(pathToRender, {
+            color: "#006B7D",
+            weight: 5,
+            opacity: 0.95,
+            lineCap: "round",
+            lineJoin: "round",
+        }).addTo(map);
+
+        // ── Draw stop markers ────────────────────────────────────
         stops.forEach((stop, i) => {
             const isFirst = i === 0;
             const isLast = i === stops.length - 1;
-            const size = (isFirst || isLast) ? 14 : 10;
-            
+            const isTerminal = isFirst || isLast;
+            const size = isTerminal ? 18 : 12;
+
+            const bgColor = isFirst ? "#10b981" : isLast ? "#ef4444" : "#ffffff";
+            const borderColor = isTerminal ? "#ffffff" : "#006B7D";
+            const shadow = "0 2px 6px rgba(0,0,0,0.3)";
+
             const icon = L.divIcon({
                 className: "custom-stop-marker",
                 html: `<div style="
-                    width: ${size}px; height: ${size}px;
-                    background: white;
-                    border: 3px solid ${isFirst || isLast ? '#006B7D' : '#1a1a2e'};
-                    border-radius: 50%;
-                    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                    width:${size}px; height:${size}px;
+                    background:${bgColor};
+                    border:${isTerminal ? 2.5 : 2}px solid ${borderColor};
+                    border-radius:50%;
+                    box-shadow:${shadow};
+                    z-index: 1000;
                 "></div>`,
                 iconSize: [size, size],
                 iconAnchor: [size / 2, size / 2],
             });
 
-            const marker = L.marker([stop.latitude, stop.longitude], { icon }).addTo(map);
-            
-            if (isFirst || isLast) {
-                marker.bindTooltip(isFirst ? "Start" : "End", {
-                    permanent: true,
+            const marker = L.marker([stop.latitude, stop.longitude], { 
+                icon,
+                zIndexOffset: isTerminal ? 1000 : 500
+            }).addTo(map);
+
+            // Popup for every stop  
+            marker.bindPopup(
+                `<div style="font-family:inherit;min-width:140px;padding:2px">
+                    <div style="font-weight:800;font-size:14px;color:#0f172a;margin-bottom:4px">
+                        ${stop.name}
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                        <span style="font-size:10px;color:#64748b;font-weight:700;background:#f1f5f9;padding:2px 6px;border-radius:4px">
+                            Stop ${i + 1}
+                        </span>
+                        ${isTerminal ? `<span style="font-size:10px;color:white;background:${bgColor};padding:2px 6px;border-radius:4px;font-weight:700">${isFirst ? 'START' : 'END'}</span>` : ''}
+                    </div>
+                </div>`,
+                { closeButton: false, className: "route-stop-popup" }
+            );
+
+            // Tooltips only for terminals
+            if (isTerminal) {
+                marker.bindTooltip(stop.name, {
+                    permanent: false,
                     direction: "top",
                     offset: [0, -10],
                     className: "stop-label-tooltip",
@@ -122,22 +208,24 @@ const RouteDetailsPage = () => {
             }
         });
 
-        // Fit bounds to show all stops
-        const bounds = L.latLngBounds(routeLatLngs);
-        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+        // ── Fit bounds ───────────────────────────────────────────
+        const allPoints: L.LatLngExpression[] = stops.map(
+            s => [s.latitude, s.longitude] as L.LatLngExpression
+        );
+        const bounds = L.latLngBounds(allPoints);
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
 
-        // Fix map sizing after tiles load
-        setTimeout(() => {
-            map.invalidateSize();
-        }, 300);
-
+        // Fix mobile rendering
+        setTimeout(() => map.invalidateSize(), 300);
         setMapReady(true);
 
         return () => {
             map.remove();
             mapInstance.current = null;
         };
-    }, [stops]);
+    }, [stops, routePath]);
+
+    const destination = routeData.destination || routeData.to || stops[stops.length - 1]?.name || "Destination";
 
     const handleBookTicket = () => {
         navigate("/book-ticket", { 
@@ -151,6 +239,7 @@ const RouteDetailsPage = () => {
         });
     };
 
+    // ── Loading screen ───────────────────────────────────────────
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center h-screen bg-slate-50 dark:bg-[#0f1522]">
@@ -160,13 +249,24 @@ const RouteDetailsPage = () => {
         );
     }
 
+    // ── Main render ──────────────────────────────────────────────
     return (
         <div className="max-w-md mx-auto flex flex-col h-screen bg-white dark:bg-[#0f1522] overflow-hidden">
             {/* Top Half: Map */}
             <div className="relative h-[42vh] w-full shrink-0">
                 <div ref={mapRef} className="absolute inset-0 z-0" />
                 
-                {/* Back Button - Floating over map */}
+                {/* Path loading indicator */}
+                {pathLoading && (
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000]">
+                        <div className="bg-white/95 backdrop-blur-md rounded-full px-4 py-2 shadow-lg flex items-center gap-2">
+                            <Loader2 className="w-4 h-4 text-[#006B7D] animate-spin" />
+                            <span className="text-xs font-bold text-slate-600">Loading road path...</span>
+                        </div>
+                    </div>
+                )}
+
+                {/* Back Button */}
                 <div className="absolute top-4 left-4 z-[1000]">
                     <button 
                         onClick={() => navigate(-1)}
@@ -176,7 +276,7 @@ const RouteDetailsPage = () => {
                     </button>
                 </div>
 
-                {/* Book Ticket Button - Floating on map */}
+                {/* Book Ticket Button */}
                 <div className="absolute bottom-4 right-4 z-[1000]">
                     <motion.button
                         whileTap={{ scale: 0.95 }}
@@ -277,6 +377,21 @@ const RouteDetailsPage = () => {
                 .custom-stop-marker {
                     background: transparent !important;
                     border: none !important;
+                }
+                .route-stop-popup .leaflet-popup-content-wrapper {
+                    border-radius: 10px !important;
+                    box-shadow: 0 8px 24px -4px rgba(0,0,0,0.15) !important;
+                    border: 1px solid rgba(0,0,0,0.06) !important;
+                    padding: 0 !important;
+                }
+                .route-stop-popup .leaflet-popup-content {
+                    margin: 10px 14px !important;
+                }
+                .route-stop-popup .leaflet-popup-tip {
+                    box-shadow: 2px 2px 8px rgba(0,0,0,0.08) !important;
+                }
+                .route-stop-popup a.leaflet-popup-close-button {
+                    display: none !important;
                 }
             `}</style>
         </div>

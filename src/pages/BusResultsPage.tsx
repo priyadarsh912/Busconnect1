@@ -60,6 +60,8 @@ const mapRoutesToBuses = (routes: UnifiedRoute[], tripType: string): BusRoute[] 
     const arrivalTime = new Date(now.getTime() + eta_min * 60000);
     const arrival = formatTime(arrivalTime);
 
+    const isAC = r.route_id?.startsWith('A') || (r.route_type || '').toLowerCase().includes('ac');
+
     return {
       id: i,
       route_no: r.route_id,
@@ -69,9 +71,11 @@ const mapRoutesToBuses = (routes: UnifiedRoute[], tripType: string): BusRoute[] 
       from_stop,
       to_stop,
       stop,
+      stops: r.stops,
       distance_km: r.distance_km,
       price_inr,
       crowd: r.crowd,
+      type: isAC ? "AC" : "Non-AC",
       eta_min,
       departure,
       arrival,
@@ -265,6 +269,10 @@ const BusResultsPage = () => {
                       })()}
                       <span className="w-1 h-1 rounded-full bg-slate-200" />
                       <span className="text-[10px] font-bold text-slate-400">{bus.distance_km.toFixed(1)} km</span>
+                      <span className="w-1 h-1 rounded-full bg-slate-200" />
+                      <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter ${(bus as any).type === 'AC' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>
+                        {(bus as any).type}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -291,6 +299,25 @@ const BusResultsPage = () => {
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Arrive</p>
                  </div>
               </div>
+
+              {/* Stop Sequence Preview */}
+              {(bus as any).stops && (bus as any).stops.length > 0 && (
+                <div className="mb-6 px-2">
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3">Route Stops ({ (bus as any).stops.length })</p>
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+                    {(bus as any).stops.map((s: any, i: number) => (
+                      <div key={i} className="flex-none flex items-center gap-2">
+                        <div className="bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-full border border-slate-100 dark:border-slate-800">
+                          <span className="text-[10px] font-bold text-on-surface">{s.name}</span>
+                        </div>
+                        {i < (bus as any).stops.length - 1 && (
+                          <div className="w-2 h-px bg-slate-200" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="mt-4">
                 <Button 

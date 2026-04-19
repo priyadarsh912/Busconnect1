@@ -11,6 +11,10 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     email TEXT,
     phone TEXT,
     role TEXT DEFAULT 'customer' CHECK (role IN ('customer', 'driver', 'admin')),
+    fcm_token TEXT,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    notify_radius INTEGER DEFAULT 1000,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );

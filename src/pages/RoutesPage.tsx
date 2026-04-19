@@ -34,7 +34,7 @@ const RoutesPage = () => {
   const location = useLocation();
   const { t } = useLanguage();
 
-  const selectedState: string = location.state?.state || localStorage.getItem("selectedState") || "Chandigarh";
+  const selectedState: string = location.state?.state || localStorage.getItem("selectedState") || "Bhubaneswar";
   const tripType: "intercity" | "outstation" = location.state?.tripType ?? "intercity";
   const origin: string = location.state?.origin ?? "";
   const destination: string = location.state?.destination ?? "";
@@ -52,12 +52,12 @@ const RoutesPage = () => {
     if (!loading) {
       if (tripType === "intercity") {
         const filtered = intercity.routes.filter((r) => {
-          if (r.distance_km > 35) return false;
+          if (r.distance_km > 150) return false;
           if (origin && destination) {
             const qO = origin.toLowerCase();
             const qD = destination.toLowerCase();
-            const fS = r.from_stop.toLowerCase();
-            const tS = r.to_stop.toLowerCase();
+            const fS = (r.origin || r.from_stop || "").toLowerCase();
+            const tS = (r.destination || r.to_stop || "").toLowerCase();
             return (fS.includes(qO) || qO.includes(fS)) && (tS.includes(qD) || qD.includes(tS));
           }
           return true;
@@ -231,7 +231,7 @@ const RoutesPage = () => {
                       if (user && from && to) {
                         busService.saveSearchHistory(user.id, from, to, tripType).catch(() => {});
                       }
-                      navigate("/tracking", { state: { route, tripType } });
+                      navigate("/route-details", { state: { route, tripType } });
                     }}
                   >
                     <MapPin className="w-3 h-3 mr-1" /> Track

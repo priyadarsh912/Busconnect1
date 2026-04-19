@@ -1,4 +1,4 @@
-package com.busconnect.ai;
+package busconnect.app;
 
 import com.getcapacitor.BridgeActivity;
 

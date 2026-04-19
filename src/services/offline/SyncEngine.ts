@@ -6,25 +6,31 @@ import { analyticsService } from '../AnalyticsService';
 export class SyncEngine {
   private isSyncing: boolean = false;
   private syncIntervalId: any = null;
+  private isInitialized: boolean = false;
 
   constructor() {
-    this.init();
+    // Don't auto-start — call start() explicitly after app is ready
   }
 
-  private init() {
+  /**
+   * Start the sync engine (call after app initialization)
+   */
+  public start() {
+    if (this.isInitialized) return;
+    this.isInitialized = true;
+
     networkManager.onStatusChange((isOnline) => {
       if (isOnline) {
-        console.log('SyncEngine: Online detected. Starting sync...');
         this.processQueue();
       }
     });
 
-    // Background sync: Check for pending items every 5 seconds if online
+    // Background sync: Check for pending items every 30 seconds if online
     this.syncIntervalId = setInterval(() => {
       if (networkManager.getStatus()) {
         this.processQueue();
       }
-    }, 5000);
+    }, 30000);
   }
 
   /**
@@ -48,7 +54,6 @@ export class SyncEngine {
       const items = await syncQueueService.getPendingItems();
       
       if (items.length === 0) {
-        console.log('SyncEngine: Queue is empty.');
         return;
       }
 

@@ -6,6 +6,7 @@ import { Input } from "../components/ui/input";
 import PageShell from "../components/PageShell";
 import { authService } from "../services/authService";
 import { busService, BusRoute } from "../services/busService";
+import { supabase } from "../lib/supabase";
 import AnimatedBusLogo from "../components/AnimatedBusLogo";
 
 const fadeUp = {
@@ -32,9 +33,19 @@ const HomePage = () => {
   const [showWelcomeSplash, setShowWelcomeSplash] = useState(false);
   const [pendingCity, setPendingCity] = useState("");
   const [routes, setRoutes] = useState<BusRoute[]>([]);
-  const [loadingRoutes, setLoadingRoutes] = useState(true);
   const [nearestStops, setNearestStops] = useState<any[]>([]);
-  const [loadingStops, setLoadingStops] = useState(true);
+  const [loadingRoutes, setLoadingRoutes] = useState(false);
+  const [loadingStops, setLoadingStops] = useState(false);
+  const [recentRoutes, setRecentRoutes] = useState<BusRoute[]>([]);
+  const [mostUsedRoutes, setMostUsedRoutes] = useState<BusRoute[]>([]);
+
+  useEffect(() => {
+    // Load recently visited from localStorage
+    const savedHistory = localStorage.getItem("route_history");
+    if (savedHistory) {
+      setRecentRoutes(JSON.parse(savedHistory).slice(0, 5));
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,6 +57,33 @@ const HomePage = () => {
           busService.getStopsByCity(selectedCity)
         ]);
         setRoutes(routesData || []);
+        
+        // Fetch most used routes for this user
+        const user = authService.getCurrentUser();
+        if (user) {
+          const { data: userRoutes } = await supabase
+            .from('user_routes')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('frequency', { ascending: false })
+            .limit(3);
+          
+          if (userRoutes && userRoutes.length > 0) {
+            // Map user_routes back to BusRoutes
+            const mapped = (userRoutes as any[]).map(ur => {
+               return routesData.find(r => 
+                 (r.origin.includes(ur.source) && r.destination.includes(ur.destination)) ||
+                 (r.route_number === ur.route_id)
+               );
+            }).filter(Boolean);
+            setMostUsedRoutes(mapped.length > 0 ? mapped : routesData.slice(0, 3));
+          } else {
+            setMostUsedRoutes(routesData.slice(0, 3));
+          }
+        } else {
+          setMostUsedRoutes(routesData.slice(0, 3));
+        }
+        
         setNearestStops(stopsData || []);
       } catch (err) {
         console.error("Error fetching homepage data:", err);
@@ -59,6 +97,15 @@ const HomePage = () => {
 
   const handleSearch = () => {
     navigate("/route-search");
+  };
+
+  const handleRouteClick = (route: BusRoute) => {
+    // Save to history
+    const history = JSON.parse(localStorage.getItem("route_history") || "[]");
+    const updated = [route, ...history.filter((r: any) => r.id !== route.id)].slice(0, 10);
+    localStorage.setItem("route_history", JSON.stringify(updated));
+    setRecentRoutes(updated.slice(0, 5));
+    navigate("/route-details", { state: { route } });
   };
 
   const filteredCities = searchQuery.length > 0 
@@ -109,18 +156,23 @@ const HomePage = () => {
         </div>
       </motion.div>
 
-      {/* Quick Recent Routes */}
-      <motion.div variants={fadeUp} initial="initial" animate="animate" className="flex gap-3 mb-10 overflow-x-auto pb-2 scrollbar-none">
-        {loadingRoutes ? (
-          <div className="flex items-center gap-2 px-4">
-            <Loader2 className="w-4 h-4 text-slate-300 animate-spin" />
-            <span className="text-xs font-bold text-slate-300 italic uppercase tracking-wider">Fetching routes...</span>
-          </div>
-        ) : routes.length > 0 ? (
-          routes.map((route) => (
+      {/* Recently Visited / Recommended Routes */}
+      <div className="mb-10 px-1">
+        <div className="flex items-center justify-between mb-4">
+           <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+             {recentRoutes.length > 0 ? "Recently Visited" : "Recommended Routes"}
+           </h3>
+        </div>
+        <motion.div variants={fadeUp} initial="initial" animate="animate" className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+          {loadingRoutes ? (
+            <div className="flex items-center gap-2 px-4 py-2">
+              <Loader2 className="w-4 h-4 text-slate-300 animate-spin" />
+              <span className="text-xs font-bold text-slate-300 italic uppercase tracking-wider">Fetching...</span>
+            </div>
+          ) : (recentRoutes.length > 0 ? recentRoutes : routes.slice(0, 5)).map((route) => (
             <button 
-              key={route.id}
-              onClick={() => navigate("/route-details", { state: { route } })} 
+              key={`${route.id}-${selectedCity}`}
+              onClick={() => handleRouteClick(route)} 
               className="flex-none bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-2xl flex items-center gap-3 shadow-sm min-w-[140px] active:scale-95 transition-transform"
             >
               <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded-xl">
@@ -131,11 +183,9 @@ const HomePage = () => {
                  <p className="text-[10px] text-slate-400 font-medium truncate max-w-[80px]">To {route.destination}</p>
               </div>
             </button>
-          ))
-        ) : (
-          <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest px-4 py-2">No routes available</div>
-        )}
-      </motion.div>
+          ))}
+        </motion.div>
+      </div>
 
       {/* Quick Payments */}
       <motion.div variants={fadeUp} initial="initial" animate="animate" className="mb-10">
@@ -181,49 +231,49 @@ const HomePage = () => {
              </div>
            </div>
 
-           {/* Bus List */}
-           <div className="space-y-4">
-             {loadingRoutes ? (
-               <div className="py-4 text-center">
-                 <Loader2 className="w-6 h-6 text-primary animate-spin mx-auto mb-2" />
-                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">Checking departures...</p>
-               </div>
-             ) : routes.length > 0 ? (
-               routes.slice(0, 2).map((route, i) => (
-                 <div 
-                   key={route.id} 
-                   className={`flex items-center justify-between group cursor-pointer ${i > 0 ? "border-t border-slate-50 dark:border-slate-800/50 pt-4" : ""}`} 
-                   onClick={() => navigate("/route-details", { state: { route } })}
-                 >
-                    <div className="flex items-center gap-3">
-                      <Bus className="w-5 h-5 text-slate-400" />
-                      <div>
-                        <p className="font-headline font-bold text-base leading-none mb-1">{route.route_number}</p>
-                        <p className="text-xs text-slate-400 font-medium">To {route.destination}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-primary font-bold text-sm flex items-center gap-1">
-                         <span className="relative flex h-2 w-2 mr-1">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                         </span>
-                         In {8 + (i * 12)} min
-                      </span>
-                      <div className="flex text-green-500">
-                         <User className="w-3.5 h-3.5" />
-                         <User className="w-3.5 h-3.5" />
-                         <User className="w-3.5 h-3.5 text-slate-200 dark:text-slate-700" />
-                      </div>
-                    </div>
-                 </div>
-               ))
-             ) : (
-               <div className="py-4 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                 No active buses found
-               </div>
-             )}
-           </div>
+            {/* Bus List */}
+            <div className="space-y-4">
+              {loadingRoutes ? (
+                <div className="py-4 text-center">
+                  <Loader2 className="w-6 h-6 text-primary animate-spin mx-auto mb-2" />
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">Checking departures...</p>
+                </div>
+              ) : mostUsedRoutes.length > 0 ? (
+                mostUsedRoutes.map((route, i) => (
+                  <div 
+                    key={route.id} 
+                    className={`flex items-center justify-between group cursor-pointer ${i > 0 ? "border-t border-slate-50 dark:border-slate-800/50 pt-4" : ""}`} 
+                    onClick={() => handleRouteClick(route)}
+                  >
+                     <div className="flex items-center gap-3">
+                       <Bus className="w-5 h-5 text-slate-400" />
+                       <div>
+                         <p className="font-headline font-bold text-base leading-none mb-1">{route.route_number}</p>
+                         <p className="text-xs text-slate-400 font-medium">To {route.destination}</p>
+                       </div>
+                     </div>
+                     <div className="flex items-center gap-2">
+                       <span className="text-primary font-bold text-sm flex items-center gap-1">
+                          <span className="relative flex h-2 w-2 mr-1">
+                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                             <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                          </span>
+                          In {8 + (i * 12)} min
+                       </span>
+                       <div className="flex text-green-500">
+                          <User className="w-3.5 h-3.5" />
+                          <User className="w-3.5 h-3.5" />
+                          <User className="w-3.5 h-3.5 text-slate-200 dark:text-slate-700" />
+                       </div>
+                     </div>
+                  </div>
+                ))
+              ) : (
+                <div className="py-4 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  No active buses found
+                </div>
+              )}
+            </div>
         </div>
 
         <button className="text-sm font-bold text-orange-500 flex items-center gap-1 hover:opacity-80 transition-opacity mt-5 px-1">

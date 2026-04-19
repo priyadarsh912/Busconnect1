@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { calculateOdishaFare, isOdishaRegion } from '../utils/fareUtils';
 
 export interface BusRoute {
   id: string;
@@ -7,6 +8,7 @@ export interface BusRoute {
   destination: string;
   distance_km: number;
   price_inr: number;
+  stops?: { name: string; sequence: number }[];
 }
 
 export interface BusStop {
@@ -22,14 +24,43 @@ export const busService = {
    * Search for routes between two points
    */
   async searchRoutes(origin: string, destination: string): Promise<BusRoute[]> {
+    // 1. Find routes that contain the origin stop
+    const { data: routeIdsWithOrigin } = await supabase
+      .from('route_stops')
+      .select('route_id, stop_sequence, stops!inner(name)')
+      .ilike('stops.name', `%${origin}%`);
+
+    // 2. Find routes that contain the destination stop
+    const { data: routeIdsWithDest } = await supabase
+      .from('route_stops')
+      .select('route_id, stop_sequence, stops!inner(name)')
+      .ilike('stops.name', `%${destination}%`);
+
+    if (!routeIdsWithOrigin || !routeIdsWithDest) return [];
+
+    // 3. Find intersection where origin_seq < dest_seq
+    const matchingRouteIds = routeIdsWithOrigin.filter(o => {
+      const d = routeIdsWithDest.find(dest => dest.route_id === o.route_id);
+      return d && o.stop_sequence < d.stop_sequence;
+    }).map(r => r.route_id);
+
+    if (matchingRouteIds.length === 0) return [];
+
+    // 4. Fetch the full route details
     const { data, error } = await supabase
       .from('routes')
-      .select('*')
-      .ilike('origin', `%${origin}%`)
-      .ilike('destination', `%${destination}%`);
+      .select('*, route_stops(stop_sequence, stops(name))')
+      .in('id', matchingRouteIds);
 
     if (error) throw error;
-    return data as BusRoute[];
+    
+    return (data || []).map(r => ({
+      ...r,
+      stops: r.route_stops ? r.route_stops.map((rs: any) => ({
+        name: rs.stops.name,
+        sequence: rs.stop_sequence
+      })).sort((a: any, b: any) => a.sequence - b.sequence) : undefined
+    })) as BusRoute[];
   },
 
   /**
@@ -63,17 +94,39 @@ export const busService = {
 
 
   /**
-   * Calculate fare dynamically based on latest pricing from DB
+   * Calculate fare dynamically based on distance and AC status
    */
-  async calculateFare(routeId: string, distanceKm: number): Promise<number> {
+  calculateFare(distance: number, isAC: boolean = false): number {
+    // Mo Bus (Bhubaneswar) style tiered pricing
+    if (isAC) {
+      if (distance <= 2) return 20;
+      if (distance <= 4) return 30;
+      if (distance <= 6) return 40;
+      if (distance <= 8) return 50;
+      return 50 + Math.ceil((distance - 8) / 2) * 5; 
+    } else {
+      if (distance <= 2) return 5;
+      if (distance <= 4) return 10;
+      if (distance <= 6) return 15;
+      if (distance <= 8) return 20;
+      return 20 + Math.ceil((distance - 8) / 2) * 5;
+    }
+  },
+
+  async getRouteFare(routeId: string, distanceKm: number): Promise<number> {
     const { data: route, error } = await supabase
       .from('routes')
-      .select('price_inr')
+      .select('price_inr, origin, destination, route_number, route_type')
       .eq('id', routeId)
       .single();
 
-    if (error || !route) return 10; // Fallback base fare
-    return Number(route.price_inr);
+    if (error || !route) return 10;
+    
+    // Check if it's an AC bus
+    const isAC = (route.route_number || '').startsWith('A') || 
+                 (route.route_type || '').toLowerCase().includes('ac');
+    
+    return this.calculateFare(distanceKm, isAC);
   },
 
   /**
@@ -227,17 +280,57 @@ export const busService = {
    * Get all routes (Admin/General)
    */
   async getAllRoutes(cityName?: string): Promise<BusRoute[]> {
-    let query = supabase.from('routes').select('*');
+    let query = supabase.from('routes').select('*, route_stops(stop_sequence, stops(name, city_id))');
     
     if (cityName) {
-      // Filter routes where origin or destination includes the city name
-      query = query.or(`origin.ilike.%${cityName}%,destination.ilike.%${cityName}%`);
+      // Handle Bhubaneswar specifically and Broad matches
+      const searchTerms = [cityName];
+      if (cityName.toLowerCase() === 'bhubaneswar') {
+        searchTerms.push('bbsr');
+        searchTerms.push('odisha');
+      }
+      
+      const orFilter = searchTerms.map(t => `origin.ilike.%${t}%,destination.ilike.%${t}%`).join(',');
+      query = query.or(orFilter);
     }
 
     const { data, error } = await query;
 
     if (error) throw error;
-    return data as BusRoute[];
+    
+    // If we didn't get enough routes by origin/destination name, 
+    // try fetching routes that have stops in this city
+    let finalData = data || [];
+    if (cityName && finalData.length < 5) {
+      const { data: routesByStops } = await supabase
+        .from('route_stops')
+        .select('route_id, stops!inner(name, city_id)')
+        .ilike('stops.name', `%${cityName}%`);
+      
+      if (routesByStops && routesByStops.length > 0) {
+         const additionalRouteIds = routesByStops.map(rs => rs.route_id);
+         const { data: moreRoutes } = await supabase
+           .from('routes')
+           .select('*, route_stops(stop_sequence, stops(name, city_id))')
+           .in('id', additionalRouteIds);
+         
+         if (moreRoutes) {
+            // Merge and avoid duplicates
+            const existingIds = new Set(finalData.map(r => r.id));
+            moreRoutes.forEach(r => {
+              if (!existingIds.has(r.id)) finalData.push(r);
+            });
+         }
+      }
+    }
+
+    return finalData.map(r => ({
+      ...r,
+      stops: r.route_stops ? r.route_stops.map((rs: any) => ({
+        name: rs.stops.name,
+        sequence: rs.stop_sequence
+      })).sort((a: any, b: any) => a.sequence - b.sequence) : undefined
+    })) as BusRoute[];
   },
 
   /**

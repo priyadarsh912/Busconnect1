@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { busService, BusRoute } from '../services/busService';
 
-export const useOutstationRoutes = (stateName: string = "Chandigarh") => {
+export const useOutstationRoutes = (stateName: string = "Bhubaneswar") => {
     const [routes, setRoutes] = useState<BusRoute[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
